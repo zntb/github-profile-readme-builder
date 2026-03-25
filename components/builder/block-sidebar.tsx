@@ -47,7 +47,7 @@ export function BlockSidebar() {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     BLOCK_CATEGORIES.map((c) => c.name)
   );
-  const { addBlock } = useBuilderStore();
+  const { addBlock, username } = useBuilderStore();
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
@@ -55,11 +55,26 @@ export function BlockSidebar() {
     );
   };
 
+  // GitHub stats block types that need username
+  const GITHUB_STATS_BLOCKS = [
+    'stats-card',
+    'top-languages',
+    'streak-stats',
+    'activity-graph',
+    'trophies',
+    'visitor-counter',
+  ];
+
   const handleAddBlock = (type: BlockType, defaultProps: Record<string, unknown>) => {
+    // If username is set and this is a GitHub stats block, use the username
+    const props = { ...defaultProps };
+    if (username && GITHUB_STATS_BLOCKS.includes(type)) {
+      props.username = username;
+    }
     addBlock({
       id: generateId(),
       type,
-      props: defaultProps,
+      props,
       children: type === 'container' || type === 'collapsible' ? [] : undefined,
     });
   };

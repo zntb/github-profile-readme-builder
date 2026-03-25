@@ -4,6 +4,7 @@
 import { JSX, useMemo } from 'react';
 import type { Block } from '@/lib/types';
 import { Eye } from 'lucide-react';
+import { useBuilderStore } from '@/lib/store';
 
 interface LivePreviewProps {
   blocks: Block[];
@@ -50,8 +51,14 @@ export function LivePreview({ blocks }: LivePreviewProps) {
 
 function PreviewBlock({ block }: { block: Block }) {
   const { type, props, children } = block;
+  const globalUsername = useBuilderStore((state) => state.username);
 
   const renderBlock = useMemo(() => {
+    // Helper function to get username with global fallback
+    const getUsername = (blockUsername: string) => {
+      return (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+    };
+
     switch (type) {
       case 'container':
         return (
@@ -275,7 +282,7 @@ function PreviewBlock({ block }: { block: Block }) {
 
       case 'stats-card':
         const statsParams = new URLSearchParams({
-          username: props.username as string,
+          username: getUsername(props.username as string),
           theme: props.theme as string,
           show_icons: props.showIcons ? 'true' : 'false',
           hide_border: props.hideBorder ? 'true' : 'false',
@@ -291,7 +298,7 @@ function PreviewBlock({ block }: { block: Block }) {
 
       case 'top-languages':
         const langsParams = new URLSearchParams({
-          username: props.username as string,
+          username: getUsername(props.username as string),
           theme: props.theme as string,
           layout: props.layout as string,
           hide_border: props.hideBorder ? 'true' : 'false',
@@ -307,7 +314,7 @@ function PreviewBlock({ block }: { block: Block }) {
 
       case 'streak-stats':
         const streakParams = new URLSearchParams({
-          username: props.username as string,
+          username: getUsername(props.username as string),
           theme: props.theme as string,
           hide_border: props.hideBorder ? 'true' : 'false',
           border_radius: String(props.borderRadius),
@@ -320,7 +327,7 @@ function PreviewBlock({ block }: { block: Block }) {
 
       case 'activity-graph':
         const activityParams = new URLSearchParams({
-          username: props.username as string,
+          username: getUsername(props.username as string),
           theme: props.theme as string,
           hide_border: props.hideBorder ? 'true' : 'false',
         });
@@ -332,7 +339,7 @@ function PreviewBlock({ block }: { block: Block }) {
 
       case 'trophies':
         const trophyParams = new URLSearchParams({
-          username: props.username as string,
+          username: getUsername(props.username as string),
           theme: props.theme as string,
           column: String(props.column),
           row: String(props.row),
@@ -348,7 +355,7 @@ function PreviewBlock({ block }: { block: Block }) {
         );
 
       case 'visitor-counter':
-        const visitorUrl = `https://komarev.com/ghpvc/?username=${props.username}&color=${props.color}&style=${props.style}&label=${encodeURIComponent(props.label as string)}`;
+        const visitorUrl = `https://komarev.com/ghpvc/?username=${getUsername(props.username as string)}&color=${props.color}&style=${props.style}&label=${encodeURIComponent(props.label as string)}`;
         return (
           <div className="text-center">
             <img src={visitorUrl} alt="Profile Views" />
@@ -382,7 +389,7 @@ function PreviewBlock({ block }: { block: Block }) {
       default:
         return null;
     }
-  }, [type, props, children]);
+  }, [type, props, children, globalUsername]);
 
   return <div className="mb-4">{renderBlock}</div>;
 }

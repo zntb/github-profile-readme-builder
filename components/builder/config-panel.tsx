@@ -807,13 +807,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       return (
         <>
           <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
-          <FieldGroup>
             <Label>Theme</Label>
             <Select
               value={props.theme as string}
@@ -883,13 +876,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'top-languages':
       return (
         <>
-          <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
           <FieldGroup>
             <Label>Theme</Label>
             <Select
@@ -961,13 +947,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       return (
         <>
           <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
-          <FieldGroup>
             <Label>Theme</Label>
             <Select
               value={props.theme as string}
@@ -1011,13 +990,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       return (
         <>
           <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
-          <FieldGroup>
             <Label>Theme</Label>
             <Select
               value={props.theme as string}
@@ -1054,13 +1026,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'trophies':
       return (
         <>
-          <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
           <FieldGroup>
             <Label>Theme</Label>
             <Select
@@ -1123,13 +1088,6 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'visitor-counter':
       return (
         <>
-          <FieldGroup>
-            <Label>GitHub Username</Label>
-            <Input
-              value={props.username as string}
-              onChange={(e) => update('username', e.target.value)}
-            />
-          </FieldGroup>
           <FieldGroup>
             <Label>Label</Label>
             <Input

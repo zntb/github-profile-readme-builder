@@ -10,10 +10,12 @@ import { useBuilderStore } from "@/lib/store";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Eye, Code, PanelLeft, Settings2, Blocks } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Eye, Code, PanelLeft, Settings2, Blocks, User } from "lucide-react";
 
 export function Builder() {
-  const { selectedBlockId } = useBuilderStore();
+  const { selectedBlockId, username, setUsername } = useBuilderStore();
   const [mobileTab, setMobileTab] = useState<"blocks" | "canvas" | "preview">("canvas");
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
@@ -41,26 +43,43 @@ export function Builder() {
           {selectedBlockId ? (
             <ConfigPanel />
           ) : (
-            <Tabs defaultValue="preview" className="flex-1 flex flex-col">
-              <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
-                <TabsList className="w-full bg-muted/50">
-                  <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
-                    <Eye className="w-4 h-4" />
-                    Preview
-                  </TabsTrigger>
-                  <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
-                    <Code className="w-4 h-4" />
-                    Markdown
-                  </TabsTrigger>
-                </TabsList>
+            <div className="flex flex-col h-full">
+              {/* Username Input */}
+              <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    GitHub Username
+                  </Label>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your GitHub username"
+                    className="h-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
               </div>
-              <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
-                <OutputPanel mode="preview" />
-              </TabsContent>
-              <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
-                <OutputPanel mode="markdown" />
-              </TabsContent>
-            </Tabs>
+              <Tabs defaultValue="preview" className="flex-1 flex flex-col">
+                <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                  <TabsList className="w-full bg-muted/50">
+                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                      <Eye className="w-4 h-4" />
+                      Preview
+                    </TabsTrigger>
+                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                      <Code className="w-4 h-4" />
+                      Markdown
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
+                  <OutputPanel mode="preview" />
+                </TabsContent>
+                <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
+                  <OutputPanel mode="markdown" />
+                </TabsContent>
+              </Tabs>
+            </div>
           )}
         </div>
       </div>
@@ -106,26 +125,43 @@ export function Builder() {
             {selectedBlockId ? (
               <ConfigPanel />
             ) : (
-              <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
-                <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
-                  <TabsList className="w-full bg-muted/50">
-                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
-                      <Eye className="w-4 h-4" />
-                      Preview
-                    </TabsTrigger>
-                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
-                      <Code className="w-4 h-4" />
-                      Markdown
-                    </TabsTrigger>
-                  </TabsList>
+              <div className="flex flex-col h-full">
+                {/* Username Input */}
+                <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
+                  <div className="flex flex-col gap-2">
+                    <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                      <User className="w-3.5 h-3.5" />
+                      GitHub Username
+                    </Label>
+                    <Input
+                      value={username}
+                      onChange={(e) => setUsername(e.target.value)}
+                      placeholder="Enter your GitHub username"
+                      className="h-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/30"
+                    />
+                  </div>
                 </div>
-                <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
-                  <OutputPanel mode="preview" />
-                </TabsContent>
-                <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
-                  <OutputPanel mode="markdown" />
-                </TabsContent>
-              </Tabs>
+                <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
+                  <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                    <TabsList className="w-full bg-muted/50">
+                      <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                        <Eye className="w-4 h-4" />
+                        Preview
+                      </TabsTrigger>
+                      <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                        <Code className="w-4 h-4" />
+                        Markdown
+                      </TabsTrigger>
+                    </TabsList>
+                  </div>
+                  <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
+                    <OutputPanel mode="preview" />
+                  </TabsContent>
+                  <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
+                    <OutputPanel mode="markdown" />
+                  </TabsContent>
+                </Tabs>
+              </div>
             )}
           </SheetContent>
         </Sheet>
@@ -166,26 +202,43 @@ export function Builder() {
             </div>
           )}
           {mobileTab === "preview" && (
-            <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
-              <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
-                <TabsList className="w-full bg-muted/50">
-                  <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
-                    <Eye className="w-4 h-4" />
-                    Preview
-                  </TabsTrigger>
-                  <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
-                    <Code className="w-4 h-4" />
-                    Markdown
-                  </TabsTrigger>
-                </TabsList>
+            <div className="flex flex-col h-full">
+              {/* Username Input */}
+              <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    GitHub Username
+                  </Label>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your GitHub username"
+                    className="h-8 text-sm transition-all duration-200 focus:ring-2 focus:ring-primary/30"
+                  />
+                </div>
               </div>
-              <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
-                <OutputPanel mode="preview" />
-              </TabsContent>
-              <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
-                <OutputPanel mode="markdown" />
-              </TabsContent>
-            </Tabs>
+              <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
+                <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                  <TabsList className="w-full bg-muted/50">
+                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                      <Eye className="w-4 h-4" />
+                      Preview
+                    </TabsTrigger>
+                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                      <Code className="w-4 h-4" />
+                      Markdown
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+                <TabsContent value="preview" className="flex-1 m-0 overflow-hidden">
+                  <OutputPanel mode="preview" />
+                </TabsContent>
+                <TabsContent value="markdown" className="flex-1 m-0 overflow-hidden">
+                  <OutputPanel mode="markdown" />
+                </TabsContent>
+              </Tabs>
+            </div>
           )}
         </div>
 

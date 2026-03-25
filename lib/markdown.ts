@@ -1,4 +1,5 @@
 import type { Block } from './types';
+import { useBuilderStore } from './store';
 
 // Build internal API URL
 function buildInternalUrl(endpoint: string, params: Record<string, unknown>): string {
@@ -184,7 +185,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'stats-card': {
-      const { username, theme, showIcons, hideBorder, hideTitle, hideRank, bgColor, textColor, titleColor, iconColor, borderRadius } = props as Record<string, unknown>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, theme, showIcons, hideBorder, hideTitle, hideRank, bgColor, textColor, titleColor, iconColor, borderRadius } = props as Record<string, unknown>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const params = {
         username,
         theme,
@@ -203,7 +207,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'top-languages': {
-      const { username, theme, layout, hideBorder, hideProgress, langs_count, bgColor, textColor, titleColor, borderRadius } = props as Record<string, unknown>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, theme, layout, hideBorder, hideProgress, langs_count, bgColor, textColor, titleColor, borderRadius } = props as Record<string, unknown>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const params = {
         username,
         theme,
@@ -221,7 +228,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'streak-stats': {
-      const { username, theme, hideBorder, borderRadius, bgColor, fireColor, ringColor, currStreakColor, sideNumColor, sideLabelColor, datesColor } = props as Record<string, unknown>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, theme, hideBorder, borderRadius, bgColor, fireColor, ringColor, currStreakColor, sideNumColor, sideLabelColor, datesColor } = props as Record<string, unknown>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const params = {
         username,
         theme,
@@ -240,7 +250,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'activity-graph': {
-      const { username, theme, hideBorder, bgColor, color, lineColor, pointColor, areaColor } = props as Record<string, unknown>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, theme, hideBorder, bgColor, color, lineColor, pointColor, areaColor } = props as Record<string, unknown>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const params = {
         username,
         theme,
@@ -256,7 +269,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'trophies': {
-      const { username, theme, column, row, margin_w, margin_h, noFrame, noBg } = props as Record<string, unknown>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, theme, column, row, margin_w, margin_h, noFrame, noBg } = props as Record<string, unknown>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const params = {
         username,
         theme,
@@ -272,7 +288,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'visitor-counter': {
-      const { username, color, style, label } = props as Record<string, string>;
+      const globalUsername = useBuilderStore.getState().username;
+      const { username: blockUsername, color, style, label } = props as Record<string, string>;
+      // Use global username if block username is empty or is the default placeholder
+      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
       const url = `https://komarev.com/ghpvc/?username=${username}&color=${color}&style=${style}&label=${encodeURIComponent(label)}`;
       return `<div align="center">\n  <img src="${url}" alt="Profile Views" />\n</div>`;
     }
