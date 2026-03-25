@@ -1,0 +1,69 @@
+name: Cleanup closed pull requests cache
+
+on:
+  schedule:
+    # Run daily at 3:00 UTC
+    - cron: '0 3 * * *'
+  workflow_dispatch:
+  # Also run when a PR is closed
+  pull_request:
+    types: [closed]
+
+jobs:
+  cleanup-cache:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: write
+
+    steps:
+      - name: Cleanup closed PR caches
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+
+            // Get all closed pull requests from the last 30 days
+            const closedPRs = await github.rest.pulls.list({
+              owner,
+              repo,
+              state: 'closed',
+              per_page: 100
+            });
+
+            console.log(`Found ${closedPRs.data.length} closed pull requests`);
+
+            // Get all current caches
+            const caches = await github.rest.actions.listCaches({
+              owner,
+              repo
+            });
+
+            console.log(`Found ${caches.data.total_count} cache entries`);
+
+            // Find and delete caches related to closed PRs
+            const prNumbers = closedPRs.data.map(pr => pr.number);
+            let deletedCount = 0;
+
+            for (const cache of caches.data.caches) {
+              // Check if the cache key contains a PR number
+              const cacheKey = cache.key;
+              const isPRCache = prNumbers.some(prNum =>
+                cacheKey.includes(`pr-${prNum}`) ||
+                cacheKey.includes(`pull/${prNum}`) ||
+                cacheKey.includes(`refs/pull/${prNum}`)
+              );
+
+              if (isPRCache) {
+                console.log(`Deleting cache: ${cacheKey} (id: ${cache.id})`);
+                await github.rest.actions.deleteCache({
+                  owner,
+                  repo,
+                  cache_id: cache.id
+                });
+                deletedCount++;
+              }
+            }
+
+            console.log(`Deleted ${deletedCount} cache entries related to closed PRs`);
