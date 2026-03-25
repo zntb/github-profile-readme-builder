@@ -83,25 +83,60 @@ GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 
 ## Development Workflow
 
-### 1. Create a Feature Branch
+We follow the **GitHub Flow** branching model, optimized for single developer and small team workflows.
 
-Always create a new branch for your changes:
+### Branch Types
+
+| Branch | Purpose | Protected | Base |
+|--------|---------|-----------|------|
+| `main` | Production-ready code | Yes | - |
+| `dev` | Integration branch for features | Yes | main |
+| `feature/*` | New features | No | dev |
+| `bugfix/*` | Bug fixes | No | dev |
+| `hotfix/*` | Emergency production fixes | No | main |
+
+### Branch Protection Rules
+
+- **`main`**: No direct pushes, requires Pull Request with review
+- **`dev`**: No direct pushes, requires Pull Request
+- **`feature/*`**, **`bugfix/*`**, **`hotfix/*`**: Can push directly, create PR before merge
+
+### Creating a Feature Branch
+
+Always create a new branch from `dev` for your changes:
 
 ```bash
-# For new features
-git checkout -b feat/feature-name
+# Ensure dev is up to date
+git checkout dev
+git pull origin dev
 
-# For bug fixes
-git checkout -b fix/bug-description
+# Create a new feature branch (include issue number if available)
+git checkout -b feature/123-new-feature-name
 
-# For refactoring
-git checkout -b refactor/section-name
+# Or for bug fixes
+git checkout -b bugfix/456-fix-description
 
-# For documentation
-git checkout -b docs/doc-section
+# For urgent hotfixes (create from main)
+git checkout main
+git pull origin main
+git checkout -b hotfix/789-urgent-fix
 ```
 
-### 2. Commit Messages
+### Branch Naming Convention
+
+- `feature/<issue-number>-<short-description>`
+- `bugfix/<issue-number>-<short-description>`
+- `hotfix/<issue-number>-<short-description>`
+
+**Examples:**
+
+```bash
+git checkout -b feature/42-add-trophy-block
+git checkout -b bugfix/15-fix-mobile-layout
+git checkout -b hotfix/99-security-patch
+```
+
+### Commit Messages
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/) for clear changelogs:
 
@@ -125,6 +160,8 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) for clear
 | `perf` | Performance improvements |
 | `test` | Adding or updating tests |
 | `chore` | Maintenance tasks |
+| `ci` | CI/CD changes |
+| `build` | Build system changes |
 
 **Examples:**
 
@@ -134,12 +171,13 @@ git commit -m "fix(canvas): resolve drag drop on mobile"
 git commit -m "docs: update contributing guidelines"
 ```
 
-### 3. Submit a Pull Request
+### Submit a Pull Request
 
-1. Push your branch: `git push origin feat/my-feature`
-2. Open a Pull Request against `main`
+1. Push your branch: `git push origin feature/123-new-feature`
+2. Open a Pull Request against `dev` (for feature/bugfix) or `main` (for hotfix)
 3. Fill out the PR template completely
 4. Wait for review and address feedback
+5. After approval, squash and merge to target branch
 
 ---
 
