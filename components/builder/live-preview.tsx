@@ -1,10 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { JSX, useMemo } from 'react';
-import type { Block } from '@/lib/types';
 import { Eye } from 'lucide-react';
+import { JSX, useMemo } from 'react';
+
 import { useBuilderStore } from '@/lib/store';
+import type { Block } from '@/lib/types';
 
 interface LivePreviewProps {
   blocks: Block[];
@@ -22,9 +23,7 @@ export function LivePreview({ blocks }: LivePreviewProps) {
           <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
             <Eye className="w-8 h-8 text-muted-foreground/50" />
           </div>
-          <p className="text-muted-foreground">
-            Add blocks to see a live preview of your README
-          </p>
+          <p className="text-muted-foreground">Add blocks to see a live preview of your README</p>
         </div>
       </div>
     );
@@ -35,8 +34,8 @@ export function LivePreview({ blocks }: LivePreviewProps) {
       <div className="p-3 sm:p-6">
         <div className="mx-auto max-w-3xl rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 sm:p-6 shadow-lg shadow-muted/10 github-preview">
           {blocks.map((block, index) => (
-            <div 
-              key={block.id} 
+            <div
+              key={block.id}
               className="animate-in"
               style={{ animationDelay: `${index * 30}ms` }}
             >
@@ -56,7 +55,9 @@ function PreviewBlock({ block }: { block: Block }) {
   const renderBlock = useMemo(() => {
     // Helper function to get username with global fallback
     const getUsername = (blockUsername: string) => {
-      return (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      return (!blockUsername || blockUsername === 'github') && globalUsername
+        ? globalUsername
+        : blockUsername;
     };
 
     switch (type) {
@@ -66,13 +67,20 @@ function PreviewBlock({ block }: { block: Block }) {
             style={{
               display: 'flex',
               flexDirection: props.direction as 'row' | 'column',
-              alignItems: props.alignment === 'center' ? 'center' : props.alignment === 'right' ? 'flex-end' : 'flex-start',
+              alignItems:
+                props.alignment === 'center'
+                  ? 'center'
+                  : props.alignment === 'right'
+                    ? 'flex-end'
+                    : 'flex-start',
               gap: `${props.gap}px`,
               width: '100%',
               justifyContent: 'center',
             }}
           >
-            {children?.map((child) => <PreviewBlock key={child.id} block={child} />)}
+            {children?.map((child) => (
+              <PreviewBlock key={child.id} block={child} />
+            ))}
           </div>
         );
 
@@ -118,7 +126,8 @@ function PreviewBlock({ block }: { block: Block }) {
               marginBottom: '1rem',
             }}
           >
-            {props.text as string} {Boolean(props.emoji) ? <span>{props.emoji as string}</span> : null}
+            {props.text as string}{' '}
+            {Boolean(props.emoji) ? <span>{props.emoji as string}</span> : null}
           </h1>
         );
 
@@ -152,7 +161,9 @@ function PreviewBlock({ block }: { block: Block }) {
           <details open={props.defaultOpen as boolean}>
             <summary>{props.title as string}</summary>
             <div className="pl-4 mt-2">
-              {children?.map((child) => <PreviewBlock key={child.id} block={child} />)}
+              {children?.map((child) => (
+                <PreviewBlock key={child.id} block={child} />
+              ))}
             </div>
           </details>
         );
@@ -199,68 +210,125 @@ function PreviewBlock({ block }: { block: Block }) {
       case 'social-badges':
         const badges: JSX.Element[] = [];
         const style = props.style as string;
-        
+
         if (props.linkedin) {
           badges.push(
-            <a key="linkedin" href={`https://linkedin.com/in/${props.linkedin}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/LinkedIn-0077B5?style=${style}&logo=linkedin&logoColor=white`} alt="LinkedIn" />
-            </a>
+            <a
+              key="linkedin"
+              href={`https://linkedin.com/in/${props.linkedin}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/LinkedIn-0077B5?style=${style}&logo=linkedin&logoColor=white`}
+                alt="LinkedIn"
+              />
+            </a>,
           );
         }
         if (props.twitter) {
           badges.push(
-            <a key="twitter" href={`https://twitter.com/${props.twitter}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/Twitter-1DA1F2?style=${style}&logo=twitter&logoColor=white`} alt="Twitter" />
-            </a>
+            <a
+              key="twitter"
+              href={`https://twitter.com/${props.twitter}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/Twitter-1DA1F2?style=${style}&logo=twitter&logoColor=white`}
+                alt="Twitter"
+              />
+            </a>,
           );
         }
         if (props.github) {
           badges.push(
-            <a key="github" href={`https://github.com/${props.github}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/GitHub-100000?style=${style}&logo=github&logoColor=white`} alt="GitHub" />
-            </a>
+            <a
+              key="github"
+              href={`https://github.com/${props.github}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/GitHub-100000?style=${style}&logo=github&logoColor=white`}
+                alt="GitHub"
+              />
+            </a>,
           );
         }
         if (props.youtube) {
           badges.push(
-            <a key="youtube" href={`https://youtube.com/@${props.youtube}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/YouTube-FF0000?style=${style}&logo=youtube&logoColor=white`} alt="YouTube" />
-            </a>
+            <a
+              key="youtube"
+              href={`https://youtube.com/@${props.youtube}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/YouTube-FF0000?style=${style}&logo=youtube&logoColor=white`}
+                alt="YouTube"
+              />
+            </a>,
           );
         }
         if (props.instagram) {
           badges.push(
-            <a key="instagram" href={`https://instagram.com/${props.instagram}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/Instagram-E4405F?style=${style}&logo=instagram&logoColor=white`} alt="Instagram" />
-            </a>
+            <a
+              key="instagram"
+              href={`https://instagram.com/${props.instagram}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/Instagram-E4405F?style=${style}&logo=instagram&logoColor=white`}
+                alt="Instagram"
+              />
+            </a>,
           );
         }
         if (props.discord) {
           badges.push(
-            <a key="discord" href={`https://discord.gg/${props.discord}`} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/Discord-7289DA?style=${style}&logo=discord&logoColor=white`} alt="Discord" />
-            </a>
+            <a
+              key="discord"
+              href={`https://discord.gg/${props.discord}`}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/Discord-7289DA?style=${style}&logo=discord&logoColor=white`}
+                alt="Discord"
+              />
+            </a>,
           );
         }
         if (props.email) {
           badges.push(
             <a key="email" href={`mailto:${props.email}`}>
-              <img src={`https://img.shields.io/badge/Email-D14836?style=${style}&logo=gmail&logoColor=white`} alt="Email" />
-            </a>
+              <img
+                src={`https://img.shields.io/badge/Email-D14836?style=${style}&logo=gmail&logoColor=white`}
+                alt="Email"
+              />
+            </a>,
           );
         }
         if (props.portfolio) {
           badges.push(
-            <a key="portfolio" href={props.portfolio as string} target="_blank" rel="noopener noreferrer">
-              <img src={`https://img.shields.io/badge/Portfolio-000000?style=${style}&logo=About.me&logoColor=white`} alt="Portfolio" />
-            </a>
+            <a
+              key="portfolio"
+              href={props.portfolio as string}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <img
+                src={`https://img.shields.io/badge/Portfolio-000000?style=${style}&logo=About.me&logoColor=white`}
+                alt="Portfolio"
+              />
+            </a>,
           );
         }
 
         return badges.length > 0 ? (
-          <div className="flex flex-wrap gap-2 justify-center">
-            {badges}
-          </div>
+          <div className="flex flex-wrap gap-2 justify-center">{badges}</div>
         ) : null;
 
       case 'custom-badge':
@@ -333,7 +401,11 @@ function PreviewBlock({ block }: { block: Block }) {
         });
         return (
           <div className="text-center">
-            <img src={`/api/activity?${activityParams.toString()}`} alt="Activity Graph" className="w-full" />
+            <img
+              src={`/api/activity?${activityParams.toString()}`}
+              alt="Activity Graph"
+              className="w-full"
+            />
           </div>
         );
 

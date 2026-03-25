@@ -1,10 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
-import { Button } from '@/components/ui/button';
 import { Copy, Download, Check, FileCode } from 'lucide-react';
-import { useBuilderStore } from '@/lib/store';
+import { useState, useMemo } from 'react';
+
+import { Button } from '@/components/ui/button';
 import { renderMarkdown, downloadMarkdown, copyToClipboard } from '@/lib/markdown';
+import { useBuilderStore } from '@/lib/store';
+
 import { LivePreview } from './live-preview';
 
 interface OutputPanelProps {
@@ -92,9 +94,7 @@ export function OutputPanel({ mode }: OutputPanelProps) {
               <div className="w-12 h-12 rounded-xl bg-muted/50 flex items-center justify-center mb-3">
                 <FileCode className="w-6 h-6 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground text-sm">
-                Add blocks to generate Markdown
-              </p>
+              <p className="text-muted-foreground text-sm">Add blocks to generate Markdown</p>
             </div>
           ) : (
             <pre className="rounded-xl bg-card/50 border border-border/50 p-3 sm:p-4 text-xs sm:text-sm overflow-x-auto whitespace-pre-wrap break-all font-mono leading-relaxed">

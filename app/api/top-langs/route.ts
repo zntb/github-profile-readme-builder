@@ -1,21 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-import { fetchLanguageStats, languageColors } from "@/lib/github";
+import { NextRequest, NextResponse } from 'next/server';
 
-const themes: Record<
-  string,
-  { bg: string; title: string; text: string; border: string }
-> = {
-  default: { bg: "fffefe", title: "2f80ed", text: "434d58", border: "e4e2e2" },
-  dark: { bg: "151515", title: "fff", text: "9f9f9f", border: "e4e2e2" },
-  tokyonight: { bg: "1a1b27", title: "70a5fd", text: "38bdae", border: "e4e2e2" },
-  dracula: { bg: "282a36", title: "ff6e96", text: "f8f8f2", border: "e4e2e2" },
-  radical: { bg: "141321", title: "fe428e", text: "a9fef7", border: "e4e2e2" },
-  merko: { bg: "0a0f0b", title: "abd200", text: "68b587", border: "e4e2e2" },
-  gruvbox: { bg: "282828", title: "fabd2f", text: "ebdbb2", border: "e4e2e2" },
-  onedark: { bg: "282c34", title: "e4bf7a", text: "abb2bf", border: "e4e2e2" },
-  nord: { bg: "2e3440", title: "81a1c1", text: "d8dee9", border: "e4e2e2" },
-  github_dark: { bg: "0d1117", title: "58a6ff", text: "c9d1d9", border: "30363d" },
-  catppuccin_mocha: { bg: "1e1e2e", title: "89b4fa", text: "cdd6f4", border: "313244" },
+import { fetchLanguageStats, languageColors } from '@/lib/github';
+
+const themes: Record<string, { bg: string; title: string; text: string; border: string }> = {
+  default: { bg: 'fffefe', title: '2f80ed', text: '434d58', border: 'e4e2e2' },
+  dark: { bg: '151515', title: 'fff', text: '9f9f9f', border: 'e4e2e2' },
+  tokyonight: { bg: '1a1b27', title: '70a5fd', text: '38bdae', border: 'e4e2e2' },
+  dracula: { bg: '282a36', title: 'ff6e96', text: 'f8f8f2', border: 'e4e2e2' },
+  radical: { bg: '141321', title: 'fe428e', text: 'a9fef7', border: 'e4e2e2' },
+  merko: { bg: '0a0f0b', title: 'abd200', text: '68b587', border: 'e4e2e2' },
+  gruvbox: { bg: '282828', title: 'fabd2f', text: 'ebdbb2', border: 'e4e2e2' },
+  onedark: { bg: '282c34', title: 'e4bf7a', text: 'abb2bf', border: 'e4e2e2' },
+  nord: { bg: '2e3440', title: '81a1c1', text: 'd8dee9', border: 'e4e2e2' },
+  github_dark: { bg: '0d1117', title: '58a6ff', text: 'c9d1d9', border: '30363d' },
+  catppuccin_mocha: { bg: '1e1e2e', title: '89b4fa', text: 'cdd6f4', border: '313244' },
 };
 
 function getTheme(themeName: string) {
@@ -38,7 +36,7 @@ function generateCompactSvg(
     hideProgress: boolean;
     langsCount: number;
     borderRadius: number;
-  }
+  },
 ) {
   const langs = languages.slice(0, options.langsCount);
   const width = 350;
@@ -55,10 +53,10 @@ function generateCompactSvg(
           const barWidth = (lang.percent / 100) * (width - 50);
           return `<rect x="${startX}" y="0" width="${barWidth}" height="8" fill="#${lang.color}" rx="2"/>`;
         })
-        .join("")}
+        .join('')}
     </g>
   `
-    : "";
+    : '';
 
   const langList = langs
     .map(
@@ -68,9 +66,9 @@ function generateCompactSvg(
       <text x="15" y="9" class="lang-name">${lang.name}</text>
       <text x="120" y="9" class="lang-percent">${lang.percent.toFixed(2)}%</text>
     </g>
-  `
+  `,
     )
-    .join("");
+    .join('');
 
   return `
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
@@ -80,7 +78,7 @@ function generateCompactSvg(
     .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? "none" : "#" + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
   
   <g transform="translate(25, 25)">
     <text class="header">Most Used Languages</text>
@@ -98,7 +96,7 @@ function generateDonutSvg(
     hideBorder: boolean;
     langsCount: number;
     borderRadius: number;
-  }
+  },
 ) {
   const langs = languages.slice(0, Math.min(options.langsCount, 6));
   const width = 300;
@@ -134,9 +132,9 @@ function generateDonutSvg(
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
     </g>
-  `
+  `,
     )
-    .join("");
+    .join('');
 
   return `
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
@@ -145,10 +143,10 @@ function generateDonutSvg(
     .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? "none" : "#" + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
   
   <text x="25" y="25" class="header">Most Used Languages</text>
-  <g>${segments.join("")}</g>
+  <g>${segments.join('')}</g>
   <circle cx="${centerX}" cy="${centerY}" r="35" fill="#${theme.bg}"/>
   ${legend}
 </svg>
@@ -158,24 +156,24 @@ function generateDonutSvg(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const username = searchParams.get("username") || "github";
-  const themeName = searchParams.get("theme") || "default";
-  const layout = searchParams.get("layout") || "compact";
-  const hideBorder = searchParams.get("hide_border") === "true";
-  const hideProgress = searchParams.get("hide_progress") === "true";
-  const langsCount = parseInt(searchParams.get("langs_count") || "8");
-  const borderRadius = parseInt(searchParams.get("border_radius") || "10");
+  const username = searchParams.get('username') || 'github';
+  const themeName = searchParams.get('theme') || 'default';
+  const layout = searchParams.get('layout') || 'compact';
+  const hideBorder = searchParams.get('hide_border') === 'true';
+  const hideProgress = searchParams.get('hide_progress') === 'true';
+  const langsCount = parseInt(searchParams.get('langs_count') || '8');
+  const borderRadius = parseInt(searchParams.get('border_radius') || '10');
 
   let theme = getTheme(themeName);
 
-  if (searchParams.get("bg_color")) {
-    theme = { ...theme, bg: searchParams.get("bg_color")!.replace("#", "") };
+  if (searchParams.get('bg_color')) {
+    theme = { ...theme, bg: searchParams.get('bg_color')!.replace('#', '') };
   }
-  if (searchParams.get("text_color")) {
-    theme = { ...theme, text: searchParams.get("text_color")!.replace("#", "") };
+  if (searchParams.get('text_color')) {
+    theme = { ...theme, text: searchParams.get('text_color')!.replace('#', '') };
   }
-  if (searchParams.get("title_color")) {
-    theme = { ...theme, title: searchParams.get("title_color")!.replace("#", "") };
+  if (searchParams.get('title_color')) {
+    theme = { ...theme, title: searchParams.get('title_color')!.replace('#', '') };
   }
 
   const token = process.env.GITHUB_TOKEN;
@@ -192,12 +190,12 @@ export async function GET(request: NextRequest) {
         .map(([name, size]) => ({
           name,
           size,
-          color: languageColors[name] || "808080",
+          color: languageColors[name] || '808080',
           percent: (size / totalSize) * 100,
         }))
         .sort((a, b) => b.size - a.size);
     } catch (error) {
-      console.error("Error fetching language stats:", error);
+      console.error('Error fetching language stats:', error);
       return new NextResponse(
         `<svg width="350" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="350" height="120" fill="#${theme.bg}" rx="10"/>
@@ -210,10 +208,10 @@ export async function GET(request: NextRequest) {
         </svg>`,
         {
           headers: {
-            "Content-Type": "image/svg+xml",
-            "Cache-Control": "public, max-age=300",
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=300',
           },
-        }
+        },
       );
     }
   } else {
@@ -232,15 +230,15 @@ export async function GET(request: NextRequest) {
       </svg>`,
       {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=60",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=60',
         },
-      }
+      },
     );
   }
 
   let svg: string;
-  if (layout === "donut" || layout === "donut-vertical" || layout === "pie") {
+  if (layout === 'donut' || layout === 'donut-vertical' || layout === 'pie') {
     svg = generateDonutSvg(languages, theme, {
       hideBorder,
       langsCount,
@@ -257,8 +255,8 @@ export async function GET(request: NextRequest) {
 
   return new NextResponse(svg, {
     headers: {
-      "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, max-age=3600",
+      'Content-Type': 'image/svg+xml',
+      'Cache-Control': 'public, max-age=3600',
     },
   });
 }

@@ -1,6 +1,9 @@
 'use client';
 
+import { LayoutTemplate, Check, Sparkles } from 'lucide-react';
 import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -9,12 +12,10 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { LayoutTemplate, Check, Sparkles } from 'lucide-react';
-import { cn } from '@/lib/utils';
-import { templates } from '@/lib/templates';
 import { useBuilderStore } from '@/lib/store';
+import { templates } from '@/lib/templates';
+import { cn } from '@/lib/utils';
 
 export function TemplatesDialog() {
   const [open, setOpen] = useState(false);
@@ -33,9 +34,9 @@ export function TemplatesDialog() {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button 
-          variant="outline" 
-          size="sm" 
+        <Button
+          variant="outline"
+          size="sm"
           className="gap-2 transition-all duration-200 hover:bg-primary/10 hover:border-primary/30"
         >
           <LayoutTemplate className="h-4 w-4" />
@@ -73,7 +74,7 @@ export function TemplatesDialog() {
                   'relative rounded-xl border-2 p-4 text-left transition-all duration-200 hover:border-primary/50 hover:shadow-md hover:shadow-primary/10',
                   selectedTemplate === template.id
                     ? 'border-primary shadow-lg shadow-primary/20 bg-primary/5'
-                    : 'border-border/50 hover:border-muted-foreground/30'
+                    : 'border-border/50 hover:border-muted-foreground/30',
                 )}
                 style={{ animationDelay: `${index * 50}ms` }}
               >
@@ -101,8 +102,8 @@ export function TemplatesDialog() {
         </ScrollArea>
 
         <div className="flex justify-end gap-3 px-6 py-4 border-t border-border/50 bg-gradient-to-b from-transparent to-muted/20">
-          <Button 
-            variant="outline" 
+          <Button
+            variant="outline"
             onClick={() => setOpen(false)}
             className="transition-all duration-200"
           >

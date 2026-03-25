@@ -47,12 +47,9 @@ export interface ContributionCalendar {
   }>;
 }
 
-async function fetchGitHub(
-  endpoint: string,
-  token?: string
-): Promise<Response> {
+async function fetchGitHub(endpoint: string, token?: string): Promise<Response> {
   const headers: HeadersInit = {
-    Accept: "application/vnd.github.v3+json",
+    Accept: 'application/vnd.github.v3+json',
   };
 
   if (token) {
@@ -65,13 +62,13 @@ async function fetchGitHub(
 async function fetchGitHubGraphQL(
   query: string,
   variables: Record<string, unknown>,
-  token: string
+  token: string,
 ): Promise<unknown> {
-  const response = await fetch("https://api.github.com/graphql", {
-    method: "POST",
+  const response = await fetch('https://api.github.com/graphql', {
+    method: 'POST',
     headers: {
       Authorization: `Bearer ${token}`,
-      "Content-Type": "application/json",
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify({ query, variables }),
   });
@@ -88,10 +85,7 @@ async function fetchGitHubGraphQL(
   return data.data;
 }
 
-export async function fetchUserProfile(
-  username: string,
-  token?: string
-): Promise<GitHubUser> {
+export async function fetchUserProfile(username: string, token?: string): Promise<GitHubUser> {
   const response = await fetchGitHub(`/users/${username}`, token);
 
   if (!response.ok) {
@@ -101,10 +95,7 @@ export async function fetchUserProfile(
   return response.json();
 }
 
-export async function fetchUserRepos(
-  username: string,
-  token?: string
-): Promise<GitHubRepo[]> {
+export async function fetchUserRepos(username: string, token?: string): Promise<GitHubRepo[]> {
   const allRepos: GitHubRepo[] = [];
   let page = 1;
   const perPage = 100;
@@ -112,7 +103,7 @@ export async function fetchUserRepos(
   while (true) {
     const response = await fetchGitHub(
       `/users/${username}/repos?per_page=${perPage}&page=${page}&type=owner`,
-      token
+      token,
     );
 
     if (!response.ok) {
@@ -132,10 +123,7 @@ export async function fetchUserRepos(
   return allRepos;
 }
 
-export async function fetchUserStats(
-  username: string,
-  token: string
-): Promise<GitHubStats> {
+export async function fetchUserStats(username: string, token: string): Promise<GitHubStats> {
   const query = `
     query($username: String!) {
       user(login: $username) {
@@ -199,18 +187,14 @@ export async function fetchUserStats(
       data.user.contributionsCollection.restrictedContributionsCount,
     totalPRs: data.user.pullRequests.totalCount,
     totalIssues: data.user.issues.totalCount,
-    totalReviews:
-      data.user.contributionsCollection.totalPullRequestReviewContributions,
+    totalReviews: data.user.contributionsCollection.totalPullRequestReviewContributions,
     contributedTo: data.user.repositoriesContributedTo.totalCount,
     followers: data.user.followers.totalCount,
     publicRepos: data.user.repositories.totalCount,
   };
 }
 
-export async function fetchLanguageStats(
-  username: string,
-  token: string
-): Promise<LanguageStats> {
+export async function fetchLanguageStats(username: string, token: string): Promise<LanguageStats> {
   const query = `
     query($username: String!) {
       user(login: $username) {
@@ -262,7 +246,7 @@ export async function fetchLanguageStats(
 
 export async function fetchContributionCalendar(
   username: string,
-  token: string
+  token: string,
 ): Promise<ContributionCalendar> {
   const query = `
     query($username: String!) {
@@ -336,7 +320,7 @@ export function calculateStreakStats(calendar: ContributionCalendar): {
 
       // Check if this streak reaches today or yesterday (current streak)
       const diffFromToday = Math.floor(
-        (today.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24)
+        (today.getTime() - dayDate.getTime()) / (1000 * 60 * 60 * 24),
       );
       if (diffFromToday <= 1) {
         currentStreak = tempStreak;
@@ -358,9 +342,7 @@ export function calculateStreakStats(calendar: ContributionCalendar): {
   if (tempStreak > longestStreak) {
     longestStreak = tempStreak;
     longestStreakStart = tempStreakStart;
-    longestStreakEnd = days[days.length - 1]
-      ? new Date(days[days.length - 1].date)
-      : null;
+    longestStreakEnd = days[days.length - 1] ? new Date(days[days.length - 1].date) : null;
   }
 
   return {
@@ -384,48 +366,48 @@ export function calculateRank(stats: GitHubStats): string {
     stats.followers * 0.5 +
     stats.contributedTo * 0.25;
 
-  if (score >= 10000) return "S+";
-  if (score >= 5000) return "S";
-  if (score >= 2500) return "A++";
-  if (score >= 1000) return "A+";
-  if (score >= 500) return "A";
-  if (score >= 250) return "B+";
-  if (score >= 100) return "B";
-  return "C";
+  if (score >= 10000) return 'S+';
+  if (score >= 5000) return 'S';
+  if (score >= 2500) return 'A++';
+  if (score >= 1000) return 'A+';
+  if (score >= 500) return 'A';
+  if (score >= 250) return 'B+';
+  if (score >= 100) return 'B';
+  return 'C';
 }
 
 export const languageColors: Record<string, string> = {
-  JavaScript: "f1e05a",
-  TypeScript: "3178c6",
-  Python: "3572A5",
-  Java: "b07219",
-  "C++": "f34b7d",
-  C: "555555",
-  "C#": "178600",
-  Go: "00ADD8",
-  Rust: "dea584",
-  Ruby: "701516",
-  PHP: "4F5D95",
-  Swift: "F05138",
-  Kotlin: "A97BFF",
-  Scala: "c22d40",
-  Dart: "00B4AB",
-  Shell: "89e051",
-  HTML: "e34c26",
-  CSS: "563d7c",
-  SCSS: "c6538c",
-  Vue: "41b883",
-  Svelte: "ff3e00",
-  Elixir: "6e4a7e",
-  Haskell: "5e5086",
-  Lua: "000080",
-  R: "198CE7",
-  Julia: "a270ba",
-  Perl: "0298c3",
-  Clojure: "db5855",
-  "Objective-C": "438eff",
-  Dockerfile: "384d54",
-  Makefile: "427819",
-  PowerShell: "012456",
-  Vim: "199f4b",
+  JavaScript: 'f1e05a',
+  TypeScript: '3178c6',
+  Python: '3572A5',
+  Java: 'b07219',
+  'C++': 'f34b7d',
+  C: '555555',
+  'C#': '178600',
+  Go: '00ADD8',
+  Rust: 'dea584',
+  Ruby: '701516',
+  PHP: '4F5D95',
+  Swift: 'F05138',
+  Kotlin: 'A97BFF',
+  Scala: 'c22d40',
+  Dart: '00B4AB',
+  Shell: '89e051',
+  HTML: 'e34c26',
+  CSS: '563d7c',
+  SCSS: 'c6538c',
+  Vue: '41b883',
+  Svelte: 'ff3e00',
+  Elixir: '6e4a7e',
+  Haskell: '5e5086',
+  Lua: '000080',
+  R: '198CE7',
+  Julia: 'a270ba',
+  Perl: '0298c3',
+  Clojure: 'db5855',
+  'Objective-C': '438eff',
+  Dockerfile: '384d54',
+  Makefile: '427819',
+  PowerShell: '012456',
+  Vim: '199f4b',
 };

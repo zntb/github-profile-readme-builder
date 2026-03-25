@@ -56,18 +56,18 @@
 
 ## 🎯 Features
 
-| Feature | Description |
-|---|---|
-| 🧱 **Drag & Drop Canvas** | Reorder blocks effortlessly with smooth dnd-kit animations |
-| 👁️ **Live Preview** | See exactly how your README renders in GitHub's style |
-| 📝 **Markdown Export** | Copy to clipboard or download a ready-to-use `README.md` |
-| 🎨 **50+ Themes** | Tokyo Night, Dracula, Radical, Catppuccin, and many more |
-| 📦 **20+ Block Types** | Headers, stats cards, badges, skill icons, graphs, and more |
-| 🖼️ **Template Library** | Start fast with 4 curated, fully customizable templates |
-| 📱 **Fully Responsive** | Optimized three-layout system for desktop, tablet, and mobile |
-| 🌙 **Dark / Light Mode** | System-aware theming powered by `next-themes` |
-| ⚡ **Self-hosted Stats** | Built-in Next.js API routes generate GitHub stat SVGs server-side |
-| 🔑 **GitHub GraphQL** | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API |
+| Feature                   | Description                                                       |
+| ------------------------- | ----------------------------------------------------------------- |
+| 🧱 **Drag & Drop Canvas** | Reorder blocks effortlessly with smooth dnd-kit animations        |
+| 👁️ **Live Preview**       | See exactly how your README renders in GitHub's style             |
+| 📝 **Markdown Export**    | Copy to clipboard or download a ready-to-use `README.md`          |
+| 🎨 **50+ Themes**         | Tokyo Night, Dracula, Radical, Catppuccin, and many more          |
+| 📦 **20+ Block Types**    | Headers, stats cards, badges, skill icons, graphs, and more       |
+| 🖼️ **Template Library**   | Start fast with 4 curated, fully customizable templates           |
+| 📱 **Fully Responsive**   | Optimized three-layout system for desktop, tablet, and mobile     |
+| 🌙 **Dark / Light Mode**  | System-aware theming powered by `next-themes`                     |
+| ⚡ **Self-hosted Stats**  | Built-in Next.js API routes generate GitHub stat SVGs server-side |
+| 🔑 **GitHub GraphQL**     | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API  |
 
 ---
 
@@ -78,63 +78,63 @@ Blocks are organized into eight categories:
 <details>
 <summary><strong>Layout</strong> — Structure your README</summary>
 
-| Block | Description |
-|---|---|
+| Block         | Description                                                          |
+| ------------- | -------------------------------------------------------------------- |
 | **Container** | Flex wrapper supporting `row`/`column` direction, alignment, and gap |
-| **Divider** | Horizontal rule or a custom animated GIF divider |
-| **Spacer** | Configurable height gap (10–100 px) |
+| **Divider**   | Horizontal rule or a custom animated GIF divider                     |
+| **Spacer**    | Configurable height gap (10–100 px)                                  |
 
 </details>
 
 <details>
 <summary><strong>Hero</strong> — Eye-catching headers</summary>
 
-| Block | Description |
-|---|---|
-| **Capsule Header** | Animated banner via [capsule-render](https://github.com/kyechan99/capsule-render) with 7 animation types |
-| **Avatar** | Circular or rounded profile image with configurable size |
-| **Greeting** | Large `<h1>` greeting with optional emoji |
-| **Typing Animation** | Animated typing SVG via readme-typing-svg with multiple lines |
+| Block                | Description                                                                                              |
+| -------------------- | -------------------------------------------------------------------------------------------------------- |
+| **Capsule Header**   | Animated banner via [capsule-render](https://github.com/kyechan99/capsule-render) with 7 animation types |
+| **Avatar**           | Circular or rounded profile image with configurable size                                                 |
+| **Greeting**         | Large `<h1>` greeting with optional emoji                                                                |
+| **Typing Animation** | Animated typing SVG via readme-typing-svg with multiple lines                                            |
 
 </details>
 
 <details>
 <summary><strong>Content</strong> — Text and code</summary>
 
-| Block | Description |
-|---|---|
-| **Heading** | H1–H3 with alignment and emoji prefix |
-| **Paragraph** | Freeform text with alignment control |
-| **Collapsible** | GitHub `<details>` block with nested children |
-| **Code Block** | Syntax-highlighted fenced code with language selector |
+| Block           | Description                                           |
+| --------------- | ----------------------------------------------------- |
+| **Heading**     | H1–H3 with alignment and emoji prefix                 |
+| **Paragraph**   | Freeform text with alignment control                  |
+| **Collapsible** | GitHub `<details>` block with nested children         |
+| **Code Block**  | Syntax-highlighted fenced code with language selector |
 
 </details>
 
 <details>
 <summary><strong>Media</strong> — Images & GIFs</summary>
 
-| Block | Description |
-|---|---|
+| Block     | Description                                            |
+| --------- | ------------------------------------------------------ |
 | **Image** | External image with size, alignment, and border-radius |
-| **GIF** | Lightweight GIF embed with width control |
+| **GIF**   | Lightweight GIF embed with width control               |
 
 </details>
 
 <details>
 <summary><strong>Social</strong> — Badges & links</summary>
 
-| Block | Description |
-|---|---|
+| Block             | Description                                                                                              |
+| ----------------- | -------------------------------------------------------------------------------------------------------- |
 | **Social Badges** | One-click shields.io badges for LinkedIn, Twitter, GitHub, YouTube, Instagram, Discord, Email, Portfolio |
-| **Custom Badge** | Fully custom label/message/color/logo badge |
+| **Custom Badge**  | Fully custom label/message/color/logo badge                                                              |
 
 </details>
 
 <details>
 <summary><strong>Tech Stack</strong> — Skills</summary>
 
-| Block | Description |
-|---|---|
+| Block           | Description                                                                           |
+| --------------- | ------------------------------------------------------------------------------------- |
 | **Skill Icons** | Grid of tech icons via [skillicons.dev](https://skillicons.dev) — 80+ icons available |
 
 </details>
@@ -142,24 +142,24 @@ Blocks are organized into eight categories:
 <details>
 <summary><strong>GitHub Stats</strong> — Activity widgets</summary>
 
-| Block | Description |
-|---|---|
-| **Stats Card** | Stars, commits, PRs, issues, and rank ring |
-| **Top Languages** | Compact, normal, donut, donut-vertical, or pie layout |
-| **Streak Stats** | Current streak, longest streak, and total contributions |
-| **Activity Graph** | 30-day contribution line chart |
-| **Trophies** | Trophy grid with configurable columns/rows |
+| Block              | Description                                             |
+| ------------------ | ------------------------------------------------------- |
+| **Stats Card**     | Stars, commits, PRs, issues, and rank ring              |
+| **Top Languages**  | Compact, normal, donut, donut-vertical, or pie layout   |
+| **Streak Stats**   | Current streak, longest streak, and total contributions |
+| **Activity Graph** | 30-day contribution line chart                          |
+| **Trophies**       | Trophy grid with configurable columns/rows              |
 
 </details>
 
 <details>
 <summary><strong>Advanced</strong> — Extra elements</summary>
 
-| Block | Description |
-|---|---|
-| **Visitor Counter** | komarev.com page-view badge |
-| **Quote** | Static custom quote or random dev quote from API |
-| **Footer Banner** | Waving capsule-render footer |
+| Block               | Description                                      |
+| ------------------- | ------------------------------------------------ |
+| **Visitor Counter** | komarev.com page-view badge                      |
+| **Quote**           | Static custom quote or random dev quote from API |
+| **Footer Banner**   | Waving capsule-render footer                     |
 
 </details>
 
@@ -187,7 +187,7 @@ Fonts             Outfit · JetBrains Mono
 
 - **Node.js** ≥ 18
 - A package manager: `npm`, `pnpm`, `yarn`, or `bun`
-- *(Optional)* A GitHub Personal Access Token for live stats
+- _(Optional)_ A GitHub Personal Access Token for live stats
 
 ### Installation
 
@@ -280,13 +280,13 @@ github-profile-readme-builder/
 
 All stat widgets are generated server-side by built-in Next.js route handlers. They proxy and render live GitHub data as SVG images, meaning the generated Markdown will work from any host that has `GITHUB_TOKEN` configured.
 
-| Route | Query Params | Description |
-|---|---|---|
-| `GET /api/stats` | `username`, `theme`, `show_icons`, `hide_border`, `hide_title`, `hide_rank`, `border_radius`, `bg_color`, `text_color`, `title_color`, `icon_color` | GitHub stats card |
-| `GET /api/streak` | `username`, `theme`, `hide_border`, `border_radius`, `background`, `fire`, `ring`, `currStreakNum`, `sideNums`, `sideLabels`, `dates` | Streak stats card |
-| `GET /api/top-langs` | `username`, `theme`, `layout`, `hide_border`, `hide_progress`, `langs_count`, `border_radius`, `bg_color`, `text_color`, `title_color` | Top languages card |
-| `GET /api/activity` | `username`, `theme`, `hide_border`, `bg_color`, `color`, `line`, `point`, `area_color` | 30-day activity graph |
-| `GET /api/trophies` | `username`, `theme`, `column`, `row`, `margin_w`, `margin_h`, `no_frame`, `no_bg` | Trophy grid |
+| Route                | Query Params                                                                                                                                        | Description           |
+| -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `GET /api/stats`     | `username`, `theme`, `show_icons`, `hide_border`, `hide_title`, `hide_rank`, `border_radius`, `bg_color`, `text_color`, `title_color`, `icon_color` | GitHub stats card     |
+| `GET /api/streak`    | `username`, `theme`, `hide_border`, `border_radius`, `background`, `fire`, `ring`, `currStreakNum`, `sideNums`, `sideLabels`, `dates`               | Streak stats card     |
+| `GET /api/top-langs` | `username`, `theme`, `layout`, `hide_border`, `hide_progress`, `langs_count`, `border_radius`, `bg_color`, `text_color`, `title_color`              | Top languages card    |
+| `GET /api/activity`  | `username`, `theme`, `hide_border`, `bg_color`, `color`, `line`, `point`, `area_color`                                                              | 30-day activity graph |
+| `GET /api/trophies`  | `username`, `theme`, `column`, `row`, `margin_w`, `margin_h`, `no_frame`, `no_bg`                                                                   | Trophy grid           |
 
 ### Supported Themes
 
@@ -300,12 +300,12 @@ Over **50 themes** are supported across all widgets, including:
 
 Four built-in templates are included to help you start quickly:
 
-| Template | Description | Blocks |
-|---|---|---|
-| **Animated Developer** | Waving header, typing SVG, full stats suite, social badges | 16 |
-| **Minimal Clean** | Simple heading/paragraph layout with essential stats | 8 |
-| **Stats Focused** | Full stats dashboard — card, streak, languages, graph, trophies | 8 |
-| **Creative Profile** | Avatar, custom animation, quote block, creative color palette | 9 |
+| Template               | Description                                                     | Blocks |
+| ---------------------- | --------------------------------------------------------------- | ------ |
+| **Animated Developer** | Waving header, typing SVG, full stats suite, social badges      | 16     |
+| **Minimal Clean**      | Simple heading/paragraph layout with essential stats            | 8      |
+| **Stats Focused**      | Full stats dashboard — card, streak, languages, graph, trophies | 8      |
+| **Creative Profile**   | Avatar, custom animation, quote block, creative color palette   | 9      |
 
 Templates are defined in `lib/templates.ts` and can be extended freely.
 

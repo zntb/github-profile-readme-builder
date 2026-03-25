@@ -143,5 +143,5 @@ If you have questions about this Code of Conduct, please contact the maintainers
 
 ---
 
-*Last Updated: March 2026*
-*This code of conduct is reviewed annually*
+_Last Updated: March 2026_
+_This code of conduct is reviewed annually_

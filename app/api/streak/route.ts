@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { fetchContributionCalendar, calculateStreakStats } from "@/lib/github";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { fetchContributionCalendar, calculateStreakStats } from '@/lib/github';
 
 const themes: Record<
   string,
@@ -16,81 +17,81 @@ const themes: Record<
   }
 > = {
   default: {
-    bg: "fffefe",
-    text: "434d58",
-    fire: "f5700c",
-    ring: "4c71f2",
-    currStreak: "151515",
-    sideNums: "434d58",
-    sideLabels: "434d58",
-    dates: "434d58",
-    border: "e4e2e2",
+    bg: 'fffefe',
+    text: '434d58',
+    fire: 'f5700c',
+    ring: '4c71f2',
+    currStreak: '151515',
+    sideNums: '434d58',
+    sideLabels: '434d58',
+    dates: '434d58',
+    border: 'e4e2e2',
   },
   dark: {
-    bg: "151515",
-    text: "9f9f9f",
-    fire: "f5700c",
-    ring: "79ff97",
-    currStreak: "fff",
-    sideNums: "9f9f9f",
-    sideLabels: "9f9f9f",
-    dates: "9f9f9f",
-    border: "e4e2e2",
+    bg: '151515',
+    text: '9f9f9f',
+    fire: 'f5700c',
+    ring: '79ff97',
+    currStreak: 'fff',
+    sideNums: '9f9f9f',
+    sideLabels: '9f9f9f',
+    dates: '9f9f9f',
+    border: 'e4e2e2',
   },
   tokyonight: {
-    bg: "1a1b27",
-    text: "38bdae",
-    fire: "bf91f3",
-    ring: "70a5fd",
-    currStreak: "70a5fd",
-    sideNums: "bf91f3",
-    sideLabels: "38bdae",
-    dates: "38bdae",
-    border: "e4e2e2",
+    bg: '1a1b27',
+    text: '38bdae',
+    fire: 'bf91f3',
+    ring: '70a5fd',
+    currStreak: '70a5fd',
+    sideNums: 'bf91f3',
+    sideLabels: '38bdae',
+    dates: '38bdae',
+    border: 'e4e2e2',
   },
   dracula: {
-    bg: "282a36",
-    text: "f8f8f2",
-    fire: "ffb86c",
-    ring: "ff6e96",
-    currStreak: "ff6e96",
-    sideNums: "bd93f9",
-    sideLabels: "f8f8f2",
-    dates: "f8f8f2",
-    border: "e4e2e2",
+    bg: '282a36',
+    text: 'f8f8f2',
+    fire: 'ffb86c',
+    ring: 'ff6e96',
+    currStreak: 'ff6e96',
+    sideNums: 'bd93f9',
+    sideLabels: 'f8f8f2',
+    dates: 'f8f8f2',
+    border: 'e4e2e2',
   },
   radical: {
-    bg: "141321",
-    text: "a9fef7",
-    fire: "f8d847",
-    ring: "fe428e",
-    currStreak: "fe428e",
-    sideNums: "f8d847",
-    sideLabels: "a9fef7",
-    dates: "a9fef7",
-    border: "e4e2e2",
+    bg: '141321',
+    text: 'a9fef7',
+    fire: 'f8d847',
+    ring: 'fe428e',
+    currStreak: 'fe428e',
+    sideNums: 'f8d847',
+    sideLabels: 'a9fef7',
+    dates: 'a9fef7',
+    border: 'e4e2e2',
   },
   github_dark: {
-    bg: "0d1117",
-    text: "c9d1d9",
-    fire: "f5700c",
-    ring: "58a6ff",
-    currStreak: "58a6ff",
-    sideNums: "1f6feb",
-    sideLabels: "c9d1d9",
-    dates: "c9d1d9",
-    border: "30363d",
+    bg: '0d1117',
+    text: 'c9d1d9',
+    fire: 'f5700c',
+    ring: '58a6ff',
+    currStreak: '58a6ff',
+    sideNums: '1f6feb',
+    sideLabels: 'c9d1d9',
+    dates: 'c9d1d9',
+    border: '30363d',
   },
   catppuccin_mocha: {
-    bg: "1e1e2e",
-    text: "cdd6f4",
-    fire: "fab387",
-    ring: "89b4fa",
-    currStreak: "89b4fa",
-    sideNums: "94e2d5",
-    sideLabels: "cdd6f4",
-    dates: "cdd6f4",
-    border: "313244",
+    bg: '1e1e2e',
+    text: 'cdd6f4',
+    fire: 'fab387',
+    ring: '89b4fa',
+    currStreak: '89b4fa',
+    sideNums: '94e2d5',
+    sideLabels: 'cdd6f4',
+    dates: 'cdd6f4',
+    border: '313244',
   },
 };
 
@@ -99,11 +100,11 @@ function getTheme(themeName: string) {
 }
 
 function formatDate(date: Date | null): string {
-  if (!date) return "N/A";
-  return date.toLocaleDateString("en-US", {
-    month: "short",
-    day: "numeric",
-    year: "numeric",
+  if (!date) return 'N/A';
+  return date.toLocaleDateString('en-US', {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
   });
 }
 
@@ -129,7 +130,7 @@ function generateStreakSvg(
     dates: string;
     border: string;
   },
-  options: { hideBorder: boolean; borderRadius: number }
+  options: { hideBorder: boolean; borderRadius: number },
 ) {
   const width = 495;
   const height = 195;
@@ -145,7 +146,7 @@ function generateStreakSvg(
     .date-range { font: 400 10px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.dates}; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? "none" : "#" + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
 
   <!-- Total Contributions -->
   <g transform="translate(50, 50)">
@@ -181,40 +182,40 @@ function generateStreakSvg(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const username = searchParams.get("username") || "github";
-  const themeName = searchParams.get("theme") || "default";
-  const hideBorder = searchParams.get("hide_border") === "true";
-  const borderRadius = parseInt(searchParams.get("border_radius") || "10");
+  const username = searchParams.get('username') || 'github';
+  const themeName = searchParams.get('theme') || 'default';
+  const hideBorder = searchParams.get('hide_border') === 'true';
+  const borderRadius = parseInt(searchParams.get('border_radius') || '10');
 
   let theme = getTheme(themeName);
 
   // Override colors if provided
-  if (searchParams.get("background")) {
-    theme = { ...theme, bg: searchParams.get("background")!.replace("#", "") };
+  if (searchParams.get('background')) {
+    theme = { ...theme, bg: searchParams.get('background')!.replace('#', '') };
   }
-  if (searchParams.get("fire")) {
-    theme = { ...theme, fire: searchParams.get("fire")!.replace("#", "") };
+  if (searchParams.get('fire')) {
+    theme = { ...theme, fire: searchParams.get('fire')!.replace('#', '') };
   }
-  if (searchParams.get("ring")) {
-    theme = { ...theme, ring: searchParams.get("ring")!.replace("#", "") };
+  if (searchParams.get('ring')) {
+    theme = { ...theme, ring: searchParams.get('ring')!.replace('#', '') };
   }
-  if (searchParams.get("currStreakNum")) {
+  if (searchParams.get('currStreakNum')) {
     theme = {
       ...theme,
-      currStreak: searchParams.get("currStreakNum")!.replace("#", ""),
+      currStreak: searchParams.get('currStreakNum')!.replace('#', ''),
     };
   }
-  if (searchParams.get("sideNums")) {
-    theme = { ...theme, sideNums: searchParams.get("sideNums")!.replace("#", "") };
+  if (searchParams.get('sideNums')) {
+    theme = { ...theme, sideNums: searchParams.get('sideNums')!.replace('#', '') };
   }
-  if (searchParams.get("sideLabels")) {
+  if (searchParams.get('sideLabels')) {
     theme = {
       ...theme,
-      sideLabels: searchParams.get("sideLabels")!.replace("#", ""),
+      sideLabels: searchParams.get('sideLabels')!.replace('#', ''),
     };
   }
-  if (searchParams.get("dates")) {
-    theme = { ...theme, dates: searchParams.get("dates")!.replace("#", "") };
+  if (searchParams.get('dates')) {
+    theme = { ...theme, dates: searchParams.get('dates')!.replace('#', '') };
   }
 
   const token = process.env.GITHUB_TOKEN;
@@ -231,12 +232,12 @@ export async function GET(request: NextRequest) {
 
       return new NextResponse(svg, {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=3600",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=3600',
         },
       });
     } catch (error) {
-      console.error("Error fetching streak stats:", error);
+      console.error('Error fetching streak stats:', error);
       return new NextResponse(
         `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="495" height="120" fill="#${theme.bg}" rx="10"/>
@@ -249,10 +250,10 @@ export async function GET(request: NextRequest) {
         </svg>`,
         {
           headers: {
-            "Content-Type": "image/svg+xml",
-            "Cache-Control": "public, max-age=300",
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=300',
           },
-        }
+        },
       );
     }
   } else {
@@ -271,10 +272,10 @@ export async function GET(request: NextRequest) {
       </svg>`,
       {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=60",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=60',
         },
-      }
+      },
     );
   }
 }

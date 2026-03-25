@@ -51,11 +51,11 @@ This project follows a [Code of Conduct](CODE_OF_CONDUCT.md). By participating, 
 
 ### Prerequisites
 
-| Requirement | Version | Notes |
-|-------------|---------|-------|
-| Node.js | ≥ 18 | LTS recommended |
-| npm | Latest | Comes with Node.js |
-| Git | Latest | For version control |
+| Requirement | Version | Notes               |
+| ----------- | ------- | ------------------- |
+| Node.js     | ≥ 18    | LTS recommended     |
+| npm         | Latest  | Comes with Node.js  |
+| Git         | Latest  | For version control |
 
 ### Environment Variables
 
@@ -72,12 +72,12 @@ GITHUB_TOKEN=ghp_xxxxxxxxxxxxxxxxxxxx
 
 ### Running the Project
 
-| Command | Description |
-|---------|-------------|
-| `npm run dev` | Start development server |
-| `npm run build` | Create production build |
-| `npm run start` | Start production server |
-| `npm run lint` | Run ESLint |
+| Command         | Description              |
+| --------------- | ------------------------ |
+| `npm run dev`   | Start development server |
+| `npm run build` | Create production build  |
+| `npm run start` | Start production server  |
+| `npm run lint`  | Run ESLint               |
 
 ---
 
@@ -87,13 +87,13 @@ We follow the **GitHub Flow** branching model, optimized for single developer an
 
 ### Branch Types
 
-| Branch | Purpose | Protected | Base |
-|--------|---------|-----------|------|
-| `main` | Production-ready code | Yes | - |
-| `dev` | Integration branch for features | Yes | main |
-| `feature/*` | New features | No | dev |
-| `bugfix/*` | Bug fixes | No | dev |
-| `hotfix/*` | Emergency production fixes | No | main |
+| Branch      | Purpose                         | Protected | Base |
+| ----------- | ------------------------------- | --------- | ---- |
+| `main`      | Production-ready code           | Yes       | -    |
+| `dev`       | Integration branch for features | Yes       | main |
+| `feature/*` | New features                    | No        | dev  |
+| `bugfix/*`  | Bug fixes                       | No        | dev  |
+| `hotfix/*`  | Emergency production fixes      | No        | main |
 
 ### Branch Protection Rules
 
@@ -150,18 +150,18 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) for clear
 
 **Types:**
 
-| Type | Description |
-|------|-------------|
-| `feat` | New feature or block |
-| `fix` | Bug fix |
-| `docs` | Documentation changes |
-| `style` | Code style changes (formatting, no logic) |
-| `refactor` | Code refactoring |
-| `perf` | Performance improvements |
-| `test` | Adding or updating tests |
-| `chore` | Maintenance tasks |
-| `ci` | CI/CD changes |
-| `build` | Build system changes |
+| Type       | Description                               |
+| ---------- | ----------------------------------------- |
+| `feat`     | New feature or block                      |
+| `fix`      | Bug fix                                   |
+| `docs`     | Documentation changes                     |
+| `style`    | Code style changes (formatting, no logic) |
+| `refactor` | Code refactoring                          |
+| `perf`     | Performance improvements                  |
+| `test`     | Adding or updating tests                  |
+| `chore`    | Maintenance tasks                         |
+| `ci`       | CI/CD changes                             |
+| `build`    | Build system changes                      |
 
 **Examples:**
 
@@ -190,11 +190,11 @@ Adding a new block requires updates in **six files**. Follow this step-by-step g
 In [`lib/types.ts`](lib/types.ts), add your block to the `BlockType` union:
 
 ```typescript
-export type BlockType = 
-  | 'container' 
+export type BlockType =
+  | 'container'
   | 'divider'
   // ... existing types
-  | 'your-new-block';  // Add here
+  | 'your-new-block'; // Add here
 ```
 
 ### Step 2: Define Default Props
@@ -328,7 +328,7 @@ const props: any = { ... };
 function useBlockManager() {
   const blocks = useStore((s) => s.blocks);
   const addBlock = useStore((s) => s.addBlock);
-  
+
   return { blocks, addBlock };
 }
 ```
@@ -449,25 +449,31 @@ NEXT_PUBLIC_APP_URL=http://localhost:3000
 
 ```markdown
 ## Bug Description
+
 A clear description of what the bug is.
 
 ## Steps to Reproduce
+
 1. Go to '...'
 2. Click on '...'
 3. See error
 
 ## Expected Behavior
+
 What should happen instead.
 
 ## Screenshots
+
 If applicable, add screenshots to help explain.
 
 ## Environment
+
 - OS: [e.g., Windows 11]
 - Browser: [e.g., Chrome 120]
 - Node version: [e.g., v20.10.0]
 
 ## Additional Context
+
 Any other context about the problem.
 ```
 
@@ -479,9 +485,11 @@ Any other context about the problem.
 
 ```markdown
 ## Description
+
 Brief description of changes made.
 
 ## Type of Change
+
 - [ ] 🐛 Bug fix
 - [ ] ✨ New feature
 - [ ] 📝 Documentation
@@ -489,13 +497,16 @@ Brief description of changes made.
 - [ ] 🔧 Configuration
 
 ## Testing
+
 - [ ] Unit tests added/updated
 - [ ] Manual testing completed
 
 ## Screenshots
+
 If applicable.
 
 ## Checklist
+
 - [ ] Code follows style guidelines
 - [ ] Self-review completed
 - [ ] Documentation updated (if needed)

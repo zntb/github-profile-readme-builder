@@ -1,29 +1,31 @@
-"use client";
+'use client';
 
-import { useState } from "react";
-import { BuilderHeader } from "./header";
-import { BlockSidebar } from "./block-sidebar";
-import { Canvas } from "./canvas";
-import { ConfigPanel } from "./config-panel";
-import { OutputPanel } from "./output-panel";
-import { useBuilderStore } from "@/lib/store";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Eye, Code, PanelLeft, Settings2, Blocks, User } from "lucide-react";
+import { Eye, Code, PanelLeft, Settings2, Blocks, User } from 'lucide-react';
+import { useState } from 'react';
+
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useBuilderStore } from '@/lib/store';
+
+import { BlockSidebar } from './block-sidebar';
+import { Canvas } from './canvas';
+import { ConfigPanel } from './config-panel';
+import { BuilderHeader } from './header';
+import { OutputPanel } from './output-panel';
 
 export function Builder() {
   const { selectedBlockId, username, setUsername } = useBuilderStore();
-  const [mobileTab, setMobileTab] = useState<"blocks" | "canvas" | "preview">("canvas");
+  const [mobileTab, setMobileTab] = useState<'blocks' | 'canvas' | 'preview'>('canvas');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
 
   return (
     <div className="h-screen flex flex-col bg-background gradient-bg">
       <BuilderHeader />
-      
+
       {/* Desktop Layout */}
       <div className="hidden lg:flex flex-1">
         {/* Left Sidebar - Block Library */}
@@ -62,11 +64,17 @@ export function Builder() {
               <Tabs defaultValue="preview" className="flex-1 flex flex-col">
                 <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                   <TabsList className="w-full bg-muted/50">
-                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                    <TabsTrigger
+                      value="preview"
+                      className="flex-1 gap-2 transition-all duration-200"
+                    >
                       <Eye className="w-4 h-4" />
                       Preview
                     </TabsTrigger>
-                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                    <TabsTrigger
+                      value="markdown"
+                      className="flex-1 gap-2 transition-all duration-200"
+                    >
                       <Code className="w-4 h-4" />
                       Markdown
                     </TabsTrigger>
@@ -89,9 +97,9 @@ export function Builder() {
         {/* Left Sidebar - Block Library (collapsible) */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="absolute left-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
             >
               <Blocks className="w-5 h-5" />
@@ -113,9 +121,9 @@ export function Builder() {
         {/* Right Panel - Config or Preview (collapsible) */}
         <Sheet open={configOpen} onOpenChange={setConfigOpen}>
           <SheetTrigger asChild>
-            <Button 
-              variant="ghost" 
-              size="icon" 
+            <Button
+              variant="ghost"
+              size="icon"
               className="absolute right-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
             >
               {selectedBlockId ? <Settings2 className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
@@ -144,11 +152,17 @@ export function Builder() {
                 <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
                   <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                     <TabsList className="w-full bg-muted/50">
-                      <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                      <TabsTrigger
+                        value="preview"
+                        className="flex-1 gap-2 transition-all duration-200"
+                      >
                         <Eye className="w-4 h-4" />
                         Preview
                       </TabsTrigger>
-                      <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                      <TabsTrigger
+                        value="markdown"
+                        className="flex-1 gap-2 transition-all duration-200"
+                      >
                         <Code className="w-4 h-4" />
                         Markdown
                       </TabsTrigger>
@@ -174,34 +188,37 @@ export function Builder() {
           <div className="absolute inset-0 pointer-events-none opacity-10">
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,transparent_0%,var(--background)_70%)]" />
           </div>
-          {mobileTab === "blocks" && (
+          {mobileTab === 'blocks' && (
             <div className="h-full">
               <BlockSidebar />
             </div>
           )}
-          {mobileTab === "canvas" && (
+          {mobileTab === 'canvas' && (
             <div className="h-full flex flex-col relative">
               <Canvas />
               {selectedBlockId && (
                 <Sheet open={configOpen} onOpenChange={setConfigOpen}>
                   <SheetTrigger asChild>
-                    <Button 
-                      variant="secondary" 
-                      size="sm" 
+                    <Button
+                      variant="secondary"
+                      size="sm"
                       className="absolute bottom-20 right-4 z-10 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground border-0"
                     >
                       <Settings2 className="w-4 h-4 mr-2" />
                       Configure
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50">
+                  <SheetContent
+                    side="bottom"
+                    className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50"
+                  >
                     <ConfigPanel />
                   </SheetContent>
                 </Sheet>
               )}
             </div>
           )}
-          {mobileTab === "preview" && (
+          {mobileTab === 'preview' && (
             <div className="flex flex-col h-full">
               {/* Username Input */}
               <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
@@ -221,11 +238,17 @@ export function Builder() {
               <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
                 <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                   <TabsList className="w-full bg-muted/50">
-                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
+                    <TabsTrigger
+                      value="preview"
+                      className="flex-1 gap-2 transition-all duration-200"
+                    >
                       <Eye className="w-4 h-4" />
                       Preview
                     </TabsTrigger>
-                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
+                    <TabsTrigger
+                      value="markdown"
+                      className="flex-1 gap-2 transition-all duration-200"
+                    >
                       <Code className="w-4 h-4" />
                       Markdown
                     </TabsTrigger>
@@ -246,30 +269,30 @@ export function Builder() {
         <div className="border-t border-border/50 bg-card/80 backdrop-blur-md p-2 safe-area-inset-bottom">
           <div className="flex items-center justify-around">
             <Button
-              variant={mobileTab === "blocks" ? "secondary" : "ghost"}
+              variant={mobileTab === 'blocks' ? 'secondary' : 'ghost'}
               size="sm"
-              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "blocks" ? "bg-primary/10 text-primary" : ""}`}
-              onClick={() => setMobileTab("blocks")}
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === 'blocks' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setMobileTab('blocks')}
             >
-              <Blocks className={`w-5 h-5 ${mobileTab === "blocks" ? "text-primary" : ""}`} />
+              <Blocks className={`w-5 h-5 ${mobileTab === 'blocks' ? 'text-primary' : ''}`} />
               <span className="text-xs font-medium">Blocks</span>
             </Button>
             <Button
-              variant={mobileTab === "canvas" ? "secondary" : "ghost"}
+              variant={mobileTab === 'canvas' ? 'secondary' : 'ghost'}
               size="sm"
-              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "canvas" ? "bg-primary/10 text-primary" : ""}`}
-              onClick={() => setMobileTab("canvas")}
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === 'canvas' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setMobileTab('canvas')}
             >
-              <PanelLeft className={`w-5 h-5 ${mobileTab === "canvas" ? "text-primary" : ""}`} />
+              <PanelLeft className={`w-5 h-5 ${mobileTab === 'canvas' ? 'text-primary' : ''}`} />
               <span className="text-xs font-medium">Canvas</span>
             </Button>
             <Button
-              variant={mobileTab === "preview" ? "secondary" : "ghost"}
+              variant={mobileTab === 'preview' ? 'secondary' : 'ghost'}
               size="sm"
-              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "preview" ? "bg-primary/10 text-primary" : ""}`}
-              onClick={() => setMobileTab("preview")}
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === 'preview' ? 'bg-primary/10 text-primary' : ''}`}
+              onClick={() => setMobileTab('preview')}
             >
-              <Eye className={`w-5 h-5 ${mobileTab === "preview" ? "text-primary" : ""}`} />
+              <Eye className={`w-5 h-5 ${mobileTab === 'preview' ? 'text-primary' : ''}`} />
               <span className="text-xs font-medium">Preview</span>
             </Button>
           </div>

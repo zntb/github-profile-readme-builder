@@ -1,9 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import {
-  fetchUserStats,
-  calculateRank,
-  type GitHubStats,
-} from "@/lib/github";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { fetchUserStats, calculateRank, type GitHubStats } from '@/lib/github';
 
 // Theme configurations
 const themes: Record<
@@ -11,87 +8,91 @@ const themes: Record<
   { bg: string; title: string; text: string; icon: string; border: string }
 > = {
   default: {
-    bg: "fffefe",
-    title: "2f80ed",
-    text: "434d58",
-    icon: "4c71f2",
-    border: "e4e2e2",
+    bg: 'fffefe',
+    title: '2f80ed',
+    text: '434d58',
+    icon: '4c71f2',
+    border: 'e4e2e2',
   },
   dark: {
-    bg: "151515",
-    title: "fff",
-    text: "9f9f9f",
-    icon: "79ff97",
-    border: "e4e2e2",
+    bg: '151515',
+    title: 'fff',
+    text: '9f9f9f',
+    icon: '79ff97',
+    border: 'e4e2e2',
   },
   radical: {
-    bg: "141321",
-    title: "fe428e",
-    text: "a9fef7",
-    icon: "f8d847",
-    border: "e4e2e2",
+    bg: '141321',
+    title: 'fe428e',
+    text: 'a9fef7',
+    icon: 'f8d847',
+    border: 'e4e2e2',
   },
   merko: {
-    bg: "0a0f0b",
-    title: "abd200",
-    text: "68b587",
-    icon: "b7d364",
-    border: "e4e2e2",
+    bg: '0a0f0b',
+    title: 'abd200',
+    text: '68b587',
+    icon: 'b7d364',
+    border: 'e4e2e2',
   },
   gruvbox: {
-    bg: "282828",
-    title: "fabd2f",
-    text: "ebdbb2",
-    icon: "fe8019",
-    border: "e4e2e2",
+    bg: '282828',
+    title: 'fabd2f',
+    text: 'ebdbb2',
+    icon: 'fe8019',
+    border: 'e4e2e2',
   },
   tokyonight: {
-    bg: "1a1b27",
-    title: "70a5fd",
-    text: "38bdae",
-    icon: "bf91f3",
-    border: "e4e2e2",
+    bg: '1a1b27',
+    title: '70a5fd',
+    text: '38bdae',
+    icon: 'bf91f3',
+    border: 'e4e2e2',
   },
   onedark: {
-    bg: "282c34",
-    title: "e4bf7a",
-    text: "abb2bf",
-    icon: "8eb573",
-    border: "e4e2e2",
+    bg: '282c34',
+    title: 'e4bf7a',
+    text: 'abb2bf',
+    icon: '8eb573',
+    border: 'e4e2e2',
   },
   dracula: {
-    bg: "282a36",
-    title: "ff6e96",
-    text: "f8f8f2",
-    icon: "bd93f9",
-    border: "e4e2e2",
+    bg: '282a36',
+    title: 'ff6e96',
+    text: 'f8f8f2',
+    icon: 'bd93f9',
+    border: 'e4e2e2',
   },
   nord: {
-    bg: "2e3440",
-    title: "81a1c1",
-    text: "d8dee9",
-    icon: "88c0d0",
-    border: "e4e2e2",
+    bg: '2e3440',
+    title: '81a1c1',
+    text: 'd8dee9',
+    icon: '88c0d0',
+    border: 'e4e2e2',
   },
   github_dark: {
-    bg: "0d1117",
-    title: "58a6ff",
-    text: "c9d1d9",
-    icon: "1f6feb",
-    border: "30363d",
+    bg: '0d1117',
+    title: '58a6ff',
+    text: 'c9d1d9',
+    icon: '1f6feb',
+    border: '30363d',
   },
   catppuccin_mocha: {
-    bg: "1e1e2e",
-    title: "89b4fa",
-    text: "cdd6f4",
-    icon: "94e2d5",
-    border: "313244",
+    bg: '1e1e2e',
+    title: '89b4fa',
+    text: 'cdd6f4',
+    icon: '94e2d5',
+    border: '313244',
   },
 };
 
-function getTheme(
-  themeName: string
-): { bg: string; title: string; text: string; icon: string; border: string } {
+function getTheme(themeName: string): {
+  bg: string;
+  title: string;
+  text: string;
+  icon: string;
+  border: string;
+} {
   return themes[themeName] || themes.default;
 }
 
@@ -106,7 +107,7 @@ function generateStatsSvg(
     hideTitle: boolean;
     hideRank: boolean;
     borderRadius: number;
-  }
+  },
 ): string {
   const width = 495;
   const height = 195;
@@ -114,7 +115,7 @@ function generateStatsSvg(
   const iconSvg = (x: number, y: number, path: string) =>
     options.showIcons
       ? `<svg x="${x}" y="${y}" width="16" height="16" viewBox="0 0 16 16" fill="#${theme.icon}">${path}</svg>`
-      : "";
+      : '';
 
   const currentYear = new Date().getFullYear();
 
@@ -131,9 +132,9 @@ function generateStatsSvg(
     .bold { font-weight: 700; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? "none" : "#" + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
   
-  ${!options.hideTitle ? `<text x="25" y="35" class="header">${username}'s GitHub Stats</text>` : ""}
+  ${!options.hideTitle ? `<text x="25" y="35" class="header">${username}'s GitHub Stats</text>` : ''}
 
   <g transform="translate(25, ${options.hideTitle ? 30 : 55})">
     ${iconSvg(0, 0, '<path d="M8 .25a.75.75 0 01.673.418l1.882 3.815 4.21.612a.75.75 0 01.416 1.279l-3.046 2.97.719 4.192a.75.75 0 01-1.088.791L8 12.347l-3.766 1.98a.75.75 0 01-1.088-.79l.72-4.194L.818 6.374a.75.75 0 01.416-1.28l4.21-.611L7.327.668A.75.75 0 018 .25z"/>')}
@@ -174,7 +175,7 @@ function generateStatsSvg(
     <text x="0" y="8" text-anchor="middle" class="rank-text">${rank}</text>
   </g>
   `
-      : ""
+      : ''
   }
 </svg>
   `.trim();
@@ -183,28 +184,28 @@ function generateStatsSvg(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const username = searchParams.get("username") || "github";
-  const themeName = searchParams.get("theme") || "default";
-  const showIcons = searchParams.get("show_icons") !== "false";
-  const hideBorder = searchParams.get("hide_border") === "true";
-  const hideTitle = searchParams.get("hide_title") === "true";
-  const hideRank = searchParams.get("hide_rank") === "true";
-  const borderRadius = parseInt(searchParams.get("border_radius") || "10");
+  const username = searchParams.get('username') || 'github';
+  const themeName = searchParams.get('theme') || 'default';
+  const showIcons = searchParams.get('show_icons') !== 'false';
+  const hideBorder = searchParams.get('hide_border') === 'true';
+  const hideTitle = searchParams.get('hide_title') === 'true';
+  const hideRank = searchParams.get('hide_rank') === 'true';
+  const borderRadius = parseInt(searchParams.get('border_radius') || '10');
 
   const theme = getTheme(themeName);
 
   // Override theme colors if provided
-  if (searchParams.get("bg_color")) {
-    theme.bg = searchParams.get("bg_color")!.replace("#", "");
+  if (searchParams.get('bg_color')) {
+    theme.bg = searchParams.get('bg_color')!.replace('#', '');
   }
-  if (searchParams.get("text_color")) {
-    theme.text = searchParams.get("text_color")!.replace("#", "");
+  if (searchParams.get('text_color')) {
+    theme.text = searchParams.get('text_color')!.replace('#', '');
   }
-  if (searchParams.get("title_color")) {
-    theme.title = searchParams.get("title_color")!.replace("#", "");
+  if (searchParams.get('title_color')) {
+    theme.title = searchParams.get('title_color')!.replace('#', '');
   }
-  if (searchParams.get("icon_color")) {
-    theme.icon = searchParams.get("icon_color")!.replace("#", "");
+  if (searchParams.get('icon_color')) {
+    theme.icon = searchParams.get('icon_color')!.replace('#', '');
   }
 
   const token = process.env.GITHUB_TOKEN;
@@ -217,7 +218,7 @@ export async function GET(request: NextRequest) {
       stats = await fetchUserStats(username, token);
       rank = calculateRank(stats);
     } catch (error) {
-      console.error("Error fetching GitHub stats:", error);
+      console.error('Error fetching GitHub stats:', error);
       // Return error SVG
       return new NextResponse(
         `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
@@ -231,10 +232,10 @@ export async function GET(request: NextRequest) {
         </svg>`,
         {
           headers: {
-            "Content-Type": "image/svg+xml",
-            "Cache-Control": "public, max-age=300",
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=300',
           },
-        }
+        },
       );
     }
   } else {
@@ -254,10 +255,10 @@ export async function GET(request: NextRequest) {
       </svg>`,
       {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=60",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=60',
         },
-      }
+      },
     );
   }
 
@@ -271,8 +272,8 @@ export async function GET(request: NextRequest) {
 
   return new NextResponse(svg, {
     headers: {
-      "Content-Type": "image/svg+xml",
-      "Cache-Control": "public, max-age=3600",
+      'Content-Type': 'image/svg+xml',
+      'Cache-Control': 'public, max-age=3600',
     },
   });
 }

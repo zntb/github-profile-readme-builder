@@ -1,18 +1,42 @@
 'use client';
 
-import { useState } from 'react';
-import { 
-  Layout, Minus, Space, Sparkles, User, Hand, Type, Heading, 
-  AlignLeft, ChevronDown, Code, Image, Film, Share2, Badge, 
-  Layers, BarChart2, PieChart, Flame, Activity, Award, Eye,
-  Quote, PanelBottom, Search, ChevronRight, Box
+import {
+  Layout,
+  Minus,
+  Space,
+  Sparkles,
+  User,
+  Hand,
+  Type,
+  Heading,
+  AlignLeft,
+  ChevronDown,
+  Code,
+  Image,
+  Film,
+  Share2,
+  Badge,
+  Layers,
+  BarChart2,
+  PieChart,
+  Flame,
+  Activity,
+  Award,
+  Eye,
+  Quote,
+  PanelBottom,
+  Search,
+  ChevronRight,
+  Box,
 } from 'lucide-react';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
+import { useState } from 'react';
+
 import { Button } from '@/components/ui/button';
-import { cn } from '@/lib/utils';
-import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore, generateId } from '@/lib/store';
+import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
+import { cn } from '@/lib/utils';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layout,
@@ -45,13 +69,13 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
 export function BlockSidebar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
-    BLOCK_CATEGORIES.map((c) => c.name)
+    BLOCK_CATEGORIES.map((c) => c.name),
   );
   const { addBlock, username } = useBuilderStore();
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
-      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name]
+      prev.includes(name) ? prev.filter((c) => c !== name) : [...prev, name],
     );
   };
 
@@ -84,7 +108,7 @@ export function BlockSidebar() {
     blocks: category.blocks.filter(
       (block) =>
         block.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        block.type.toLowerCase().includes(searchQuery.toLowerCase())
+        block.type.toLowerCase().includes(searchQuery.toLowerCase()),
     ),
   })).filter((category) => category.blocks.length > 0);
 
@@ -109,8 +133,8 @@ export function BlockSidebar() {
       <ScrollArea className="flex-1">
         <div className="p-3 space-y-2">
           {filteredCategories.map((category, catIndex) => (
-            <div 
-              key={category.name} 
+            <div
+              key={category.name}
               className="animate-in stagger-children"
               style={{ '--animation-delay': `${catIndex * 50}ms` } as React.CSSProperties}
             >
@@ -125,7 +149,7 @@ export function BlockSidebar() {
                 <ChevronRight
                   className={cn(
                     'h-4 w-4 text-muted-foreground transition-transform duration-200',
-                    expandedCategories.includes(category.name) && 'rotate-90'
+                    expandedCategories.includes(category.name) && 'rotate-90',
                   )}
                 />
               </button>

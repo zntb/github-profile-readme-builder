@@ -1,5 +1,5 @@
-import type { Block } from './types';
 import { useBuilderStore } from './store';
+import type { Block } from './types';
 
 // Build internal API URL
 function buildInternalUrl(endpoint: string, params: Record<string, unknown>): string {
@@ -14,7 +14,11 @@ function buildInternalUrl(endpoint: string, params: Record<string, unknown>): st
 }
 
 // Build external URL for exported markdown
-function buildExternalUrl(endpoint: string, params: Record<string, unknown>, origin: string): string {
+function buildExternalUrl(
+  endpoint: string,
+  params: Record<string, unknown>,
+  origin: string,
+): string {
   const filteredParams: Record<string, string> = {};
   for (const [key, value] of Object.entries(params)) {
     if (value !== undefined && value !== null && value !== '') {
@@ -52,14 +56,21 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'capsule-header': {
-      const { text, type: headerType, height, section, color } = props as Record<string, string | number>;
+      const {
+        text,
+        type: headerType,
+        height,
+        section,
+        color,
+      } = props as Record<string, string | number>;
       const capsuleUrl = `https://capsule-render.vercel.app/api?type=${headerType}&color=${encodeURIComponent(String(color))}&height=${height}&section=${section}&text=${encodeURIComponent(String(text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
       return `<div align="center">\n  <img src="${capsuleUrl}" />\n</div>`;
     }
 
     case 'avatar': {
       const { imageUrl, size, borderRadius } = props as Record<string, string | number>;
-      const style = borderRadius === 50 ? 'border-radius: 50%;' : `border-radius: ${borderRadius}px;`;
+      const style =
+        borderRadius === 50 ? 'border-radius: 50%;' : `border-radius: ${borderRadius}px;`;
       return `<div align="center">\n  <img src="${imageUrl}" width="${size}" height="${size}" style="${style}" />\n</div>`;
     }
 
@@ -73,7 +84,12 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'typing-animation': {
-      const { lines, color, width, height } = props as { lines: string[]; color: string; width: number; height: number };
+      const { lines, color, width, height } = props as {
+        lines: string[];
+        color: string;
+        width: number;
+        height: number;
+      };
       const linesParam = lines.join(';');
       const url = `https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=${color}&center=true&vCenter=true&width=${width}&height=${height}&lines=${encodeURIComponent(linesParam)}`;
       return `<div align="center">\n  <img src="${url}" alt="Typing SVG" />\n</div>`;
@@ -110,13 +126,16 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'image': {
-      const { url, alt, width, height, alignment, borderRadius } = props as Record<string, string | number>;
+      const { url, alt, width, height, alignment, borderRadius } = props as Record<
+        string,
+        string | number
+      >;
       let imgTag = `<img src="${url}" alt="${alt}"`;
       if (width) imgTag += ` width="${width}"`;
       if (height) imgTag += ` height="${height}"`;
       if (borderRadius) imgTag += ` style="border-radius: ${borderRadius}px;"`;
       imgTag += ' />';
-      
+
       if (alignment === 'center') {
         return `<div align="center">\n  ${imgTag}\n</div>`;
       }
@@ -128,7 +147,7 @@ export function renderBlock(block: Block, origin: string = ''): string {
       let imgTag = `<img src="${url}" alt="${alt}"`;
       if (width) imgTag += ` width="${width}"`;
       imgTag += ' />';
-      
+
       if (alignment === 'center') {
         return `<div align="center">\n  ${imgTag}\n</div>`;
       }
@@ -136,32 +155,49 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'social-badges': {
-      const { linkedin, twitter, email, portfolio, github, youtube, instagram, discord, style } = props as Record<string, string>;
+      const { linkedin, twitter, email, portfolio, github, youtube, instagram, discord, style } =
+        props as Record<string, string>;
       const badges: string[] = [];
-      
+
       if (linkedin) {
-        badges.push(`[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=${style}&logo=linkedin&logoColor=white)](https://linkedin.com/in/${linkedin})`);
+        badges.push(
+          `[![LinkedIn](https://img.shields.io/badge/LinkedIn-0077B5?style=${style}&logo=linkedin&logoColor=white)](https://linkedin.com/in/${linkedin})`,
+        );
       }
       if (twitter) {
-        badges.push(`[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=${style}&logo=twitter&logoColor=white)](https://twitter.com/${twitter})`);
+        badges.push(
+          `[![Twitter](https://img.shields.io/badge/Twitter-1DA1F2?style=${style}&logo=twitter&logoColor=white)](https://twitter.com/${twitter})`,
+        );
       }
       if (github) {
-        badges.push(`[![GitHub](https://img.shields.io/badge/GitHub-100000?style=${style}&logo=github&logoColor=white)](https://github.com/${github})`);
+        badges.push(
+          `[![GitHub](https://img.shields.io/badge/GitHub-100000?style=${style}&logo=github&logoColor=white)](https://github.com/${github})`,
+        );
       }
       if (youtube) {
-        badges.push(`[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=${style}&logo=youtube&logoColor=white)](https://youtube.com/@${youtube})`);
+        badges.push(
+          `[![YouTube](https://img.shields.io/badge/YouTube-FF0000?style=${style}&logo=youtube&logoColor=white)](https://youtube.com/@${youtube})`,
+        );
       }
       if (instagram) {
-        badges.push(`[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=${style}&logo=instagram&logoColor=white)](https://instagram.com/${instagram})`);
+        badges.push(
+          `[![Instagram](https://img.shields.io/badge/Instagram-E4405F?style=${style}&logo=instagram&logoColor=white)](https://instagram.com/${instagram})`,
+        );
       }
       if (discord) {
-        badges.push(`[![Discord](https://img.shields.io/badge/Discord-7289DA?style=${style}&logo=discord&logoColor=white)](https://discord.gg/${discord})`);
+        badges.push(
+          `[![Discord](https://img.shields.io/badge/Discord-7289DA?style=${style}&logo=discord&logoColor=white)](https://discord.gg/${discord})`,
+        );
       }
       if (email) {
-        badges.push(`[![Email](https://img.shields.io/badge/Email-D14836?style=${style}&logo=gmail&logoColor=white)](mailto:${email})`);
+        badges.push(
+          `[![Email](https://img.shields.io/badge/Email-D14836?style=${style}&logo=gmail&logoColor=white)](mailto:${email})`,
+        );
       }
       if (portfolio) {
-        badges.push(`[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=${style}&logo=About.me&logoColor=white)](${portfolio})`);
+        badges.push(
+          `[![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=${style}&logo=About.me&logoColor=white)](${portfolio})`,
+        );
       }
 
       if (badges.length === 0) return '';
@@ -169,7 +205,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'custom-badge': {
-      const { label, message, color, labelColor, style, logo, logoColor } = props as Record<string, string>;
+      const { label, message, color, labelColor, style, logo, logoColor } = props as Record<
+        string,
+        string
+      >;
       let url = `https://img.shields.io/badge/${encodeURIComponent(label)}-${encodeURIComponent(message)}-${color}?style=${style}`;
       if (labelColor) url += `&labelColor=${labelColor}`;
       if (logo) url += `&logo=${logo}`;
@@ -178,7 +217,11 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'skill-icons': {
-      const { icons, perLine, theme } = props as { icons: string[]; perLine: number; theme: string };
+      const { icons, perLine, theme } = props as {
+        icons: string[];
+        perLine: number;
+        theme: string;
+      };
       const iconsStr = icons.join(',');
       const url = `https://skillicons.dev/icons?i=${iconsStr}&perline=${perLine}&theme=${theme}`;
       return `<div align="center">\n  <img src="${url}" />\n</div>`;
@@ -186,9 +229,24 @@ export function renderBlock(block: Block, origin: string = ''): string {
 
     case 'stats-card': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, theme, showIcons, hideBorder, hideTitle, hideRank, bgColor, textColor, titleColor, iconColor, borderRadius } = props as Record<string, unknown>;
+      const {
+        username: blockUsername,
+        theme,
+        showIcons,
+        hideBorder,
+        hideTitle,
+        hideRank,
+        bgColor,
+        textColor,
+        titleColor,
+        iconColor,
+        borderRadius,
+      } = props as Record<string, unknown>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const params = {
         username,
         theme,
@@ -202,15 +260,31 @@ export function renderBlock(block: Block, origin: string = ''): string {
         icon_color: iconColor,
         border_radius: borderRadius,
       };
-      const url = origin ? buildExternalUrl('stats', params, origin) : buildInternalUrl('stats', params);
+      const url = origin
+        ? buildExternalUrl('stats', params, origin)
+        : buildInternalUrl('stats', params);
       return `<div align="center">\n  <img src="${url}" alt="GitHub Stats" />\n</div>`;
     }
 
     case 'top-languages': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, theme, layout, hideBorder, hideProgress, langs_count, bgColor, textColor, titleColor, borderRadius } = props as Record<string, unknown>;
+      const {
+        username: blockUsername,
+        theme,
+        layout,
+        hideBorder,
+        hideProgress,
+        langs_count,
+        bgColor,
+        textColor,
+        titleColor,
+        borderRadius,
+      } = props as Record<string, unknown>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const params = {
         username,
         theme,
@@ -223,15 +297,32 @@ export function renderBlock(block: Block, origin: string = ''): string {
         title_color: titleColor,
         border_radius: borderRadius,
       };
-      const url = origin ? buildExternalUrl('top-langs', params, origin) : buildInternalUrl('top-langs', params);
+      const url = origin
+        ? buildExternalUrl('top-langs', params, origin)
+        : buildInternalUrl('top-langs', params);
       return `<div align="center">\n  <img src="${url}" alt="Top Languages" />\n</div>`;
     }
 
     case 'streak-stats': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, theme, hideBorder, borderRadius, bgColor, fireColor, ringColor, currStreakColor, sideNumColor, sideLabelColor, datesColor } = props as Record<string, unknown>;
+      const {
+        username: blockUsername,
+        theme,
+        hideBorder,
+        borderRadius,
+        bgColor,
+        fireColor,
+        ringColor,
+        currStreakColor,
+        sideNumColor,
+        sideLabelColor,
+        datesColor,
+      } = props as Record<string, unknown>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const params = {
         username,
         theme,
@@ -245,15 +336,29 @@ export function renderBlock(block: Block, origin: string = ''): string {
         sideLabels: sideLabelColor,
         dates: datesColor,
       };
-      const url = origin ? buildExternalUrl('streak', params, origin) : buildInternalUrl('streak', params);
+      const url = origin
+        ? buildExternalUrl('streak', params, origin)
+        : buildInternalUrl('streak', params);
       return `<div align="center">\n  <img src="${url}" alt="GitHub Streak" />\n</div>`;
     }
 
     case 'activity-graph': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, theme, hideBorder, bgColor, color, lineColor, pointColor, areaColor } = props as Record<string, unknown>;
+      const {
+        username: blockUsername,
+        theme,
+        hideBorder,
+        bgColor,
+        color,
+        lineColor,
+        pointColor,
+        areaColor,
+      } = props as Record<string, unknown>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const params = {
         username,
         theme,
@@ -264,15 +369,29 @@ export function renderBlock(block: Block, origin: string = ''): string {
         point: pointColor,
         area_color: areaColor,
       };
-      const url = origin ? buildExternalUrl('activity', params, origin) : buildInternalUrl('activity', params);
+      const url = origin
+        ? buildExternalUrl('activity', params, origin)
+        : buildInternalUrl('activity', params);
       return `<div align="center">\n  <img src="${url}" alt="Activity Graph" />\n</div>`;
     }
 
     case 'trophies': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, theme, column, row, margin_w, margin_h, noFrame, noBg } = props as Record<string, unknown>;
+      const {
+        username: blockUsername,
+        theme,
+        column,
+        row,
+        margin_w,
+        margin_h,
+        noFrame,
+        noBg,
+      } = props as Record<string, unknown>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const params = {
         username,
         theme,
@@ -283,7 +402,9 @@ export function renderBlock(block: Block, origin: string = ''): string {
         no_frame: noFrame ? 'true' : 'false',
         no_bg: noBg ? 'true' : 'false',
       };
-      const url = origin ? buildExternalUrl('trophies', params, origin) : buildInternalUrl('trophies', params);
+      const url = origin
+        ? buildExternalUrl('trophies', params, origin)
+        : buildInternalUrl('trophies', params);
       return `<div align="center">\n  <img src="${url}" alt="GitHub Trophies" />\n</div>`;
     }
 
@@ -291,7 +412,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
       const globalUsername = useBuilderStore.getState().username;
       const { username: blockUsername, color, style, label } = props as Record<string, string>;
       // Use global username if block username is empty or is the default placeholder
-      const username = (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+      const username =
+        (!blockUsername || blockUsername === 'github') && globalUsername
+          ? globalUsername
+          : blockUsername;
       const url = `https://komarev.com/ghpvc/?username=${username}&color=${color}&style=${style}&label=${encodeURIComponent(label)}`;
       return `<div align="center">\n  <img src="${url}" alt="Profile Views" />\n</div>`;
     }

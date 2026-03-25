@@ -1,5 +1,6 @@
-import { NextRequest, NextResponse } from "next/server";
-import { fetchContributionCalendar } from "@/lib/github";
+import { NextRequest, NextResponse } from 'next/server';
+
+import { fetchContributionCalendar } from '@/lib/github';
 
 const themes: Record<
   string,
@@ -12,82 +13,82 @@ const themes: Record<
     border: string;
   }
 > = {
-  "tokyo-night": {
-    bg: "1a1b27",
-    color: "70a5fd",
-    line: "bf91f3",
-    point: "70a5fd",
-    area: "70a5fd30",
-    border: "e4e2e2",
+  'tokyo-night': {
+    bg: '1a1b27',
+    color: '70a5fd',
+    line: 'bf91f3',
+    point: '70a5fd',
+    area: '70a5fd30',
+    border: 'e4e2e2',
   },
   dracula: {
-    bg: "282a36",
-    color: "ff6e96",
-    line: "bd93f9",
-    point: "ff6e96",
-    area: "ff6e9630",
-    border: "e4e2e2",
+    bg: '282a36',
+    color: 'ff6e96',
+    line: 'bd93f9',
+    point: 'ff6e96',
+    area: 'ff6e9630',
+    border: 'e4e2e2',
   },
   github: {
-    bg: "ffffff",
-    color: "24292e",
-    line: "2188ff",
-    point: "24292e",
-    area: "2188ff30",
-    border: "e4e2e2",
+    bg: 'ffffff',
+    color: '24292e',
+    line: '2188ff',
+    point: '24292e',
+    area: '2188ff30',
+    border: 'e4e2e2',
   },
-  "github-dark": {
-    bg: "0d1117",
-    color: "c9d1d9",
-    line: "58a6ff",
-    point: "c9d1d9",
-    area: "58a6ff30",
-    border: "30363d",
+  'github-dark': {
+    bg: '0d1117',
+    color: 'c9d1d9',
+    line: '58a6ff',
+    point: 'c9d1d9',
+    area: '58a6ff30',
+    border: '30363d',
   },
   rogue: {
-    bg: "172030",
-    color: "a3b09a",
-    line: "b18bb1",
-    point: "a3b09a",
-    area: "b18bb130",
-    border: "e4e2e2",
+    bg: '172030',
+    color: 'a3b09a',
+    line: 'b18bb1',
+    point: 'a3b09a',
+    area: 'b18bb130',
+    border: 'e4e2e2',
   },
   merko: {
-    bg: "0a0f0b",
-    color: "abd200",
-    line: "b7d364",
-    point: "abd200",
-    area: "abd20030",
-    border: "e4e2e2",
+    bg: '0a0f0b',
+    color: 'abd200',
+    line: 'b7d364',
+    point: 'abd200',
+    area: 'abd20030',
+    border: 'e4e2e2',
   },
   vue: {
-    bg: "ecf0f1",
-    color: "2c3e50",
-    line: "41b883",
-    point: "2c3e50",
-    area: "41b88330",
-    border: "e4e2e2",
+    bg: 'ecf0f1',
+    color: '2c3e50',
+    line: '41b883',
+    point: '2c3e50',
+    area: '41b88330',
+    border: 'e4e2e2',
   },
-  "react-dark": {
-    bg: "20232a",
-    color: "ffffff",
-    line: "61dafb",
-    point: "ffffff",
-    area: "61dafb30",
-    border: "e4e2e2",
+  'react-dark': {
+    bg: '20232a',
+    color: 'ffffff',
+    line: '61dafb',
+    point: 'ffffff',
+    area: '61dafb30',
+    border: 'e4e2e2',
   },
-  "high-contrast": {
-    bg: "000000",
-    color: "ffffff",
-    line: "00ff00",
-    point: "ffffff",
-    area: "00ff0030",
-    border: "ffffff",
+  'high-contrast': {
+    bg: '000000',
+    color: 'ffffff',
+    line: '00ff00',
+    point: 'ffffff',
+    area: '00ff0030',
+    border: 'ffffff',
   },
 };
 
 function getTheme(themeName: string) {
-  return themes[themeName] || themes["tokyo-night"];
+  return themes[themeName] || themes['tokyo-night'];
 }
 
 function generateActivityGraph(
@@ -101,7 +102,7 @@ function generateActivityGraph(
     area: string;
     border: string;
   },
-  options: { hideBorder: boolean }
+  options: { hideBorder: boolean },
 ) {
   const width = 850;
   const height = 300;
@@ -122,7 +123,7 @@ function generateActivityGraph(
 
   const linePath = points
     .map((p, i) => (i === 0 ? `M ${p.x} ${p.y}` : `L ${p.x} ${p.y}`))
-    .join(" ");
+    .join(' ');
   const areaPath = `${linePath} L ${points[points.length - 1].x} ${offsetY + graphHeight} L ${offsetX} ${offsetY + graphHeight} Z`;
 
   // Generate days labels (last 30 days)
@@ -131,13 +132,13 @@ function generateActivityGraph(
   for (let i = 0; i < 30; i += 6) {
     const date = new Date(today);
     date.setDate(date.getDate() - (29 - i));
-    const label = date.toLocaleDateString("en-US", {
-      month: "short",
-      day: "numeric",
+    const label = date.toLocaleDateString('en-US', {
+      month: 'short',
+      day: 'numeric',
     });
     const x = offsetX + (i / 29) * graphWidth;
     dayLabels.push(
-      `<text x="${x}" y="${offsetY + graphHeight + 25}" class="axis-label" text-anchor="middle">${label}</text>`
+      `<text x="${x}" y="${offsetY + graphHeight + 25}" class="axis-label" text-anchor="middle">${label}</text>`,
     );
   }
 
@@ -158,7 +159,7 @@ function generateActivityGraph(
     .grid { stroke: #${theme.color}; stroke-opacity: 0.1; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="10" ry="10" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? "none" : "#" + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="10" ry="10" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
   
   <text x="25" y="28" class="header">${username}'s Contribution Graph</text>
 
@@ -168,7 +169,7 @@ function generateActivityGraph(
       const y = offsetY + graphHeight * (1 - p);
       return `<line x1="${offsetX}" y1="${y}" x2="${offsetX + graphWidth}" y2="${y}" class="grid"/>`;
     })
-    .join("")}
+    .join('')}
 
   <!-- Area -->
   <path d="${areaPath}" class="area"/>
@@ -180,11 +181,11 @@ function generateActivityGraph(
   ${points
     .filter((_, i) => i % 3 === 0)
     .map((p) => `<circle cx="${p.x}" cy="${p.y}" r="4" class="point"/>`)
-    .join("")}
+    .join('')}
 
   <!-- Axes -->
-  ${dayLabels.join("")}
-  ${yLabels.join("")}
+  ${dayLabels.join('')}
+  ${yLabels.join('')}
 </svg>
   `.trim();
 }
@@ -192,28 +193,28 @@ function generateActivityGraph(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const username = searchParams.get("username") || "github";
-  const themeName = searchParams.get("theme") || "tokyo-night";
-  const hideBorder = searchParams.get("hide_border") === "true";
+  const username = searchParams.get('username') || 'github';
+  const themeName = searchParams.get('theme') || 'tokyo-night';
+  const hideBorder = searchParams.get('hide_border') === 'true';
 
   let theme = getTheme(themeName);
 
-  if (searchParams.get("bg_color")) {
-    theme = { ...theme, bg: searchParams.get("bg_color")!.replace("#", "") };
+  if (searchParams.get('bg_color')) {
+    theme = { ...theme, bg: searchParams.get('bg_color')!.replace('#', '') };
   }
-  if (searchParams.get("color")) {
-    theme = { ...theme, color: searchParams.get("color")!.replace("#", "") };
+  if (searchParams.get('color')) {
+    theme = { ...theme, color: searchParams.get('color')!.replace('#', '') };
   }
-  if (searchParams.get("line")) {
-    theme = { ...theme, line: searchParams.get("line")!.replace("#", "") };
+  if (searchParams.get('line')) {
+    theme = { ...theme, line: searchParams.get('line')!.replace('#', '') };
   }
-  if (searchParams.get("point")) {
-    theme = { ...theme, point: searchParams.get("point")!.replace("#", "") };
+  if (searchParams.get('point')) {
+    theme = { ...theme, point: searchParams.get('point')!.replace('#', '') };
   }
-  if (searchParams.get("area_color")) {
+  if (searchParams.get('area_color')) {
     theme = {
       ...theme,
-      area: searchParams.get("area_color")!.replace("#", "") + "30",
+      area: searchParams.get('area_color')!.replace('#', '') + '30',
     };
   }
 
@@ -235,12 +236,12 @@ export async function GET(request: NextRequest) {
 
       return new NextResponse(svg, {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=3600",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=3600',
         },
       });
     } catch (error) {
-      console.error("Error fetching activity:", error);
+      console.error('Error fetching activity:', error);
       return new NextResponse(
         `<svg width="850" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="850" height="120" fill="#${theme.bg}" rx="10"/>
@@ -253,10 +254,10 @@ export async function GET(request: NextRequest) {
         </svg>`,
         {
           headers: {
-            "Content-Type": "image/svg+xml",
-            "Cache-Control": "public, max-age=300",
+            'Content-Type': 'image/svg+xml',
+            'Cache-Control': 'public, max-age=300',
           },
-        }
+        },
       );
     }
   } else {
@@ -275,10 +276,10 @@ export async function GET(request: NextRequest) {
       </svg>`,
       {
         headers: {
-          "Content-Type": "image/svg+xml",
-          "Cache-Control": "public, max-age=60",
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=60',
         },
-      }
+      },
     );
   }
 }

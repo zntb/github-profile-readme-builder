@@ -1,6 +1,5 @@
 'use client';
 
-import { useCallback } from 'react';
 import {
   DndContext,
   closestCenter,
@@ -16,11 +15,20 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
+import { Layers, Sparkles } from 'lucide-react';
+import { useCallback } from 'react';
+
+import {
+  Empty,
+  EmptyMedia,
+  EmptyTitle,
+  EmptyDescription,
+  EmptyContent,
+} from '@/components/ui/empty';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore } from '@/lib/store';
+
 import { CanvasBlock } from './canvas-block';
-import { Empty, EmptyMedia, EmptyTitle, EmptyDescription, EmptyContent } from '@/components/ui/empty';
-import { Layers, Sparkles } from 'lucide-react';
 
 export function Canvas() {
   const { blocks, setBlocks, selectBlock, selectedBlockId } = useBuilderStore();
@@ -33,7 +41,7 @@ export function Canvas() {
     }),
     useSensor(KeyboardSensor, {
       coordinateGetter: sortableKeyboardCoordinates,
-    })
+    }),
   );
 
   const handleDragEnd = useCallback(
@@ -46,7 +54,7 @@ export function Canvas() {
         setBlocks(arrayMove(blocks, oldIndex, newIndex));
       }
     },
-    [blocks, setBlocks]
+    [blocks, setBlocks],
   );
 
   const handleCanvasClick = (e: React.MouseEvent) => {
@@ -88,28 +96,24 @@ export function Canvas() {
 
   return (
     <ScrollArea className="h-full bg-background/30">
-      <div
-        className="min-h-full p-4 sm:p-8"
-        onClick={handleCanvasClick}
-      >
+      <div className="min-h-full p-4 sm:p-8" onClick={handleCanvasClick}>
         <div className="mx-auto max-w-4xl">
           {/* Canvas header */}
           <div className="mb-6 flex items-center justify-between">
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <div className="w-2 h-2 rounded-full bg-green-500 animate-pulse" />
-              <span>{blocks.length} block{blocks.length !== 1 ? 's' : ''}</span>
+              <span>
+                {blocks.length} block{blocks.length !== 1 ? 's' : ''}
+              </span>
             </div>
           </div>
-          
+
           <DndContext
             sensors={sensors}
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext
-              items={blocks.map((b) => b.id)}
-              strategy={verticalListSortingStrategy}
-            >
+            <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
               <div className="space-y-3">
                 {blocks.map((block, index) => (
                   <div

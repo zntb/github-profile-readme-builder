@@ -26,6 +26,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 ### What to Include
 
 When reporting, please include:
+
 - Type of vulnerability
 - Full paths of source file(s) related to the vulnerability
 - Location of the affected source code (tag/branch/commit or direct URL)
@@ -77,16 +78,19 @@ User Input (GitHub Username)
 ### 1. GitHub API Integration
 
 #### Rate Limiting
+
 - GitHub API has rate limits (currently 60 requests/hour for unauthenticated requests)
 - The application implements request caching to minimize API calls
 - Consider implementing GitHub OAuth for higher rate limits in production
 
 #### Data Privacy
+
 - Only **public** GitHub data is fetched
 - No private repositories, private gists, or private activity data
 - User data is not stored on our servers
 
 #### Token Handling
+
 - If implementing GitHub OAuth, tokens should be:
   - Stored server-side only
   - Encrypted at rest
@@ -96,6 +100,7 @@ User Input (GitHub Username)
 ### 2. Input Validation
 
 #### Username Validation
+
 - GitHub usernames must be validated before API requests
 - Allowed characters: alphanumeric, hyphens, underscores
 - Length constraints: 1-39 characters
@@ -107,6 +112,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-_]{0,38}[a-zA-Z0-9])?$/;
 ```
 
 #### Output Encoding
+
 - All user-generated content must be properly escaped
 - Markdown output should not allow arbitrary HTML injection
 - Use trusted markdown libraries with sanitization
@@ -114,17 +120,20 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-_]{0,38}[a-zA-Z0-9])?$/;
 ### 3. Client-Side Security
 
 #### State Management (Zustand)
+
 - Client-side state is ephemeral and cleared on page refresh
 - No sensitive data should be stored in state management
 - Consider encrypting any persisted state
 
 #### Local Storage
+
 - If using local storage for preferences:
   - Never store authentication tokens
   - Implement storage encryption for sensitive preferences
   - Provide user control to clear stored data
 
 #### XSS Prevention
+
 - React's built-in XSS protection is utilized
 - Avoid `dangerouslySetInnerHTML` with user input
 - Sanitize any markdown rendered as HTML
@@ -132,6 +141,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-_]{0,38}[a-zA-Z0-9])?$/;
 ### 4. Server-Side Security
 
 #### API Routes
+
 - All API routes should implement:
   - Input validation and sanitization
   - Rate limiting per IP/user
@@ -139,6 +149,7 @@ const USERNAME_REGEX = /^[a-zA-Z0-9]([a-zA-Z0-9-_]{0,38}[a-zA-Z0-9])?$/;
   - Request timeout limits
 
 #### Next.js Security Headers
+
 The following security headers are recommended in `next.config.ts`:
 
 ```typescript
@@ -163,26 +174,30 @@ const nextConfig = {
 ### 5. Dependency Security
 
 #### Regular Audits
+
 - Run `npm audit` regularly to check for vulnerabilities
 - Subscribe to GitHub Security Advisories for dependencies
 - Update dependencies promptly, especially critical security patches
 
 #### Known Dependencies
-| Package | Purpose | Security Note |
-|---------|---------|---------------|
-| next | Framework | Keep updated to latest stable |
-| react | UI Library | Latest version recommended |
-| zustand | State Management | No sensitive data in state |
-| lucide-react | Icons | Verify icon sources |
+
+| Package      | Purpose          | Security Note                 |
+| ------------ | ---------------- | ----------------------------- |
+| next         | Framework        | Keep updated to latest stable |
+| react        | UI Library       | Latest version recommended    |
+| zustand      | State Management | No sensitive data in state    |
+| lucide-react | Icons            | Verify icon sources           |
 
 ### 6. Production Deployment
 
 #### Environment Variables
+
 - Never commit `.env` files or environment variables to version control
 - Use `.env.local` for local development (already in `.gitignore`)
 - Production secrets should be managed through secure secret management
 
 #### Recommended Environment Setup
+
 ```
 # Required
 GITHUB_TOKEN=  # For higher API rate limits (optional)
@@ -192,6 +207,7 @@ NEXT_PUBLIC_ANALYTICS_ID=  # If using analytics
 ```
 
 #### HTTPS
+
 - Always serve production applications over HTTPS
 - Enable HSTS (HTTP Strict Transport Security)
 - Use modern TLS versions (1.2+)
@@ -258,10 +274,11 @@ This project aims to follow security best practices. For enterprise deployments:
 ## Contact
 
 For security-related questions or concerns, please:
+
 - Use GitHub's private vulnerability reporting, OR
 - Contact the maintainers through appropriate channels
 
 ---
 
-*Last Updated: March 2026*
-*This security policy is reviewed quarterly*
+_Last Updated: March 2026_
+_This security policy is reviewed quarterly_

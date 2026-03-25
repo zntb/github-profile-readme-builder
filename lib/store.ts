@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
+
 import type { Block, Template } from './types';
 
 interface BuilderState {
@@ -7,7 +8,7 @@ interface BuilderState {
   selectedBlockId: string | null;
   isDragging: boolean;
   username: string;
-  
+
   // Actions
   addBlock: (block: Block, index?: number) => void;
   removeBlock: (id: string) => void;
@@ -170,8 +171,8 @@ export const useBuilderStore = create<BuilderState>()(
     {
       name: 'github-readme-builder-storage',
       partialize: (state) => ({ username: state.username }),
-    }
-  )
+    },
+  ),
 );
 
 // Find a block by ID

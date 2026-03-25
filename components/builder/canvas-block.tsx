@@ -3,10 +3,12 @@
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Copy, Trash2 } from 'lucide-react';
-import { cn } from '@/lib/utils';
+
 import { Button } from '@/components/ui/button';
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
+import { cn } from '@/lib/utils';
+
 import { BlockPreview } from './block-preview';
 
 interface CanvasBlockProps {
@@ -18,14 +20,9 @@ interface CanvasBlockProps {
 export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
   const { removeBlock, duplicateBlock } = useBuilderStore();
 
-  const {
-    attributes,
-    listeners,
-    setNodeRef,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({ id: block.id });
+  const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
+    id: block.id,
+  });
 
   const style = {
     transform: CSS.Transform.toString(transform),
@@ -51,7 +48,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         isSelected
           ? 'border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/20'
           : 'border-border/50 hover:border-muted-foreground/30 hover:shadow-md hover:shadow-muted/20',
-        isDragging && 'opacity-60 shadow-xl scale-[1.02] ring-2 ring-primary/40'
+        isDragging && 'opacity-60 shadow-xl scale-[1.02] ring-2 ring-primary/40',
       )}
       onClick={onSelect}
     >
@@ -60,7 +57,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         className={cn(
           'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
-          isSelected && 'sm:opacity-100'
+          isSelected && 'sm:opacity-100',
         )}
       >
         <button
@@ -77,7 +74,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         className={cn(
           'absolute top-2 right-2 sm:-right-10 sm:top-1/2 sm:-translate-y-1/2 flex sm:flex-col items-center gap-1 transition-all duration-200',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
-          isSelected && 'sm:opacity-100'
+          isSelected && 'sm:opacity-100',
         )}
       >
         <Button

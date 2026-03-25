@@ -41,7 +41,7 @@
   --sidebar-accent-foreground: oklch(0.4 0.02 250);
   --sidebar-border: oklch(0.88 0.02 250);
   --sidebar-ring: oklch(0.55 0.18 250);
-  
+
   /* Animation variables */
   --animate-slide-up: slide-up 0.3s ease-out;
   --animate-slide-down: slide-down 0.3s ease-out;
@@ -194,14 +194,16 @@
   * {
     @apply border-border outline-ring/50;
   }
-  
+
   html {
     scroll-behavior: smooth;
   }
-  
+
   body {
     @apply bg-background text-foreground;
-    font-feature-settings: "rlig" 1, "calt" 1;
+    font-feature-settings:
+      'rlig' 1,
+      'calt' 1;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
@@ -254,14 +256,14 @@
 
 /* Gradient background */
 .gradient-bg {
-  background: 
+  background:
     radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.9 0.05 250) 0%, transparent 100%),
     radial-gradient(ellipse 60% 40% at 100% 100%, oklch(0.85 0.08 280) 0%, transparent 50%),
     var(--background);
 }
 
 .dark .gradient-bg {
-  background: 
+  background:
     radial-gradient(ellipse 80% 50% at 50% -20%, oklch(0.15 0.05 250) 0%, transparent 100%),
     radial-gradient(ellipse 60% 40% at 0% 100%, oklch(0.12 0.08 280) 0%, transparent 50%),
     var(--background);
@@ -285,18 +287,36 @@
   animation: var(--animate-fade-in) ease-out backwards;
 }
 
-.stagger-children > *:nth-child(1) { animation-delay: 0ms; }
-.stagger-children > *:nth-child(2) { animation-delay: 50ms; }
-.stagger-children > *:nth-child(3) { animation-delay: 100ms; }
-.stagger-children > *:nth-child(4) { animation-delay: 150ms; }
-.stagger-children > *:nth-child(5) { animation-delay: 200ms; }
-.stagger-children > *:nth-child(6) { animation-delay: 250ms; }
-.stagger-children > *:nth-child(7) { animation-delay: 300ms; }
-.stagger-children > *:nth-child(8) { animation-delay: 350ms; }
+.stagger-children > *:nth-child(1) {
+  animation-delay: 0ms;
+}
+.stagger-children > *:nth-child(2) {
+  animation-delay: 50ms;
+}
+.stagger-children > *:nth-child(3) {
+  animation-delay: 100ms;
+}
+.stagger-children > *:nth-child(4) {
+  animation-delay: 150ms;
+}
+.stagger-children > *:nth-child(5) {
+  animation-delay: 200ms;
+}
+.stagger-children > *:nth-child(6) {
+  animation-delay: 250ms;
+}
+.stagger-children > *:nth-child(7) {
+  animation-delay: 300ms;
+}
+.stagger-children > *:nth-child(8) {
+  animation-delay: 350ms;
+}
 
 /* Hover lift effect */
 .hover-lift {
-  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out;
+  transition:
+    transform 0.2s ease-out,
+    box-shadow 0.2s ease-out;
 }
 
 .hover-lift:hover {
@@ -314,7 +334,9 @@
 }
 
 .focus-ring:focus-visible {
-  box-shadow: 0 0 0 3px var(--primary-light), 0 0 0 5px var(--ring);
+  box-shadow:
+    0 0 0 3px var(--primary-light),
+    0 0 0 5px var(--ring);
 }
 
 /* Subtle border glow */
@@ -339,19 +361,15 @@
 
 /* Shimmer loading effect */
 .shimmer {
-  background: linear-gradient(
-    90deg,
-    var(--muted) 0%,
-    var(--secondary) 50%,
-    var(--muted) 100%
-  );
+  background: linear-gradient(90deg, var(--muted) 0%, var(--secondary) 50%, var(--muted) 100%);
   background-size: 200% 100%;
   animation: var(--animate-shimmer);
 }
 
 /* GitHub README preview styles */
 .github-preview {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
+  font-family:
+    -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans', Helvetica, Arial, sans-serif;
   line-height: 1.5;
 }
 

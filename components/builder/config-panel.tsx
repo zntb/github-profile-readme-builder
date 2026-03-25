@@ -1,12 +1,11 @@
 'use client';
 
-import { ScrollArea } from '@/components/ui/scroll-area';
+import { X, Plus, Trash2 } from 'lucide-react';
+
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Switch } from '@/components/ui/switch';
-import { Slider } from '@/components/ui/slider';
-import { Textarea } from '@/components/ui/textarea';
+import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -14,9 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
 import { useBuilderStore, findBlock } from '@/lib/store';
 import { STATS_THEMES, SKILL_ICONS, type Block } from '@/lib/types';
-import { X, Plus, Trash2 } from 'lucide-react';
 
 export function ConfigPanel() {
   const { blocks, selectedBlockId, selectBlock, updateBlock } = useBuilderStore();
@@ -45,12 +46,7 @@ export function ConfigPanel() {
         <h2 className="text-sm font-semibold text-sidebar-foreground">
           {selectedBlock.type.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
         </h2>
-        <Button
-          variant="ghost"
-          size="icon"
-          className="h-6 w-6"
-          onClick={() => selectBlock(null)}
-        >
+        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => selectBlock(null)}>
           <X className="h-4 w-4" />
         </Button>
       </div>
@@ -82,10 +78,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -98,10 +91,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Direction</Label>
-            <Select
-              value={props.direction as string}
-              onValueChange={(v) => update('direction', v)}
-            >
+            <Select value={props.direction as string} onValueChange={(v) => update('direction', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -129,10 +119,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Type</Label>
-            <Select
-              value={props.type as string}
-              onValueChange={(v) => update('type', v)}
-            >
+            <Select value={props.type as string} onValueChange={(v) => update('type', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -146,7 +133,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <FieldGroup>
               <Label>GIF URL</Label>
               <Input
-                value={props.gifUrl as string || ''}
+                value={(props.gifUrl as string) || ''}
                 onChange={(e) => update('gifUrl', e.target.value)}
                 placeholder="https://..."
               />
@@ -174,17 +161,11 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Text</Label>
-            <Input
-              value={props.text as string}
-              onChange={(e) => update('text', e.target.value)}
-            />
+            <Input value={props.text as string} onChange={(e) => update('text', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Animation Type</Label>
-            <Select
-              value={props.type as string}
-              onValueChange={(v) => update('type', v)}
-            >
+            <Select value={props.type as string} onValueChange={(v) => update('type', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -201,10 +182,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Section</Label>
-            <Select
-              value={props.section as string}
-              onValueChange={(v) => update('section', v)}
-            >
+            <Select value={props.section as string} onValueChange={(v) => update('section', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -273,25 +251,19 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Text</Label>
-            <Input
-              value={props.text as string}
-              onChange={(e) => update('text', e.target.value)}
-            />
+            <Input value={props.text as string} onChange={(e) => update('text', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Emoji (optional)</Label>
             <Input
-              value={props.emoji as string || ''}
+              value={(props.emoji as string) || ''}
               onChange={(e) => update('emoji', e.target.value)}
               placeholder="e.g., 👋"
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -374,17 +346,11 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Text</Label>
-            <Input
-              value={props.text as string}
-              onChange={(e) => update('text', e.target.value)}
-            />
+            <Input value={props.text as string} onChange={(e) => update('text', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Level</Label>
-            <Select
-              value={String(props.level)}
-              onValueChange={(v) => update('level', parseInt(v))}
-            >
+            <Select value={String(props.level)} onValueChange={(v) => update('level', parseInt(v))}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -398,16 +364,13 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Emoji (optional)</Label>
             <Input
-              value={props.emoji as string || ''}
+              value={(props.emoji as string) || ''}
               onChange={(e) => update('emoji', e.target.value)}
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -434,10 +397,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -500,32 +460,30 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Image URL</Label>
-            <Input
-              value={props.url as string}
-              onChange={(e) => update('url', e.target.value)}
-            />
+            <Input value={props.url as string} onChange={(e) => update('url', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Alt Text</Label>
-            <Input
-              value={props.alt as string}
-              onChange={(e) => update('alt', e.target.value)}
-            />
+            <Input value={props.alt as string} onChange={(e) => update('alt', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Width (optional)</Label>
             <Input
               type="number"
-              value={props.width as number || ''}
-              onChange={(e) => update('width', e.target.value ? parseInt(e.target.value) : undefined)}
+              value={(props.width as number) || ''}
+              onChange={(e) =>
+                update('width', e.target.value ? parseInt(e.target.value) : undefined)
+              }
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Height (optional)</Label>
             <Input
               type="number"
-              value={props.height as number || ''}
-              onChange={(e) => update('height', e.target.value ? parseInt(e.target.value) : undefined)}
+              value={(props.height as number) || ''}
+              onChange={(e) =>
+                update('height', e.target.value ? parseInt(e.target.value) : undefined)
+              }
             />
           </FieldGroup>
           <FieldGroup>
@@ -540,10 +498,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -562,32 +517,25 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>GIF URL</Label>
-            <Input
-              value={props.url as string}
-              onChange={(e) => update('url', e.target.value)}
-            />
+            <Input value={props.url as string} onChange={(e) => update('url', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Alt Text</Label>
-            <Input
-              value={props.alt as string}
-              onChange={(e) => update('alt', e.target.value)}
-            />
+            <Input value={props.alt as string} onChange={(e) => update('alt', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Width (optional)</Label>
             <Input
               type="number"
-              value={props.width as number || ''}
-              onChange={(e) => update('width', e.target.value ? parseInt(e.target.value) : undefined)}
+              value={(props.width as number) || ''}
+              onChange={(e) =>
+                update('width', e.target.value ? parseInt(e.target.value) : undefined)
+              }
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
-            <Select
-              value={props.alignment as string}
-              onValueChange={(v) => update('alignment', v)}
-            >
+            <Select value={props.alignment as string} onValueChange={(v) => update('alignment', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -606,10 +554,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Badge Style</Label>
-            <Select
-              value={props.style as string}
-              onValueChange={(v) => update('style', v)}
-            >
+            <Select value={props.style as string} onValueChange={(v) => update('style', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -625,7 +570,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>LinkedIn Username</Label>
             <Input
-              value={props.linkedin as string || ''}
+              value={(props.linkedin as string) || ''}
               onChange={(e) => update('linkedin', e.target.value)}
               placeholder="your-linkedin-username"
             />
@@ -633,7 +578,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Twitter/X Username</Label>
             <Input
-              value={props.twitter as string || ''}
+              value={(props.twitter as string) || ''}
               onChange={(e) => update('twitter', e.target.value)}
               placeholder="your-twitter-username"
             />
@@ -641,7 +586,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>GitHub Username</Label>
             <Input
-              value={props.github as string || ''}
+              value={(props.github as string) || ''}
               onChange={(e) => update('github', e.target.value)}
               placeholder="your-github-username"
             />
@@ -649,7 +594,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>YouTube Channel</Label>
             <Input
-              value={props.youtube as string || ''}
+              value={(props.youtube as string) || ''}
               onChange={(e) => update('youtube', e.target.value)}
               placeholder="your-channel-name"
             />
@@ -657,7 +602,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Instagram Username</Label>
             <Input
-              value={props.instagram as string || ''}
+              value={(props.instagram as string) || ''}
               onChange={(e) => update('instagram', e.target.value)}
               placeholder="your-instagram-username"
             />
@@ -665,7 +610,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Discord Server ID</Label>
             <Input
-              value={props.discord as string || ''}
+              value={(props.discord as string) || ''}
               onChange={(e) => update('discord', e.target.value)}
               placeholder="your-discord-server-id"
             />
@@ -674,7 +619,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <Label>Email</Label>
             <Input
               type="email"
-              value={props.email as string || ''}
+              value={(props.email as string) || ''}
               onChange={(e) => update('email', e.target.value)}
               placeholder="your@email.com"
             />
@@ -682,7 +627,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Portfolio URL</Label>
             <Input
-              value={props.portfolio as string || ''}
+              value={(props.portfolio as string) || ''}
               onChange={(e) => update('portfolio', e.target.value)}
               placeholder="https://yourportfolio.com"
             />
@@ -717,10 +662,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Style</Label>
-            <Select
-              value={props.style as string}
-              onValueChange={(v) => update('style', v)}
-            >
+            <Select value={props.style as string} onValueChange={(v) => update('style', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -735,7 +677,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Logo (optional)</Label>
             <Input
-              value={props.logo as string || ''}
+              value={(props.logo as string) || ''}
               onChange={(e) => update('logo', e.target.value)}
               placeholder="github, twitter, etc."
             />
@@ -753,7 +695,12 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
               {icons.map((icon) => (
                 <button
                   key={icon}
-                  onClick={() => update('icons', icons.filter((i) => i !== icon))}
+                  onClick={() =>
+                    update(
+                      'icons',
+                      icons.filter((i) => i !== icon),
+                    )
+                  }
                   className="px-2 py-0.5 text-xs rounded bg-background hover:bg-destructive hover:text-destructive-foreground transition-colors"
                 >
                   {icon} ×
@@ -787,10 +734,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -808,10 +752,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -878,10 +819,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -896,10 +834,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Layout</Label>
-            <Select
-              value={props.layout as string}
-              onValueChange={(v) => update('layout', v)}
-            >
+            <Select value={props.layout as string} onValueChange={(v) => update('layout', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -948,10 +883,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -991,10 +923,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1028,10 +957,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1076,10 +1002,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>No Background</Label>
-              <Switch
-                checked={props.noBg as boolean}
-                onCheckedChange={(v) => update('noBg', v)}
-              />
+              <Switch checked={props.noBg as boolean} onCheckedChange={(v) => update('noBg', v)} />
             </div>
           </FieldGroup>
         </>
@@ -1097,10 +1020,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Color</Label>
-            <Select
-              value={props.color as string}
-              onValueChange={(v) => update('color', v)}
-            >
+            <Select value={props.color as string} onValueChange={(v) => update('color', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1117,10 +1037,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Style</Label>
-            <Select
-              value={props.style as string}
-              onValueChange={(v) => update('style', v)}
-            >
+            <Select value={props.style as string} onValueChange={(v) => update('style', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1140,7 +1057,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Custom Quote (optional)</Label>
             <Textarea
-              value={props.quote as string || ''}
+              value={(props.quote as string) || ''}
               onChange={(e) => update('quote', e.target.value)}
               placeholder="Leave empty for random quote"
               rows={3}
@@ -1149,16 +1066,13 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <Label>Author (optional)</Label>
             <Input
-              value={props.author as string || ''}
+              value={(props.author as string) || ''}
               onChange={(e) => update('author', e.target.value)}
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select
-              value={props.theme as string}
-              onValueChange={(v) => update('theme', v)}
-            >
+            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1173,10 +1087,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Layout</Label>
-            <Select
-              value={props.type as string}
-              onValueChange={(v) => update('type', v)}
-            >
+            <Select value={props.type as string} onValueChange={(v) => update('type', v)}>
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -1195,10 +1106,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Text</Label>
-            <Input
-              value={props.text as string}
-              onChange={(e) => update('text', e.target.value)}
-            />
+            <Input value={props.text as string} onChange={(e) => update('text', e.target.value)} />
           </FieldGroup>
           <FieldGroup>
             <Label>Wave Color (gradient)</Label>
