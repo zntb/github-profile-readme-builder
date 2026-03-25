@@ -18,7 +18,7 @@ jobs:
       - run: npm ci
       - run: npm test
       - run: npm run test:coverage
-      - uses: codecov/codecov-action@v4
+      - uses: codecov/codecov-action@v5
         with:
           files: ./coverage/coverage.json
           fail_ci_if_error: false
