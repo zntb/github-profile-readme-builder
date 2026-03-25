@@ -17,7 +17,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 ### How to Report
 
 1. **Do NOT** create a public GitHub issue for security vulnerabilities
-2. Email the security team directly at: [security contact placeholder - add your email]
+2. Email the security team directly at: <codetibo@proton.me>
 3. Alternatively, use GitHub's private vulnerability reporting:
    - Navigate to the [Security tab](https://github.com/zenetio/github-profile-readme-builder/security) of the repository
    - Click "Report a vulnerability"
