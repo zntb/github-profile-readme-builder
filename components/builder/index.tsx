@@ -19,7 +19,7 @@ export function Builder() {
   const [configOpen, setConfigOpen] = useState(false);
 
   return (
-    <div className="h-screen flex flex-col bg-background">
+    <div className="h-screen flex flex-col bg-background gradient-bg">
       <BuilderHeader />
       
       {/* Desktop Layout */}
@@ -28,23 +28,27 @@ export function Builder() {
         <BlockSidebar />
 
         {/* Center - Canvas */}
-        <div className="flex-1 flex flex-col min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 relative">
+          {/* Subtle background pattern */}
+          <div className="absolute inset-0 pointer-events-none opacity-20">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,transparent_0%,var(--background)_70%)]" />
+          </div>
           <Canvas />
         </div>
 
         {/* Right Panel - Config or Preview */}
-        <div className="w-80 xl:w-96 border-l border-border bg-card flex flex-col h-full">
+        <div className="w-80 xl:w-96 border-l border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full">
           {selectedBlockId ? (
             <ConfigPanel />
           ) : (
             <Tabs defaultValue="preview" className="flex-1 flex flex-col">
-              <div className="border-b border-border p-2">
-                <TabsList className="w-full">
-                  <TabsTrigger value="preview" className="flex-1 gap-2">
+              <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                <TabsList className="w-full bg-muted/50">
+                  <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
                     <Eye className="w-4 h-4" />
                     Preview
                   </TabsTrigger>
-                  <TabsTrigger value="markdown" className="flex-1 gap-2">
+                  <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
                     <Code className="w-4 h-4" />
                     Markdown
                   </TabsTrigger>
@@ -62,25 +66,28 @@ export function Builder() {
       </div>
 
       {/* Tablet Layout (md-lg) */}
-      <div className="hidden md:flex lg:hidden flex-1">
+      <div className="hidden md:flex lg:hidden flex-1 relative">
         {/* Left Sidebar - Block Library (collapsible) */}
         <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
           <SheetTrigger asChild>
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute left-2 top-16 z-10 md:flex hidden lg:hidden"
+              className="absolute left-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
             >
               <Blocks className="w-5 h-5" />
             </Button>
           </SheetTrigger>
-          <SheetContent side="left" className="w-72 p-0">
+          <SheetContent side="left" className="w-72 p-0 border-r border-border/50">
             <BlockSidebar />
           </SheetContent>
         </Sheet>
 
         {/* Center - Canvas */}
-        <div className="flex-1 flex flex-col min-w-0 pl-12">
+        <div className="flex-1 flex flex-col min-w-0 pl-12 relative">
+          <div className="absolute inset-0 pointer-events-none opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,transparent_0%,var(--background)_70%)]" />
+          </div>
           <Canvas />
         </div>
 
@@ -90,23 +97,23 @@ export function Builder() {
             <Button 
               variant="ghost" 
               size="icon" 
-              className="absolute right-2 top-16 z-10 md:flex hidden lg:hidden"
+              className="absolute right-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
             >
               {selectedBlockId ? <Settings2 className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
             </Button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-80 p-0">
+          <SheetContent side="right" className="w-80 p-0 border-l border-border/50">
             {selectedBlockId ? (
               <ConfigPanel />
             ) : (
               <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
-                <div className="border-b border-border p-2">
-                  <TabsList className="w-full">
-                    <TabsTrigger value="preview" className="flex-1 gap-2">
+                <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                  <TabsList className="w-full bg-muted/50">
+                    <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
                       <Eye className="w-4 h-4" />
                       Preview
                     </TabsTrigger>
-                    <TabsTrigger value="markdown" className="flex-1 gap-2">
+                    <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
                       <Code className="w-4 h-4" />
                       Markdown
                     </TabsTrigger>
@@ -127,14 +134,17 @@ export function Builder() {
       {/* Mobile Layout */}
       <div className="flex md:hidden flex-1 flex-col">
         {/* Mobile Tab Content */}
-        <div className="flex-1 overflow-hidden">
+        <div className="flex-1 overflow-hidden relative">
+          <div className="absolute inset-0 pointer-events-none opacity-10">
+            <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,transparent_0%,var(--background)_70%)]" />
+          </div>
           {mobileTab === "blocks" && (
             <div className="h-full">
               <BlockSidebar />
             </div>
           )}
           {mobileTab === "canvas" && (
-            <div className="h-full flex flex-col">
+            <div className="h-full flex flex-col relative">
               <Canvas />
               {selectedBlockId && (
                 <Sheet open={configOpen} onOpenChange={setConfigOpen}>
@@ -142,13 +152,13 @@ export function Builder() {
                     <Button 
                       variant="secondary" 
                       size="sm" 
-                      className="absolute bottom-20 right-4 z-10 shadow-lg"
+                      className="absolute bottom-20 right-4 z-10 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground border-0"
                     >
                       <Settings2 className="w-4 h-4 mr-2" />
                       Configure
                     </Button>
                   </SheetTrigger>
-                  <SheetContent side="bottom" className="h-[70vh] p-0">
+                  <SheetContent side="bottom" className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50">
                     <ConfigPanel />
                   </SheetContent>
                 </Sheet>
@@ -157,13 +167,13 @@ export function Builder() {
           )}
           {mobileTab === "preview" && (
             <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
-              <div className="border-b border-border p-2">
-                <TabsList className="w-full">
-                  <TabsTrigger value="preview" className="flex-1 gap-2">
+              <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
+                <TabsList className="w-full bg-muted/50">
+                  <TabsTrigger value="preview" className="flex-1 gap-2 transition-all duration-200">
                     <Eye className="w-4 h-4" />
                     Preview
                   </TabsTrigger>
-                  <TabsTrigger value="markdown" className="flex-1 gap-2">
+                  <TabsTrigger value="markdown" className="flex-1 gap-2 transition-all duration-200">
                     <Code className="w-4 h-4" />
                     Markdown
                   </TabsTrigger>
@@ -179,35 +189,35 @@ export function Builder() {
           )}
         </div>
 
-        {/* Mobile Bottom Navigation */}
-        <div className="border-t border-border bg-card p-2 safe-area-inset-bottom">
+        {/* Mobile Bottom Navigation - Improved styling */}
+        <div className="border-t border-border/50 bg-card/80 backdrop-blur-md p-2 safe-area-inset-bottom">
           <div className="flex items-center justify-around">
             <Button
               variant={mobileTab === "blocks" ? "secondary" : "ghost"}
               size="sm"
-              className="flex-1 flex-col h-auto py-2 gap-1"
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "blocks" ? "bg-primary/10 text-primary" : ""}`}
               onClick={() => setMobileTab("blocks")}
             >
-              <Blocks className="w-5 h-5" />
-              <span className="text-xs">Blocks</span>
+              <Blocks className={`w-5 h-5 ${mobileTab === "blocks" ? "text-primary" : ""}`} />
+              <span className="text-xs font-medium">Blocks</span>
             </Button>
             <Button
               variant={mobileTab === "canvas" ? "secondary" : "ghost"}
               size="sm"
-              className="flex-1 flex-col h-auto py-2 gap-1"
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "canvas" ? "bg-primary/10 text-primary" : ""}`}
               onClick={() => setMobileTab("canvas")}
             >
-              <PanelLeft className="w-5 h-5" />
-              <span className="text-xs">Canvas</span>
+              <PanelLeft className={`w-5 h-5 ${mobileTab === "canvas" ? "text-primary" : ""}`} />
+              <span className="text-xs font-medium">Canvas</span>
             </Button>
             <Button
               variant={mobileTab === "preview" ? "secondary" : "ghost"}
               size="sm"
-              className="flex-1 flex-col h-auto py-2 gap-1"
+              className={`flex-1 flex-col h-auto py-3 gap-1.5 transition-all duration-200 ${mobileTab === "preview" ? "bg-primary/10 text-primary" : ""}`}
               onClick={() => setMobileTab("preview")}
             >
-              <Eye className="w-5 h-5" />
-              <span className="text-xs">Preview</span>
+              <Eye className={`w-5 h-5 ${mobileTab === "preview" ? "text-primary" : ""}`} />
+              <span className="text-xs font-medium">Preview</span>
             </Button>
           </div>
         </div>

@@ -47,18 +47,18 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       ref={setNodeRef}
       style={style}
       className={cn(
-        'group relative rounded-lg border bg-card transition-all',
+        'group relative rounded-xl border bg-card/80 backdrop-blur-sm transition-all duration-200',
         isSelected
-          ? 'border-primary ring-2 ring-primary/20'
-          : 'border-border hover:border-muted-foreground/50',
-        isDragging && 'opacity-50 shadow-lg'
+          ? 'border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/20'
+          : 'border-border/50 hover:border-muted-foreground/30 hover:shadow-md hover:shadow-muted/20',
+        isDragging && 'opacity-60 shadow-xl scale-[1.02] ring-2 ring-primary/40'
       )}
       onClick={onSelect}
     >
       {/* Drag Handle - Desktop: left side, Mobile: top-left corner */}
       <div
         className={cn(
-          'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-opacity',
+          'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
           isSelected && 'sm:opacity-100'
         )}
@@ -66,7 +66,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         <button
           {...attributes}
           {...listeners}
-          className="cursor-grab rounded p-1 text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing"
+          className="cursor-grab rounded-lg p-1.5 text-muted-foreground hover:bg-muted hover:text-foreground active:cursor-grabbing active:scale-95 transition-all duration-150"
         >
           <GripVertical className="h-4 w-4" />
         </button>
@@ -75,7 +75,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       {/* Quick Actions - Desktop: right side, Mobile: top-right corner */}
       <div
         className={cn(
-          'absolute top-2 right-2 sm:-right-10 sm:top-1/2 sm:-translate-y-1/2 flex sm:flex-col items-center gap-1 transition-opacity',
+          'absolute top-2 right-2 sm:-right-10 sm:top-1/2 sm:-translate-y-1/2 flex sm:flex-col items-center gap-1 transition-all duration-200',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
           isSelected && 'sm:opacity-100'
         )}
@@ -83,7 +83,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 text-muted-foreground hover:text-foreground"
+          className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-200"
           onClick={handleDuplicate}
         >
           <Copy className="h-3.5 w-3.5" />
@@ -91,7 +91,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         <Button
           variant="ghost"
           size="icon"
-          className="h-7 w-7 text-muted-foreground hover:text-destructive"
+          className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
           onClick={handleDelete}
         >
           <Trash2 className="h-3.5 w-3.5" />
@@ -99,7 +99,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       </div>
 
       {/* Block Type Label */}
-      <div className="absolute -top-2.5 left-3 px-2 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-card">
+      <div className="absolute -top-2.5 left-3 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-card/90 rounded-md border border-border/30">
         {block.type.replace(/-/g, ' ')}
       </div>
 

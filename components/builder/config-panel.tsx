@@ -112,7 +112,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             </Select>
           </FieldGroup>
           <FieldGroup>
-            <Label>Gap ({props.gap}px)</Label>
+            <Label>Gap ({String(props.gap)}px)</Label>
             <Slider
               value={[props.gap as number]}
               onValueChange={([v]) => update('gap', v)}
@@ -158,7 +158,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'spacer':
       return (
         <FieldGroup>
-          <Label>Height ({props.height}px)</Label>
+          <Label>Height ({String(props.height)}px)</Label>
           <Slider
             value={[props.height as number]}
             onValueChange={([v]) => update('height', v)}
@@ -223,7 +223,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Height ({props.height}px)</Label>
+            <Label>Height ({String(props.height)}px)</Label>
             <Slider
               value={[props.height as number]}
               onValueChange={([v]) => update('height', v)}
@@ -246,7 +246,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Size ({props.size}px)</Label>
+            <Label>Size ({String(props.size)}px)</Label>
             <Slider
               value={[props.size as number]}
               onValueChange={([v]) => update('size', v)}
@@ -256,7 +256,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({props.borderRadius}%)</Label>
+            <Label>Border Radius ({String(props.borderRadius)}%)</Label>
             <Slider
               value={[props.borderRadius as number]}
               onValueChange={([v]) => update('borderRadius', v)}
@@ -357,7 +357,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Width ({props.width}px)</Label>
+            <Label>Width ({String(props.width)}px)</Label>
             <Slider
               value={[props.width as number]}
               onValueChange={([v]) => update('width', v)}
@@ -529,7 +529,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({props.borderRadius}px)</Label>
+            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
             <Slider
               value={[props.borderRadius as number]}
               onValueChange={([v]) => update('borderRadius', v)}
@@ -868,7 +868,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             </div>
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({props.borderRadius}px)</Label>
+            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
             <Slider
               value={[props.borderRadius as number]}
               onValueChange={([v]) => update('borderRadius', v)}
@@ -927,7 +927,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             </Select>
           </FieldGroup>
           <FieldGroup>
-            <Label>Languages Count ({props.langs_count})</Label>
+            <Label>Languages Count ({String(props.langs_count)})</Label>
             <Slider
               value={[props.langs_count as number]}
               onValueChange={([v]) => update('langs_count', v)}
@@ -995,7 +995,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             </div>
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({props.borderRadius}px)</Label>
+            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
             <Slider
               value={[props.borderRadius as number]}
               onValueChange={([v]) => update('borderRadius', v)}
@@ -1080,7 +1080,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             </Select>
           </FieldGroup>
           <FieldGroup>
-            <Label>Columns ({props.column})</Label>
+            <Label>Columns ({String(props.column)})</Label>
             <Slider
               value={[props.column as number]}
               onValueChange={([v]) => update('column', v)}
@@ -1090,7 +1090,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Rows ({props.row})</Label>
+            <Label>Rows ({String(props.row)})</Label>
             <Slider
               value={[props.row as number]}
               onValueChange={([v]) => update('row', v)}
@@ -1259,7 +1259,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Height ({props.height}px)</Label>
+            <Label>Height ({String(props.height)}px)</Label>
             <Slider
               value={[props.height as number]}
               onValueChange={([v]) => update('height', v)}

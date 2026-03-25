@@ -3,6 +3,7 @@
 
 import { JSX, useMemo } from 'react';
 import type { Block } from '@/lib/types';
+import { Eye } from 'lucide-react';
 
 interface LivePreviewProps {
   blocks: Block[];
@@ -11,10 +12,19 @@ interface LivePreviewProps {
 export function LivePreview({ blocks }: LivePreviewProps) {
   if (blocks.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center p-4 sm:p-8">
-        <p className="text-center text-muted-foreground">
-          Add blocks to see a live preview of your README
-        </p>
+      <div className="flex h-full items-center justify-center p-4 sm:p-8 relative">
+        {/* Background decoration */}
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
+        </div>
+        <div className="relative text-center animate-in">
+          <div className="w-16 h-16 rounded-2xl bg-muted/50 flex items-center justify-center mx-auto mb-4">
+            <Eye className="w-8 h-8 text-muted-foreground/50" />
+          </div>
+          <p className="text-muted-foreground">
+            Add blocks to see a live preview of your README
+          </p>
+        </div>
       </div>
     );
   }
@@ -22,9 +32,15 @@ export function LivePreview({ blocks }: LivePreviewProps) {
   return (
     <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="p-3 sm:p-6">
-        <div className="mx-auto max-w-3xl rounded-lg border border-border bg-card p-3 sm:p-6 github-preview">
-          {blocks.map((block) => (
-            <PreviewBlock key={block.id} block={block} />
+        <div className="mx-auto max-w-3xl rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 sm:p-6 shadow-lg shadow-muted/10 github-preview">
+          {blocks.map((block, index) => (
+            <div 
+              key={block.id} 
+              className="animate-in"
+              style={{ animationDelay: `${index * 30}ms` }}
+            >
+              <PreviewBlock block={block} />
+            </div>
           ))}
         </div>
       </div>
@@ -343,7 +359,7 @@ function PreviewBlock({ block }: { block: Block }) {
         if (props.quote && props.author) {
           return (
             <blockquote className="border-l-4 border-primary pl-4 italic my-4">
-              <p>&quot;{props.quote as string}&quot;</p>
+              <p>"{props.quote as string}"</p>
               <cite className="text-muted-foreground">- {props.author as string}</cite>
             </blockquote>
           );
