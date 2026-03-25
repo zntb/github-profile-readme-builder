@@ -39,7 +39,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
             className="bg-muted/50 rounded flex items-center justify-center text-xs text-muted-foreground"
             style={{ height: Math.min(props.height as number, 60) }}
           >
-            Spacer ({props.height}px)
+            Spacer ({String(props.height)}px)
           </div>
         );
 
@@ -75,7 +75,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
               props.alignment === 'right' && 'text-right'
             )}
           >
-            {props.text as string} {props.emoji && <span>{props.emoji as string}</span>}
+            {props.text ? String(props.text) : ''}{props.emoji ? <span>{String(props.emoji)}</span> : null}
           </h2>
         );
 
@@ -91,7 +91,8 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         );
 
       case 'heading':
-        const HeadingTag = `h${props.level}` as keyof JSX.IntrinsicElements;
+        const level = Number(props.level) || 2;
+        const HeadingTag = level === 1 ? 'h1' : level === 2 ? 'h2' : level === 3 ? 'h3' : level === 4 ? 'h4' : level === 5 ? 'h5' : 'h6';
         return (
           <HeadingTag
             className={cn(
@@ -103,7 +104,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
               props.alignment === 'right' && 'text-right'
             )}
           >
-            {props.emoji && <span>{props.emoji as string} </span>}
+            {props.emoji ? <span>{String(props.emoji)} </span> : null}
             {props.text as string}
           </HeadingTag>
         );
@@ -330,11 +331,11 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
                 ? `"${props.quote as string}"`
                 : '"Random inspirational quote..."'}
             </p>
-            {props.author && (
+            {props.author ? (
               <p className="text-xs text-muted-foreground mt-1">
-                - {props.author as string}
+                - {String(props.author)}
               </p>
-            )}
+            ) : null}
           </div>
         );
 
