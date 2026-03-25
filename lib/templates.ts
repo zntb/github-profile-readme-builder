@@ -1,6 +1,9 @@
 import type { Template } from './types';
 
 export const templates: Template[] = [
+  // ──────────────────────────────────────────────────────────────────────────
+  // EXISTING TEMPLATES
+  // ──────────────────────────────────────────────────────────────────────────
   {
     id: 'animated-developer',
     name: 'Animated Developer',
@@ -440,6 +443,1689 @@ export const templates: Template[] = [
           waveColor: 'gradient',
           fontColor: 'ffffff',
           height: 100,
+        },
+      },
+    ],
+  },
+
+  // ──────────────────────────────────────────────────────────────────────────
+  // NEW TEMPLATES
+  // ──────────────────────────────────────────────────────────────────────────
+
+  {
+    id: 'open-source-maintainer',
+    name: 'Open Source Maintainer',
+    description:
+      'Built for OSS contributors — trophies, full activity graph, and collapsible project highlights',
+    thumbnail: '/templates/opensource.png',
+    blocks: [
+      {
+        id: 'oss-1',
+        type: 'capsule-header',
+        props: {
+          text: 'Open Source Maintainer',
+          type: 'waving',
+          color: '0:0D1117,100:161B22',
+          height: 180,
+          section: 'header',
+        },
+      },
+      {
+        id: 'oss-2',
+        type: 'container',
+        props: { alignment: 'center', direction: 'column', gap: 8 },
+        children: [
+          {
+            id: 'oss-2a',
+            type: 'avatar',
+            props: {
+              imageUrl: 'https://github.com/github.png',
+              size: 120,
+              borderRadius: 50,
+            },
+          },
+          {
+            id: 'oss-2b',
+            type: 'greeting',
+            props: {
+              text: 'Hey, I build things for the community',
+              emoji: '🛠️',
+              alignment: 'center',
+            },
+          },
+        ],
+      },
+      {
+        id: 'oss-3',
+        type: 'typing-animation',
+        props: {
+          lines: ['Open Source Contributor', 'Library Author', 'Bug Squasher', 'Community Builder'],
+          color: '58A6FF',
+          width: 480,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'oss-4',
+        type: 'social-badges',
+        props: {
+          github: 'yourusername',
+          twitter: 'yourusername',
+          email: 'you@example.com',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'oss-5',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'oss-6',
+        type: 'heading',
+        props: {
+          text: 'About Me',
+          level: 2,
+          alignment: 'left',
+          emoji: '👤',
+        },
+      },
+      {
+        id: 'oss-7',
+        type: 'paragraph',
+        props: {
+          text: "I'm passionate about open-source software and believe in the power of collaborative development. I maintain several widely-used libraries and am always looking for ways to give back to the community.",
+          alignment: 'left',
+        },
+      },
+      {
+        id: 'oss-8',
+        type: 'collapsible',
+        props: { title: '🔥 Featured Projects', defaultOpen: true },
+        children: [
+          {
+            id: 'oss-8a',
+            type: 'paragraph',
+            props: {
+              text: '- **awesome-lib** — A utility library used by 10k+ developers\n- **cli-tool** — A developer productivity CLI with 5k+ stars\n- **docs-gen** — Auto documentation generator for TypeScript projects',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'oss-9',
+        type: 'collapsible',
+        props: { title: '📦 My Tech Stack', defaultOpen: false },
+        children: [
+          {
+            id: 'oss-9a',
+            type: 'skill-icons',
+            props: {
+              icons: [
+                'ts',
+                'nodejs',
+                'rust',
+                'go',
+                'python',
+                'docker',
+                'kubernetes',
+                'github',
+                'linux',
+                'bash',
+              ],
+              perLine: 10,
+              theme: 'dark',
+            },
+          },
+        ],
+      },
+      {
+        id: 'oss-10',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'oss-11',
+        type: 'heading',
+        props: {
+          text: 'Contribution Stats',
+          level: 2,
+          alignment: 'center',
+          emoji: '📈',
+        },
+      },
+      {
+        id: 'oss-12',
+        type: 'trophies',
+        props: {
+          username: 'github',
+          theme: 'github_dark',
+          column: 7,
+          row: 2,
+          margin_w: 10,
+          margin_h: 10,
+          noFrame: false,
+          noBg: false,
+        },
+      },
+      {
+        id: 'oss-13',
+        type: 'activity-graph',
+        props: {
+          username: 'github',
+          theme: 'github-dark',
+          hideBorder: true,
+        },
+      },
+      {
+        id: 'oss-14',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'github_dark',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'oss-15',
+        type: 'streak-stats',
+        props: {
+          username: 'github',
+          theme: 'github_dark',
+          hideBorder: false,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'oss-16',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'github_dark',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 10,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'oss-17',
+        type: 'visitor-counter',
+        props: {
+          username: 'github',
+          color: 'brightgreen',
+          style: 'flat-square',
+          label: 'Profile Views',
+        },
+      },
+      {
+        id: 'oss-18',
+        type: 'footer-banner',
+        props: {
+          text: 'Happy to collaborate — open an issue or PR!',
+          waveColor: '0:0D1117,100:161B22',
+          fontColor: '58A6FF',
+          height: 100,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'full-stack-engineer',
+    name: 'Full Stack Engineer',
+    description:
+      'Showcases frontend, backend, cloud, and DevOps skills with a professional Catppuccin theme',
+    thumbnail: '/templates/fullstack.png',
+    blocks: [
+      {
+        id: 'fs-1',
+        type: 'capsule-header',
+        props: {
+          text: 'Full Stack Engineer',
+          type: 'slice',
+          color: '0:CBA6F7,50:89B4FA,100:94E2D5',
+          height: 200,
+          section: 'header',
+        },
+      },
+      {
+        id: 'fs-2',
+        type: 'greeting',
+        props: {
+          text: "I'm a Full Stack Engineer",
+          emoji: '⚡',
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'fs-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'React · Next.js · TypeScript',
+            'Node.js · PostgreSQL · Redis',
+            'AWS · Docker · Kubernetes',
+            'Building at scale since 2018',
+          ],
+          color: 'CBA6F7',
+          width: 500,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'fs-4',
+        type: 'paragraph',
+        props: {
+          text: 'I design and build end-to-end products — from pixel-perfect UIs to scalable distributed backends. I care deeply about developer experience, performance, and clean architecture.',
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'fs-5',
+        type: 'social-badges',
+        props: {
+          linkedin: 'yourusername',
+          github: 'yourusername',
+          twitter: 'yourusername',
+          portfolio: 'https://yoursite.dev',
+          email: 'hello@yoursite.dev',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'fs-6',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'fs-7',
+        type: 'heading',
+        props: {
+          text: 'Frontend',
+          level: 3,
+          alignment: 'left',
+          emoji: '🎨',
+        },
+      },
+      {
+        id: 'fs-8',
+        type: 'skill-icons',
+        props: {
+          icons: ['html', 'css', 'js', 'ts', 'react', 'nextjs', 'vue', 'tailwind', 'sass', 'figma'],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'fs-9',
+        type: 'heading',
+        props: {
+          text: 'Backend & Databases',
+          level: 3,
+          alignment: 'left',
+          emoji: '🗄️',
+        },
+      },
+      {
+        id: 'fs-10',
+        type: 'skill-icons',
+        props: {
+          icons: [
+            'nodejs',
+            'express',
+            'nestjs',
+            'python',
+            'fastapi',
+            'postgres',
+            'mysql',
+            'mongodb',
+            'redis',
+            'graphql',
+          ],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'fs-11',
+        type: 'heading',
+        props: {
+          text: 'Cloud & DevOps',
+          level: 3,
+          alignment: 'left',
+          emoji: '☁️',
+        },
+      },
+      {
+        id: 'fs-12',
+        type: 'skill-icons',
+        props: {
+          icons: [
+            'aws',
+            'gcp',
+            'azure',
+            'docker',
+            'kubernetes',
+            'nginx',
+            'github',
+            'git',
+            'linux',
+            'bash',
+          ],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'fs-13',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'fs-14',
+        type: 'heading',
+        props: {
+          text: 'GitHub Stats',
+          level: 2,
+          alignment: 'center',
+          emoji: '📊',
+        },
+      },
+      {
+        id: 'fs-15',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'catppuccin_mocha',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 12,
+        },
+      },
+      {
+        id: 'fs-16',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'catppuccin_mocha',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 8,
+          borderRadius: 12,
+        },
+      },
+      {
+        id: 'fs-17',
+        type: 'streak-stats',
+        props: {
+          username: 'github',
+          theme: 'catppuccin_mocha',
+          hideBorder: false,
+          borderRadius: 12,
+        },
+      },
+      {
+        id: 'fs-18',
+        type: 'activity-graph',
+        props: {
+          username: 'github',
+          theme: 'tokyo-night',
+          hideBorder: false,
+        },
+      },
+      {
+        id: 'fs-19',
+        type: 'footer-banner',
+        props: {
+          text: 'Open to new opportunities',
+          waveColor: '0:CBA6F7,50:89B4FA,100:94E2D5',
+          fontColor: '1E1E2E',
+          height: 120,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'data-scientist-ml',
+    name: 'Data Scientist / ML Engineer',
+    description:
+      'ML-focused profile with Python stack, research collapsibles, and a dark scholarly aesthetic',
+    thumbnail: '/templates/datascience.png',
+    blocks: [
+      {
+        id: 'ds-1',
+        type: 'capsule-header',
+        props: {
+          text: 'Data Scientist & ML Engineer',
+          type: 'soft',
+          color: '0:0A0F0B,100:1A2F1B',
+          height: 180,
+          section: 'header',
+        },
+      },
+      {
+        id: 'ds-2',
+        type: 'container',
+        props: { alignment: 'center', direction: 'column', gap: 12 },
+        children: [
+          {
+            id: 'ds-2a',
+            type: 'avatar',
+            props: {
+              imageUrl: 'https://github.com/github.png',
+              size: 130,
+              borderRadius: 15,
+            },
+          },
+          {
+            id: 'ds-2b',
+            type: 'greeting',
+            props: {
+              text: 'Turning data into decisions',
+              emoji: '🧠',
+              alignment: 'center',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ds-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'Machine Learning Engineer',
+            'Deep Learning · NLP · Computer Vision',
+            'Python · PyTorch · TensorFlow',
+            'Making models that ship to production',
+          ],
+          color: 'ABD200',
+          width: 520,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'ds-4',
+        type: 'social-badges',
+        props: {
+          github: 'yourusername',
+          linkedin: 'yourusername',
+          portfolio: 'https://yoursite.ai',
+          email: 'research@yoursite.ai',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'ds-5',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'ds-6',
+        type: 'heading',
+        props: {
+          text: 'What I Work On',
+          level: 2,
+          alignment: 'left',
+          emoji: '🔬',
+        },
+      },
+      {
+        id: 'ds-7',
+        type: 'paragraph',
+        props: {
+          text: 'I research and build machine learning systems — from data pipelines and feature engineering to model training, evaluation, and deployment. I bridge the gap between research and production.',
+          alignment: 'left',
+        },
+      },
+      {
+        id: 'ds-8',
+        type: 'collapsible',
+        props: { title: '📄 Research & Publications', defaultOpen: true },
+        children: [
+          {
+            id: 'ds-8a',
+            type: 'paragraph',
+            props: {
+              text: '- **[2024]** "Efficient Fine-Tuning of LLMs at Scale" — arxiv.org/abs/xxxx\n- **[2023]** "Real-Time Anomaly Detection in Time-Series Data" — arxiv.org/abs/yyyy\n- **[2022]** "Self-Supervised Representations for Medical Imaging" — NeurIPS Workshop',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ds-9',
+        type: 'collapsible',
+        props: { title: '🤖 Featured ML Projects', defaultOpen: false },
+        children: [
+          {
+            id: 'ds-9a',
+            type: 'paragraph',
+            props: {
+              text: '- **llm-fine-tuner** — CLI for LoRA/QLoRA fine-tuning of open-source LLMs\n- **timeseries-bench** — Benchmark suite for time-series forecasting models\n- **cv-pipeline** — Modular computer vision training framework (PyTorch Lightning)',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'ds-10',
+        type: 'heading',
+        props: {
+          text: 'Core Stack',
+          level: 2,
+          alignment: 'left',
+          emoji: '🧰',
+        },
+      },
+      {
+        id: 'ds-11',
+        type: 'skill-icons',
+        props: {
+          icons: [
+            'python',
+            'pytorch',
+            'tensorflow',
+            'sklearn',
+            'opencv',
+            'docker',
+            'kubernetes',
+            'aws',
+            'github',
+            'linux',
+          ],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'ds-12',
+        type: 'heading',
+        props: {
+          text: 'Data & Tooling',
+          level: 3,
+          alignment: 'left',
+          emoji: '📦',
+        },
+      },
+      {
+        id: 'ds-13',
+        type: 'code-block',
+        props: {
+          language: 'python',
+          code: `# A glimpse at my typical experiment setup
+import torch
+from transformers import AutoModelForCausalLM, AutoTokenizer
+from peft import LoraConfig, get_peft_model
+
+model = AutoModelForCausalLM.from_pretrained("mistralai/Mistral-7B-v0.1")
+config = LoraConfig(r=16, lora_alpha=32, target_modules=["q_proj", "v_proj"])
+model = get_peft_model(model, config)
+print(f"Trainable params: {model.num_parameters(only_trainable=True):,}")`,
+        },
+      },
+      {
+        id: 'ds-14',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'ds-15',
+        type: 'heading',
+        props: {
+          text: 'GitHub Activity',
+          level: 2,
+          alignment: 'center',
+          emoji: '📊',
+        },
+      },
+      {
+        id: 'ds-16',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'merko',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'ds-17',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'merko',
+          layout: 'pie',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 6,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'ds-18',
+        type: 'activity-graph',
+        props: {
+          username: 'github',
+          theme: 'merko',
+          hideBorder: false,
+        },
+      },
+      {
+        id: 'ds-19',
+        type: 'quote',
+        props: {
+          theme: 'merko',
+          type: 'horizontal',
+        },
+      },
+      {
+        id: 'ds-20',
+        type: 'footer-banner',
+        props: {
+          text: 'Data-driven. Research-inspired. Production-ready.',
+          waveColor: '0:0A0F0B,100:1A2F1B',
+          fontColor: 'ABD200',
+          height: 100,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'devops-cloud',
+    name: 'DevOps / Cloud Engineer',
+    description:
+      'Infrastructure-first profile with a dark terminal aesthetic, badges, and collapsible runbooks',
+    thumbnail: '/templates/devops.png',
+    blocks: [
+      {
+        id: 'do-1',
+        type: 'capsule-header',
+        props: {
+          text: 'DevOps & Cloud Engineer',
+          type: 'rect',
+          color: '0:0A192F,100:112240',
+          height: 160,
+          section: 'header',
+        },
+      },
+      {
+        id: 'do-2',
+        type: 'greeting',
+        props: {
+          text: 'Shipping infra, not just code',
+          emoji: '🚀',
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'do-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'Kubernetes · Terraform · AWS',
+            'CI/CD Pipelines · GitOps · SRE',
+            'Docker · Helm · ArgoCD',
+            "99.99% uptime is not a goal — it's a standard",
+          ],
+          color: '64FFDA',
+          width: 520,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'do-4',
+        type: 'social-badges',
+        props: {
+          github: 'yourusername',
+          linkedin: 'yourusername',
+          twitter: 'yourusername',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'do-5',
+        type: 'custom-badge',
+        props: {
+          label: 'AWS',
+          message: 'Solutions Architect',
+          color: 'FF9900',
+          style: 'for-the-badge',
+          logo: 'amazon-aws',
+        },
+      },
+      {
+        id: 'do-6',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'do-7',
+        type: 'heading',
+        props: {
+          text: 'Core Competencies',
+          level: 2,
+          alignment: 'left',
+          emoji: '🛠️',
+        },
+      },
+      {
+        id: 'do-8',
+        type: 'paragraph',
+        props: {
+          text: 'I design, automate, and operate cloud infrastructure at scale. From zero-downtime deployments and multi-region HA clusters to FinOps cost optimisation and security hardening.',
+          alignment: 'left',
+        },
+      },
+      {
+        id: 'do-9',
+        type: 'heading',
+        props: {
+          text: 'Infrastructure & Cloud',
+          level: 3,
+          alignment: 'left',
+          emoji: '☁️',
+        },
+      },
+      {
+        id: 'do-10',
+        type: 'skill-icons',
+        props: {
+          icons: [
+            'aws',
+            'gcp',
+            'azure',
+            'docker',
+            'kubernetes',
+            'nginx',
+            'linux',
+            'bash',
+            'powershell',
+            'github',
+          ],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'do-11',
+        type: 'heading',
+        props: {
+          text: 'Languages & Scripting',
+          level: 3,
+          alignment: 'left',
+          emoji: '💻',
+        },
+      },
+      {
+        id: 'do-12',
+        type: 'skill-icons',
+        props: {
+          icons: ['python', 'go', 'ts', 'js', 'rust', 'git', 'vscode', 'vim'],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'do-13',
+        type: 'collapsible',
+        props: { title: '📋 Quick-start: My Kubernetes Boilerplate', defaultOpen: false },
+        children: [
+          {
+            id: 'do-13a',
+            type: 'code-block',
+            props: {
+              language: 'bash',
+              code: `# Spin up a local cluster with kind
+kind create cluster --config kind-config.yaml
+
+# Install core platform components
+helm repo add argo https://argoproj.github.io/argo-helm
+helm install argocd argo/argo-cd --namespace argocd --create-namespace
+
+# Bootstrap GitOps repo
+kubectl apply -f https://raw.githubusercontent.com/yourusername/platform/main/bootstrap.yaml`,
+            },
+          },
+        ],
+      },
+      {
+        id: 'do-14',
+        type: 'collapsible',
+        props: { title: '🏗️ Notable Projects', defaultOpen: false },
+        children: [
+          {
+            id: 'do-14a',
+            type: 'paragraph',
+            props: {
+              text: '- **platform-bootstrap** — Production-grade GitOps platform (ArgoCD + Crossplane)\n- **cost-sentinel** — Slack-integrated AWS cost anomaly detection bot (Go)\n- **k8s-hardener** — Automated CIS benchmark enforcement via OPA Gatekeeper',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'do-15',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'do-16',
+        type: 'heading',
+        props: {
+          text: 'GitHub Stats',
+          level: 2,
+          alignment: 'center',
+          emoji: '📈',
+        },
+      },
+      {
+        id: 'do-17',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'nord',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'do-18',
+        type: 'streak-stats',
+        props: {
+          username: 'github',
+          theme: 'nord',
+          hideBorder: false,
+          borderRadius: 8,
+        },
+      },
+      {
+        id: 'do-19',
+        type: 'activity-graph',
+        props: {
+          username: 'github',
+          theme: 'react-dark',
+          hideBorder: false,
+        },
+      },
+      {
+        id: 'do-20',
+        type: 'trophies',
+        props: {
+          username: 'github',
+          theme: 'nord',
+          column: 6,
+          row: 1,
+          margin_w: 10,
+          margin_h: 10,
+          noFrame: true,
+          noBg: false,
+        },
+      },
+      {
+        id: 'do-21',
+        type: 'footer-banner',
+        props: {
+          text: 'Infrastructure as Code. Culture as Practice.',
+          waveColor: '0:0A192F,100:112240',
+          fontColor: '64FFDA',
+          height: 100,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'student-beginner',
+    name: 'Student / Beginner',
+    description:
+      'A friendly, approachable profile for students and developers who are just starting out',
+    thumbnail: '/templates/student.png',
+    blocks: [
+      {
+        id: 'stu-1',
+        type: 'capsule-header',
+        props: {
+          text: 'Learning Every Day!',
+          type: 'waving',
+          color: '0:FF6B6B,50:FFE66D,100:4ECDC4',
+          height: 180,
+          section: 'header',
+        },
+      },
+      {
+        id: 'stu-2',
+        type: 'container',
+        props: { alignment: 'center', direction: 'column', gap: 8 },
+        children: [
+          {
+            id: 'stu-2a',
+            type: 'avatar',
+            props: {
+              imageUrl: 'https://github.com/github.png',
+              size: 120,
+              borderRadius: 50,
+            },
+          },
+          {
+            id: 'stu-2b',
+            type: 'greeting',
+            props: {
+              text: "Hi! I'm [Your Name], a CS Student",
+              emoji: '🎓',
+              alignment: 'center',
+            },
+          },
+        ],
+      },
+      {
+        id: 'stu-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'CS Student @ [Your University]',
+            'Learning to code, one bug at a time 🐛',
+            'Building cool stuff with Python & JavaScript',
+            'Open to internships & collaborations!',
+          ],
+          color: 'FF6B6B',
+          width: 460,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'stu-4',
+        type: 'paragraph',
+        props: {
+          text: "I'm currently in my [Year] year studying Computer Science. I love learning new technologies and building projects that solve real-world problems. When I'm not coding, I enjoy gaming, reading, and hiking.",
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'stu-5',
+        type: 'social-badges',
+        props: {
+          linkedin: 'yourusername',
+          github: 'yourusername',
+          email: 'you@student.edu',
+          style: 'flat-square',
+        },
+      },
+      {
+        id: 'stu-6',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'stu-7',
+        type: 'heading',
+        props: {
+          text: "What I'm Learning",
+          level: 2,
+          alignment: 'left',
+          emoji: '📚',
+        },
+      },
+      {
+        id: 'stu-8',
+        type: 'paragraph',
+        props: {
+          text: '🔭 Currently working on: **My First Portfolio Website**\n🌱 Currently learning: **React, Node.js, and SQL**\n👯 Looking to collaborate on: **Open Source Beginner-Friendly Issues**\n🤔 Looking for help with: **System Design Concepts**\n💬 Ask me about: **Python, HTML/CSS, Algorithms**\n😄 Fun fact: **I once fixed a bug by restarting my computer 😅**',
+          alignment: 'left',
+        },
+      },
+      {
+        id: 'stu-9',
+        type: 'heading',
+        props: {
+          text: 'Technologies I Know',
+          level: 2,
+          alignment: 'center',
+          emoji: '🛠️',
+        },
+      },
+      {
+        id: 'stu-10',
+        type: 'skill-icons',
+        props: {
+          icons: ['html', 'css', 'js', 'python', 'java', 'react', 'git', 'github', 'vscode'],
+          perLine: 9,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'stu-11',
+        type: 'heading',
+        props: {
+          text: 'Technologies on My Roadmap',
+          level: 3,
+          alignment: 'center',
+          emoji: '🗺️',
+        },
+      },
+      {
+        id: 'stu-12',
+        type: 'skill-icons',
+        props: {
+          icons: ['ts', 'nodejs', 'mongodb', 'postgres', 'docker', 'aws'],
+          perLine: 6,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'stu-13',
+        type: 'collapsible',
+        props: { title: '🚀 My Projects So Far', defaultOpen: true },
+        children: [
+          {
+            id: 'stu-13a',
+            type: 'paragraph',
+            props: {
+              text: '- **Todo App** — A simple task manager built with React & localStorage\n- **Calculator** — A fully-functional calculator using vanilla JavaScript\n- **Portfolio Site** — My personal portfolio built with HTML, CSS & a little JS\n\n_More coming soon as I keep learning!_',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'stu-14',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'stu-15',
+        type: 'heading',
+        props: {
+          text: 'My GitHub Journey',
+          level: 2,
+          alignment: 'center',
+          emoji: '📊',
+        },
+      },
+      {
+        id: 'stu-16',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'tokyonight',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'stu-17',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'tokyonight',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 6,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'stu-18',
+        type: 'streak-stats',
+        props: {
+          username: 'github',
+          theme: 'tokyonight',
+          hideBorder: false,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'stu-19',
+        type: 'quote',
+        props: {
+          theme: 'tokyonight',
+          type: 'horizontal',
+        },
+      },
+      {
+        id: 'stu-20',
+        type: 'visitor-counter',
+        props: {
+          username: 'github',
+          color: 'blue',
+          style: 'flat',
+          label: 'Profile Views',
+        },
+      },
+      {
+        id: 'stu-21',
+        type: 'footer-banner',
+        props: {
+          text: 'The best time to start was yesterday. The next best time is now. 🌟',
+          waveColor: '0:FF6B6B,50:FFE66D,100:4ECDC4',
+          fontColor: 'ffffff',
+          height: 120,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'cybersecurity-researcher',
+    name: 'Cybersecurity Researcher',
+    description:
+      'Dark, terminal-inspired profile for security professionals with CTF highlights and tool badges',
+    thumbnail: '/templates/security.png',
+    blocks: [
+      {
+        id: 'sec-1',
+        type: 'capsule-header',
+        props: {
+          text: '> whoami',
+          type: 'rect',
+          color: '0:000000,100:0D0D0D',
+          height: 160,
+          section: 'header',
+        },
+      },
+      {
+        id: 'sec-2',
+        type: 'code-block',
+        props: {
+          language: 'bash',
+          code: `$ whoami
+security-researcher
+
+$ cat /etc/skills
+[*] Penetration Testing
+[*] Malware Analysis & Reverse Engineering
+[*] Threat Intelligence & Incident Response
+[*] CTF Competitor (Top 1% on HackTheBox)
+[*] Bug Bounty Hunter`,
+        },
+      },
+      {
+        id: 'sec-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'Ethical Hacker & Security Researcher',
+            'CTF Player · Bug Bounty Hunter',
+            'Red Team · Blue Team · Purple Team',
+            'Offensive Security | Defensive Strategy',
+          ],
+          color: '39FF14',
+          width: 500,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'sec-4',
+        type: 'container',
+        props: { alignment: 'center', direction: 'row', gap: 8 },
+        children: [
+          {
+            id: 'sec-4a',
+            type: 'custom-badge',
+            props: {
+              label: 'HackTheBox',
+              message: 'Pro Hacker',
+              color: '9FEF00',
+              style: 'for-the-badge',
+              logo: 'hackthebox',
+            },
+          },
+          {
+            id: 'sec-4b',
+            type: 'custom-badge',
+            props: {
+              label: 'TryHackMe',
+              message: 'Top 1%',
+              color: '212C42',
+              style: 'for-the-badge',
+            },
+          },
+          {
+            id: 'sec-4c',
+            type: 'custom-badge',
+            props: {
+              label: 'OSCP',
+              message: 'Certified',
+              color: 'EF4444',
+              style: 'for-the-badge',
+            },
+          },
+        ],
+      },
+      {
+        id: 'sec-5',
+        type: 'social-badges',
+        props: {
+          github: 'yourusername',
+          twitter: 'yourusername',
+          email: 'pgp@yoursite.io',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'sec-6',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'sec-7',
+        type: 'heading',
+        props: {
+          text: 'Arsenal',
+          level: 2,
+          alignment: 'left',
+          emoji: '⚔️',
+        },
+      },
+      {
+        id: 'sec-8',
+        type: 'skill-icons',
+        props: {
+          icons: [
+            'python',
+            'bash',
+            'go',
+            'rust',
+            'c',
+            'cpp',
+            'linux',
+            'docker',
+            'github',
+            'vscode',
+          ],
+          perLine: 10,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'sec-9',
+        type: 'collapsible',
+        props: { title: '🚩 CTF Highlights', defaultOpen: true },
+        children: [
+          {
+            id: 'sec-9a',
+            type: 'paragraph',
+            props: {
+              text: '| Competition | Year | Place | Category |\n|---|---|---|---|\n| DEF CON CTF Quals | 2024 | Top 50 | RE / Pwn |\n| HITCON CTF | 2023 | Top 20 | Web / Crypto |\n| Google CTF | 2023 | Top 100 | Misc / Pwn |\n| PicoCTF | 2022 | 1st Place | All |\n\n_Write-ups available on my blog._',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'sec-10',
+        type: 'collapsible',
+        props: { title: '🔓 Bug Bounty & CVEs', defaultOpen: false },
+        children: [
+          {
+            id: 'sec-10a',
+            type: 'paragraph',
+            props: {
+              text: '- **CVE-2024-XXXXX** — RCE in [Vendor Product] (Critical, CVSS 9.8)\n- **CVE-2023-XXXXX** — Auth bypass in [Open Source Library] (High)\n- **HackerOne** — [Programme Name], $XX,XXX total bounties\n- **Bugcrowd** — Hall of Fame: [Company A], [Company B]',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'sec-11',
+        type: 'collapsible',
+        props: { title: '🛠️ Public Tools & Research', defaultOpen: false },
+        children: [
+          {
+            id: 'sec-11a',
+            type: 'paragraph',
+            props: {
+              text: '- **reconx** — Automated recon framework for bug bounty hunters (Python)\n- **heap-viz** — Heap visualiser for glibc pwn challenges (C + Python)\n- **mal-sandbox** — Lightweight malware sandbox using Linux namespaces (Go)',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'sec-12',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'sec-13',
+        type: 'heading',
+        props: {
+          text: 'GitHub Activity',
+          level: 2,
+          alignment: 'center',
+          emoji: '📊',
+        },
+      },
+      {
+        id: 'sec-14',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'dark',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 6,
+        },
+      },
+      {
+        id: 'sec-15',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'dark',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 8,
+          borderRadius: 6,
+        },
+      },
+      {
+        id: 'sec-16',
+        type: 'activity-graph',
+        props: {
+          username: 'github',
+          theme: 'high-contrast',
+          hideBorder: false,
+        },
+      },
+      {
+        id: 'sec-17',
+        type: 'footer-banner',
+        props: {
+          text: 'Hack the planet — responsibly.',
+          waveColor: '0:000000,100:0D0D0D',
+          fontColor: '39FF14',
+          height: 100,
+        },
+      },
+    ],
+  },
+
+  {
+    id: 'game-developer',
+    name: 'Game Developer',
+    description:
+      'Pixel-art inspired layout for indie game developers with engine badges, game collapsibles, and a vibrant Dracula theme',
+    thumbnail: '/templates/gamedev.png',
+    blocks: [
+      {
+        id: 'gd-1',
+        type: 'capsule-header',
+        props: {
+          text: 'Game Developer',
+          type: 'waving',
+          color: '0:6272A4,50:BD93F9,100:FF79C6',
+          height: 200,
+          section: 'header',
+        },
+      },
+      {
+        id: 'gd-2',
+        type: 'greeting',
+        props: {
+          text: 'I make worlds from code',
+          emoji: '🎮',
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'gd-3',
+        type: 'typing-animation',
+        props: {
+          lines: [
+            'Indie Game Developer',
+            'Unity · Unreal Engine · Godot',
+            'C# · C++ · GDScript',
+            'Currently making: [Your Game Title] 🕹️',
+          ],
+          color: 'BD93F9',
+          width: 480,
+          height: 30,
+          speed: 50,
+        },
+      },
+      {
+        id: 'gd-4',
+        type: 'paragraph',
+        props: {
+          text: "I'm an indie game developer obsessed with creating immersive experiences. From game mechanics and level design to shaders and audio — I love every part of the craft.",
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'gd-5',
+        type: 'social-badges',
+        props: {
+          github: 'yourusername',
+          twitter: 'yourusername',
+          youtube: 'yourchannel',
+          portfolio: 'https://yourgames.itch.io',
+          email: 'you@studio.dev',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'gd-6',
+        type: 'container',
+        props: { alignment: 'center', direction: 'row', gap: 8 },
+        children: [
+          {
+            id: 'gd-6a',
+            type: 'custom-badge',
+            props: {
+              label: 'itch.io',
+              message: 'Games Published',
+              color: 'FA5C5C',
+              style: 'for-the-badge',
+            },
+          },
+          {
+            id: 'gd-6b',
+            type: 'custom-badge',
+            props: {
+              label: 'Game Jams',
+              message: 'Participated',
+              color: 'FFB86C',
+              style: 'for-the-badge',
+            },
+          },
+        ],
+      },
+      {
+        id: 'gd-7',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'gd-8',
+        type: 'heading',
+        props: {
+          text: 'Tech & Tools',
+          level: 2,
+          alignment: 'center',
+          emoji: '🧰',
+        },
+      },
+      {
+        id: 'gd-9',
+        type: 'heading',
+        props: {
+          text: 'Game Engines & Languages',
+          level: 3,
+          alignment: 'left',
+          emoji: '🕹️',
+        },
+      },
+      {
+        id: 'gd-10',
+        type: 'skill-icons',
+        props: {
+          icons: ['unity', 'unreal', 'cs', 'cpp', 'blender', 'figma', 'ps'],
+          perLine: 7,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'gd-11',
+        type: 'heading',
+        props: {
+          text: 'Dev & Tooling',
+          level: 3,
+          alignment: 'left',
+          emoji: '💻',
+        },
+      },
+      {
+        id: 'gd-12',
+        type: 'skill-icons',
+        props: {
+          icons: ['git', 'github', 'vscode', 'python', 'js', 'nodejs', 'docker'],
+          perLine: 7,
+          theme: 'dark',
+        },
+      },
+      {
+        id: 'gd-13',
+        type: 'collapsible',
+        props: { title: '🎮 Published Games', defaultOpen: true },
+        children: [
+          {
+            id: 'gd-13a',
+            type: 'paragraph',
+            props: {
+              text: '| Game | Engine | Platform | Status |\n|---|---|---|---|\n| **[Game Title 1]** | Unity | PC / Web | Released |\n| **[Game Title 2]** | Godot | PC | Released |\n| **[WIP Game]** | Unreal 5 | PC | In Development |\n\n➡️ Play them all on [itch.io](https://yourusername.itch.io)',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'gd-14',
+        type: 'collapsible',
+        props: { title: '🏆 Game Jam Highlights', defaultOpen: false },
+        children: [
+          {
+            id: 'gd-14a',
+            type: 'paragraph',
+            props: {
+              text: '- 🥇 **Ludum Dare 54** — "Constraints" — 1st place (Overall)\n- 🥈 **Global Game Jam 2024** — 2nd place (Innovation)\n- 🎖️ **GMTK Game Jam 2023** — Top 5% out of 6,800+ entries',
+              alignment: 'left',
+            },
+          },
+        ],
+      },
+      {
+        id: 'gd-15',
+        type: 'divider',
+        props: { type: 'line' },
+      },
+      {
+        id: 'gd-16',
+        type: 'heading',
+        props: {
+          text: 'GitHub Stats',
+          level: 2,
+          alignment: 'center',
+          emoji: '📊',
+        },
+      },
+      {
+        id: 'gd-17',
+        type: 'stats-card',
+        props: {
+          username: 'github',
+          theme: 'dracula',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'gd-18',
+        type: 'streak-stats',
+        props: {
+          username: 'github',
+          theme: 'dracula',
+          hideBorder: false,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'gd-19',
+        type: 'top-languages',
+        props: {
+          username: 'github',
+          theme: 'dracula',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 6,
+          borderRadius: 10,
+        },
+      },
+      {
+        id: 'gd-20',
+        type: 'trophies',
+        props: {
+          username: 'github',
+          theme: 'dracula',
+          column: 6,
+          row: 1,
+          margin_w: 10,
+          margin_h: 10,
+          noFrame: false,
+          noBg: false,
+        },
+      },
+      {
+        id: 'gd-21',
+        type: 'quote',
+        props: {
+          theme: 'dracula',
+          type: 'horizontal',
+        },
+      },
+      {
+        id: 'gd-22',
+        type: 'footer-banner',
+        props: {
+          text: 'Every great game starts with a single commit.',
+          waveColor: '0:6272A4,50:BD93F9,100:FF79C6',
+          fontColor: 'F8F8F2',
+          height: 120,
         },
       },
     ],
