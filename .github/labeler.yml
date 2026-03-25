@@ -1,0 +1,58 @@
+# Add labels to PRs based on file changes
+
+# UI/Component changes
+components:
+  - changed-files:
+      - any-glob-to-any-file: 'components/**/*'
+
+# App/API changes
+app:
+  - changed-files:
+      - any-glob-to-any-file: 'app/**/*'
+
+# Library/utility changes
+lib:
+  - changed-files:
+      - any-glob-to-any-file: 'lib/**/*'
+
+# Configuration files
+config:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.json'
+          - '*.config.*'
+          - 'tsconfig.json'
+
+# GitHub workflow files
+workflows:
+  - changed-files:
+      - any-glob-to-any-file: '.github/workflows/**/*'
+
+# Documentation
+docs:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '*.md'
+          - '*.mdx'
+
+# Styles (CSS)
+styles:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.css'
+          - '**/*.scss'
+          - '**/*.sass'
+
+# Dependencies (package.json, etc.)
+dependencies:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'package.json'
+          - 'package-lock.json'
+          - 'pnpm-lock.yaml'
+          - 'yarn.lock'
+
+# Public assets
+public:
+  - changed-files:
+      - any-glob-to-any-file: 'public/**/*'
