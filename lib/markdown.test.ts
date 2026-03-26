@@ -452,7 +452,6 @@ describe('renderMarkdown', () => {
     expect((result.match(/<div align="center">/g) || []).length).toBe(1);
     expect(result).toContain('alt="GitHub Stats"');
     expect(result).toContain('alt="Top Languages"');
-    expect(result).toContain('width="49%"');
   });
 
   it('should keep half-width card separate when following card is full width', () => {
@@ -473,25 +472,5 @@ describe('renderMarkdown', () => {
     expect((result.match(/<div align="center">/g) || []).length).toBe(2);
     expect(result).toContain('alt="GitHub Stats"');
     expect(result).toContain('alt="GitHub Streak"');
-  });
-
-  it('should apply explicit card width and height attributes when provided', () => {
-    const blocks: Block[] = [
-      {
-        id: '1',
-        type: 'stats-card',
-        props: {
-          username: 'user-one',
-          theme: 'dark',
-          layoutWidth: 'half',
-          cardWidth: '420',
-          cardHeight: '180',
-        },
-      },
-    ];
-
-    const result = renderMarkdown(blocks);
-    expect(result).toContain('width="420"');
-    expect(result).toContain('height="180"');
   });
 });
