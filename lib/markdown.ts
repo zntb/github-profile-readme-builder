@@ -358,7 +358,9 @@ function renderStatsCardImageTag(block: Block, origin: string): string {
     borderRadius,
   } = block.props as Record<string, unknown>;
   const username =
-    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+    (!blockUsername || blockUsername === 'github') && globalUsername
+      ? globalUsername
+      : blockUsername;
   const params = {
     username,
     theme,
@@ -372,7 +374,9 @@ function renderStatsCardImageTag(block: Block, origin: string): string {
     icon_color: iconColor,
     border_radius: borderRadius,
   };
-  const url = origin ? buildExternalUrl('stats', params, origin) : buildInternalUrl('stats', params);
+  const url = origin
+    ? buildExternalUrl('stats', params, origin)
+    : buildInternalUrl('stats', params);
   return `<img src="${url}" alt="GitHub Stats" />`;
 }
 
@@ -391,7 +395,9 @@ function renderTopLanguagesImageTag(block: Block, origin: string): string {
     borderRadius,
   } = block.props as Record<string, unknown>;
   const username =
-    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+    (!blockUsername || blockUsername === 'github') && globalUsername
+      ? globalUsername
+      : blockUsername;
   const params = {
     username,
     theme,
@@ -404,7 +410,9 @@ function renderTopLanguagesImageTag(block: Block, origin: string): string {
     title_color: titleColor,
     border_radius: borderRadius,
   };
-  const url = origin ? buildExternalUrl('top-langs', params, origin) : buildInternalUrl('top-langs', params);
+  const url = origin
+    ? buildExternalUrl('top-langs', params, origin)
+    : buildInternalUrl('top-langs', params);
   return `<img src="${url}" alt="Top Languages" />`;
 }
 
@@ -424,7 +432,9 @@ function renderStreakStatsImageTag(block: Block, origin: string): string {
     datesColor,
   } = block.props as Record<string, unknown>;
   const username =
-    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+    (!blockUsername || blockUsername === 'github') && globalUsername
+      ? globalUsername
+      : blockUsername;
   const params = {
     username,
     theme,
@@ -438,7 +448,9 @@ function renderStreakStatsImageTag(block: Block, origin: string): string {
     sideLabels: sideLabelColor,
     dates: datesColor,
   };
-  const url = origin ? buildExternalUrl('streak', params, origin) : buildInternalUrl('streak', params);
+  const url = origin
+    ? buildExternalUrl('streak', params, origin)
+    : buildInternalUrl('streak', params);
   return `<img src="${url}" alt="GitHub Streak" />`;
 }
 
@@ -473,7 +485,9 @@ export function renderMarkdown(blocks: Block[], origin: string = ''): string {
     if (imageTag && isHalfWidthCard(block)) {
       const nextBlock = blocks[i + 1];
       const nextImageTag =
-        nextBlock && isHalfWidthCard(nextBlock) ? getHalfWidthCardImageTag(nextBlock, origin) : null;
+        nextBlock && isHalfWidthCard(nextBlock)
+          ? getHalfWidthCardImageTag(nextBlock, origin)
+          : null;
       if (nextImageTag) {
         rendered.push(`<div align="center">\n  ${imageTag}\n  ${nextImageTag}\n</div>`);
         i += 1;
