@@ -421,6 +421,24 @@ describe('renderMarkdown', () => {
     expect(result).toContain('username=user-two');
   });
 
+  it('should use custom width from props when rendering adjacent cards', () => {
+    const blocks: Block[] = [
+      {
+        id: '1',
+        type: 'stats-card',
+        props: { username: 'user-one', theme: 'dark', width: '48%', layoutWidth: 'half' },
+      },
+      {
+        id: '2',
+        type: 'top-languages',
+        props: { username: 'user-one', theme: 'dark', width: '48%', layoutWidth: 'half' },
+      },
+    ];
+
+    const result = renderMarkdown(blocks);
+    expect(result).toContain('width="48%"');
+  });
+
   it('should keep non-adjacent stats cards in separate rows', () => {
     const blocks: Block[] = [
       { id: '1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },

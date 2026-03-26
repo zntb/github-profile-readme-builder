@@ -458,7 +458,10 @@ function isHalfWidthCard(block: Block): boolean {
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
-  return block.type === 'stats-card';
+  // Default to true for these card types
+  return (
+    block.type === 'stats-card' || block.type === 'top-languages' || block.type === 'streak-stats'
+  );
 }
 
 function getHalfWidthCardImageTag(block: Block, origin: string): string | null {
@@ -489,7 +492,32 @@ export function renderMarkdown(blocks: Block[], origin: string = ''): string {
           ? getHalfWidthCardImageTag(nextBlock, origin)
           : null;
       if (nextImageTag) {
-        rendered.push(`<div align="center">\n  ${imageTag}\n  ${nextImageTag}\n</div>`);
+        // Determine alt text based on block types
+        const getAltText = (blockType: string, isSecond: boolean = false): string => {
+          if (blockType === 'stats-card') return 'GitHub Stats';
+          if (blockType === 'top-languages') return isSecond ? 'Top Languages' : 'Top Languages';
+          if (blockType === 'streak-stats') return 'GitHub Streak';
+          return 'Stats';
+        };
+
+        // Get individual card widths from props, default to 50%
+        // Check for width property explicitly with different fallbacks
+        const firstWidthRaw = block.props.width;
+        const secondWidthRaw = nextBlock.props.width;
+
+        // Use width if it's a non-empty string, otherwise default to 50%
+        const firstWidth =
+          typeof firstWidthRaw === 'string' && firstWidthRaw.trim() !== ''
+            ? firstWidthRaw.trim()
+            : '50%';
+        const secondWidth =
+          typeof secondWidthRaw === 'string' && secondWidthRaw.trim() !== ''
+            ? secondWidthRaw.trim()
+            : '50%';
+
+        rendered.push(
+          `<div align="center">\n  <img src="${imageTag.match(/src="([^"]+)"/)?.[1]}" width="${firstWidth}" alt="${getAltText(block.type)}" />\n  <img src="${nextImageTag.match(/src="([^"]+)"/)?.[1]}" width="${secondWidth}" alt="${getAltText(nextBlock.type, true)}" />\n</div>`,
+        );
         i += 1;
         continue;
       }

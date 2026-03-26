@@ -105,21 +105,33 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
   };
 
   const renderCardWidthField = () => (
-    <FieldGroup>
-      <Label>Card Width</Label>
-      <Select
-        value={(props.layoutWidth as string) || (type === 'stats-card' ? 'half' : 'full')}
-        onValueChange={(value) => update('layoutWidth', value)}
-      >
-        <SelectTrigger>
-          <SelectValue />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectItem value="half">Half (2 cards per row)</SelectItem>
-          <SelectItem value="full">Full (1 card per row)</SelectItem>
-        </SelectContent>
-      </Select>
-    </FieldGroup>
+    <>
+      <FieldGroup>
+        <Label>Layout Width</Label>
+        <Select
+          value={(props.layoutWidth as string) || (type === 'stats-card' ? 'half' : 'full')}
+          onValueChange={(value) => update('layoutWidth', value)}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="half">Half (2 cards per row)</SelectItem>
+            <SelectItem value="full">Full (1 card per row)</SelectItem>
+          </SelectContent>
+        </Select>
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Custom Width (%)</Label>
+        <input
+          type="text"
+          value={(props.width as string) || ''}
+          onChange={(e) => update('width', e.target.value || undefined)}
+          placeholder="e.g., 48%"
+          className="w-full px-2 py-1 border rounded"
+        />
+      </FieldGroup>
+    </>
   );
 
   switch (type) {
