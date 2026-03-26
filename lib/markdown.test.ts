@@ -407,4 +407,30 @@ describe('renderMarkdown', () => {
     expect(result).toContain('Title');
     expect(result).toContain('Content');
   });
+
+  it('should render adjacent stats cards in one centered row', () => {
+    const blocks: Block[] = [
+      { id: '1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },
+      { id: '2', type: 'stats-card', props: { username: 'user-two', theme: 'radical' } },
+    ];
+
+    const result = renderMarkdown(blocks);
+    expect((result.match(/<div align="center">/g) || []).length).toBe(1);
+    expect((result.match(/alt="GitHub Stats"/g) || []).length).toBe(2);
+    expect(result).toContain('username=user-one');
+    expect(result).toContain('username=user-two');
+  });
+
+  it('should keep non-adjacent stats cards in separate rows', () => {
+    const blocks: Block[] = [
+      { id: '1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },
+      { id: '2', type: 'paragraph', props: { text: 'Break', alignment: 'left' } },
+      { id: '3', type: 'stats-card', props: { username: 'user-two', theme: 'radical' } },
+    ];
+
+    const result = renderMarkdown(blocks);
+    expect((result.match(/alt="GitHub Stats"/g) || []).length).toBe(2);
+    expect((result.match(/<div align="center">/g) || []).length).toBe(2);
+    expect(result).toContain('Break');
+  });
 });

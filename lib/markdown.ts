@@ -228,42 +228,8 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'stats-card': {
-      const globalUsername = useBuilderStore.getState().username;
-      const {
-        username: blockUsername,
-        theme,
-        showIcons,
-        hideBorder,
-        hideTitle,
-        hideRank,
-        bgColor,
-        textColor,
-        titleColor,
-        iconColor,
-        borderRadius,
-      } = props as Record<string, unknown>;
-      // Use global username if block username is empty or is the default placeholder
-      const username =
-        (!blockUsername || blockUsername === 'github') && globalUsername
-          ? globalUsername
-          : blockUsername;
-      const params = {
-        username,
-        theme,
-        show_icons: showIcons ? 'true' : 'false',
-        hide_border: hideBorder ? 'true' : 'false',
-        hide_title: hideTitle ? 'true' : 'false',
-        hide_rank: hideRank ? 'true' : 'false',
-        bg_color: bgColor,
-        text_color: textColor,
-        title_color: titleColor,
-        icon_color: iconColor,
-        border_radius: borderRadius,
-      };
-      const url = origin
-        ? buildExternalUrl('stats', params, origin)
-        : buildInternalUrl('stats', params);
-      return `<div align="center">\n  <img src="${url}" alt="GitHub Stats" />\n</div>`;
+      const imageTag = renderStatsCardImageTag(block, origin);
+      return `<div align="center">\n  ${imageTag}\n</div>`;
     }
 
     case 'top-languages': {
@@ -442,9 +408,61 @@ export function renderBlock(block: Block, origin: string = ''): string {
   }
 }
 
+function renderStatsCardImageTag(block: Block, origin: string): string {
+  const globalUsername = useBuilderStore.getState().username;
+  const {
+    username: blockUsername,
+    theme,
+    showIcons,
+    hideBorder,
+    hideTitle,
+    hideRank,
+    bgColor,
+    textColor,
+    titleColor,
+    iconColor,
+    borderRadius,
+  } = block.props as Record<string, unknown>;
+  const username =
+    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+  const params = {
+    username,
+    theme,
+    show_icons: showIcons ? 'true' : 'false',
+    hide_border: hideBorder ? 'true' : 'false',
+    hide_title: hideTitle ? 'true' : 'false',
+    hide_rank: hideRank ? 'true' : 'false',
+    bg_color: bgColor,
+    text_color: textColor,
+    title_color: titleColor,
+    icon_color: iconColor,
+    border_radius: borderRadius,
+  };
+  const url = origin ? buildExternalUrl('stats', params, origin) : buildInternalUrl('stats', params);
+  return `<img src="${url}" alt="GitHub Stats" />`;
+}
+
 // Render all blocks to markdown
 export function renderMarkdown(blocks: Block[], origin: string = ''): string {
-  return blocks.map((block) => renderBlock(block, origin)).join('\n\n');
+  const rendered: string[] = [];
+
+  for (let i = 0; i < blocks.length; i += 1) {
+    const block = blocks[i];
+
+    if (block.type === 'stats-card') {
+      const nextBlock = blocks[i + 1];
+      if (nextBlock?.type === 'stats-card') {
+        const imageTags = [block, nextBlock].map((statsBlock) => renderStatsCardImageTag(statsBlock, origin));
+        rendered.push(`<div align="center">\n  ${imageTags.join('\n  ')}\n</div>`);
+        i += 1;
+        continue;
+      }
+    }
+
+    rendered.push(renderBlock(block, origin));
+  }
+
+  return rendered.join('\n\n');
 }
 
 // Download markdown file

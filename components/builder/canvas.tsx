@@ -12,8 +12,8 @@ import {
 import {
   arrayMove,
   SortableContext,
+  rectSortingStrategy,
   sortableKeyboardCoordinates,
-  verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { Layers, Sparkles } from 'lucide-react';
 import { useCallback } from 'react';
@@ -113,12 +113,12 @@ export function Canvas() {
             collisionDetection={closestCenter}
             onDragEnd={handleDragEnd}
           >
-            <SortableContext items={blocks.map((b) => b.id)} strategy={verticalListSortingStrategy}>
-              <div className="space-y-3">
+            <SortableContext items={blocks.map((b) => b.id)} strategy={rectSortingStrategy}>
+              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
                 {blocks.map((block, index) => (
                   <div
                     key={block.id}
-                    className="animate-slide-up"
+                    className={block.type === 'stats-card' ? 'animate-slide-up' : 'animate-slide-up lg:col-span-2'}
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <CanvasBlock
