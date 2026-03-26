@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { fetchUserStats, calculateRank, type GitHubStats } from '@/lib/github';
+import { calculateRank, fetchUserStats, type GitHubStats } from '@/lib/github';
 
 // Theme configurations
 const themes: Record<
@@ -84,6 +84,174 @@ const themes: Record<
     icon: '94e2d5',
     border: '313244',
   },
+  rose_pine: {
+    bg: '191724',
+    title: 'ebbcba',
+    text: 'e0def4',
+    icon: 'f6c177',
+    border: '44403c',
+  },
+  cobalt: {
+    bg: '0f1f3f',
+    title: 'c792ea',
+    text: 'c3ddee',
+    icon: '68d1e8',
+    border: '1c2e50',
+  },
+  synthwave: {
+    bg: '262335',
+    title: 'ff7edb',
+    text: 'f7c1c3',
+    icon: 'fede5e',
+    border: '3b2e50',
+  },
+  highcontrast: {
+    bg: '000000',
+    title: 'ffffff',
+    text: '00ff00',
+    icon: 'ffff00',
+    border: 'ffffff',
+  },
+  monokai: {
+    bg: '272822',
+    title: 'f92672',
+    text: 'f8f8f2',
+    icon: 'a6e22e',
+    border: '3e3d32',
+  },
+  vue: {
+    bg: '1e1e1e',
+    title: '42b883',
+    text: 'ffffff',
+    icon: '41b883',
+    border: '3e3e3e',
+  },
+  'vue-dark': {
+    bg: '1e1e1e',
+    title: '42b883',
+    text: 'ffffff',
+    icon: '41b883',
+    border: '3e3e3e',
+  },
+  'shades-of-purple': {
+    bg: '1a1b26',
+    title: 'b58900',
+    text: 'c0caf5',
+    icon: '7aa2f7',
+    border: '414868',
+  },
+  nightowl: {
+    bg: '011627',
+    title: 'c792ea',
+    text: 'd6deeb',
+    icon: '7fdbca',
+    border: '1e3a5f',
+  },
+  prussian: {
+    bg: '172c45',
+    title: 'dcbdfb',
+    text: '99c1f1',
+    icon: '99c1f1',
+    border: '2e4050',
+  },
+  buefy: {
+    bg: '1a1b26',
+    title: 'ffd866',
+    text: 'a9b1d6',
+    icon: '7aa2f7',
+    border: '414868',
+  },
+  'blue-green': {
+    bg: '041c2c',
+    title: '5fb3a1',
+    text: 'addb67',
+    icon: '5fb3a1',
+    border: '0d2a3c',
+  },
+  algolia: {
+    bg: '1f1f1f',
+    title: '00aeff',
+    text: 'ffffff',
+    icon: '00aeff',
+    border: '333333',
+  },
+  'great-gatsby': {
+    bg: '#1a1a2e',
+    title: '#d4af37',
+    text: '#eeeeee',
+    icon: '#d4af37',
+    border: '#16213e',
+  },
+  darcula: {
+    bg: '282a36',
+    title: 'ff79c6',
+    text: 'f8f8f2',
+    icon: 'bd93f9',
+    border: '44475a',
+  },
+  bear: {
+    bg: '1f1f1f',
+    title: 'e06c75',
+    text: 'd19a66',
+    icon: '98c379',
+    border: '2d2d2d',
+  },
+  'solarized-dark': {
+    bg: '002b36',
+    title: 'b58900',
+    text: '93a1a1',
+    icon: '2aa198',
+    border: '073642',
+  },
+  'solarized-light': {
+    bg: 'fdf6e3',
+    title: 'b58900',
+    text: '657b83',
+    icon: '2aa198',
+    border: 'eee8d5',
+  },
+  gotham: {
+    bg: '111111',
+    title: '99d1ce',
+    text: 'd3c3c9',
+    icon: '599bb3',
+    border: '222222',
+  },
+  'material-palenight': {
+    bg: '292d3e',
+    title: 'c792ea',
+    text: '959dcb',
+    icon: '82aaff',
+    border: '3e4451',
+  },
+  graywhite: {
+    bg: '1a1a1a',
+    title: 'ffffff',
+    text: '888888',
+    icon: '666666',
+    border: '333333',
+  },
+  'vision-friendly-dark': {
+    bg: '091b27',
+    title: 'addb67',
+    text: 'dbdbdb',
+    icon: 'addb67',
+    border: '162e42',
+  },
+  'ayu-mirage': {
+    bg: '1a1e2e',
+    title: 'f4a261',
+    text: 'b8c5d6',
+    icon: 'e6b450',
+    border: '2d3044',
+  },
+  'midnight-purple': {
+    bg: '1a1b26',
+    title: 'bb9af7',
+    text: '9aa5ce',
+    icon: '7aa2f7',
+    border: '414868',
+  },
 };
 
 function getTheme(themeName: string): {
@@ -133,7 +301,7 @@ function generateStatsSvg(
   </style>
 
   <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
-  
+
   ${!options.hideTitle ? `<text x="25" y="35" class="header">${username}'s GitHub Stats</text>` : ''}
 
   <g transform="translate(25, ${options.hideTitle ? 30 : 55})">

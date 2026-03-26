@@ -1,6 +1,6 @@
 'use client';
 
-import { X, Plus, Trash2 } from 'lucide-react';
+import { Plus, Trash2, X } from 'lucide-react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -16,8 +16,8 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { useBuilderStore, findBlock } from '@/lib/store';
-import { STATS_THEMES, SKILL_ICONS, type Block } from '@/lib/types';
+import { findBlock, useBuilderStore } from '@/lib/store';
+import { SKILL_ICONS, STATS_THEMES, type Block } from '@/lib/types';
 
 export function ConfigPanel() {
   const { blocks, selectedBlockId, selectBlock, updateBlock } = useBuilderStore();
@@ -425,7 +425,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>Default Open</Label>
               <Switch
-                checked={props.defaultOpen as boolean}
+                checked={Boolean(props.defaultOpen)}
                 onCheckedChange={(v) => update('defaultOpen', v)}
               />
             </div>
@@ -752,7 +752,10 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
+            <Select
+              value={(props.theme as string) || 'default'}
+              onValueChange={(v) => update('theme', v)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -768,47 +771,56 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Show Icons</Label>
-              <Switch
-                checked={props.showIcons as boolean}
-                onCheckedChange={(v) => update('showIcons', v)}
+              <input
+                type="checkbox"
+                checked={Boolean(props.showIcons)}
+                onChange={(e) => update('showIcons', e.target.checked)}
+                className="h-4 w-4"
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
-              <Switch
-                checked={props.hideBorder as boolean}
-                onCheckedChange={(v) => update('hideBorder', v)}
+              <input
+                type="checkbox"
+                checked={Boolean(props.hideBorder)}
+                onChange={(e) => update('hideBorder', e.target.checked)}
+                className="h-4 w-4"
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Title</Label>
-              <Switch
-                checked={props.hideTitle as boolean}
-                onCheckedChange={(v) => update('hideTitle', v)}
+              <input
+                type="checkbox"
+                checked={Boolean(props.hideTitle)}
+                onChange={(e) => update('hideTitle', e.target.checked)}
+                className="h-4 w-4"
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Rank</Label>
-              <Switch
-                checked={props.hideRank as boolean}
-                onCheckedChange={(v) => update('hideRank', v)}
+              <input
+                type="checkbox"
+                checked={Boolean(props.hideRank)}
+                onChange={(e) => update('hideRank', e.target.checked)}
+                className="h-4 w-4"
               />
             </div>
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
-            <Slider
-              value={[props.borderRadius as number]}
-              onValueChange={([v]) => update('borderRadius', v)}
+            <Label>Border Radius ({String(props.borderRadius ?? 10)}px)</Label>
+            <input
+              type="number"
+              value={Number(props.borderRadius) || 10}
+              onChange={(e) => update('borderRadius', parseInt(e.target.value) || 10)}
               min={0}
               max={20}
-              step={1}
+              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
         </>
@@ -861,7 +873,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
               <Switch
-                checked={props.hideBorder as boolean}
+                checked={Boolean(props.hideBorder)}
                 onCheckedChange={(v) => update('hideBorder', v)}
               />
             </div>
@@ -870,7 +882,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>Hide Progress</Label>
               <Switch
-                checked={props.hideProgress as boolean}
+                checked={Boolean(props.hideProgress)}
                 onCheckedChange={(v) => update('hideProgress', v)}
               />
             </div>
@@ -900,13 +912,13 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
               <Switch
-                checked={props.hideBorder as boolean}
+                checked={Boolean(props.hideBorder)}
                 onCheckedChange={(v) => update('hideBorder', v)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
+            <Label>Border Radius ({String(props.borderRadius ?? 10)}px)</Label>
             <Slider
               value={[props.borderRadius as number]}
               onValueChange={([v]) => update('borderRadius', v)}
@@ -923,7 +935,10 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         <>
           <FieldGroup>
             <Label>Theme</Label>
-            <Select value={props.theme as string} onValueChange={(v) => update('theme', v)}>
+            <Select
+              value={(props.theme as string) || 'tokyo-night'}
+              onValueChange={(v) => update('theme', v)}
+            >
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
@@ -944,7 +959,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
               <Switch
-                checked={props.hideBorder as boolean}
+                checked={Boolean(props.hideBorder)}
                 onCheckedChange={(v) => update('hideBorder', v)}
               />
             </div>
@@ -994,7 +1009,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             <div className="flex items-center justify-between">
               <Label>No Frame</Label>
               <Switch
-                checked={props.noFrame as boolean}
+                checked={Boolean(props.noFrame)}
                 onCheckedChange={(v) => update('noFrame', v)}
               />
             </div>
@@ -1002,7 +1017,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>No Background</Label>
-              <Switch checked={props.noBg as boolean} onCheckedChange={(v) => update('noBg', v)} />
+              <Switch checked={Boolean(props.noBg)} onCheckedChange={(v) => update('noBg', v)} />
             </div>
           </FieldGroup>
         </>
