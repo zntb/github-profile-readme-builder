@@ -23,6 +23,8 @@ function generateCompactSvg(
 ) {
   const langs = languages.slice(0, options.langsCount);
   const width = 350;
+  // Increase internal available width for two columns (350 total - 50 margin = 300)
+  const colWidth = 150;
   const height = Math.max(170, 55 + Math.ceil(langs.length / 2) * 25 + 20);
 
   const progressBar = !options.hideProgress
@@ -44,10 +46,11 @@ function generateCompactSvg(
   const langList = langs
     .map(
       (lang, i) => `
-    <g transform="translate(${(i % 2) * 165}, ${Math.floor(i / 2) * 25 + 55})">
+    <g transform="translate(${(i % 2) * colWidth}, ${Math.floor(i / 2) * 25 + 55})">
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
-      <text x="155" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      <!-- Position percent at the end of the column and use text-anchor: end -->
+      <text x="${colWidth - 10}" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -58,7 +61,11 @@ function generateCompactSvg(
   <style>
     .header { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
     .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
+    .lang-percent {
+      font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif;
+      fill: #${theme.text};
+      text-anchor: end;
+    }
   </style>
 
   <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
@@ -128,11 +135,12 @@ function generateDonutSvg(
     borderRadius: number;
   },
 ) {
-  const langs = languages.slice(0, Math.min(options.langsCount, 6));
-  const width = 300;
-  const height = 200;
-  const centerX = 150;
-  const centerY = 100;
+  const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
+  const width = 350;
+  // Calculate height: base 100px + (number of langs * line height) + padding
+  const height = Math.max(200, 45 + langs.length * 25 + 20);
+  const centerX = 90;
+  const centerY = height / 2 + 10; // Keep chart centered vertically relative to dynamic height
   const radius = 70;
 
   let currentAngle = -90;
@@ -151,17 +159,16 @@ function generateDonutSvg(
     const y2 = centerY + radius * Math.sin(endRad);
 
     const largeArc = angle > 180 ? 1 : 0;
-
     return `<path d="M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="#${lang.color}"/>`;
   });
 
   const legend = langs
     .map(
       (lang, i) => `
-    <g transform="translate(240, ${40 + i * 25})">
+    <g transform="translate(185, ${55 + i * 25})">
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
-      <text x="50" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      <text x="140" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -170,14 +177,14 @@ function generateDonutSvg(
   return `
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .header { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
+    .header { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
     .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
+    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; text-anchor: end; }
   </style>
 
   <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
 
-  <text x="25" y="25" class="header">Most Used Languages</text>
+  <text x="25" y="35" class="header">Most Used Languages</text>
   <g>${segments.join('')}</g>
   <circle cx="${centerX}" cy="${centerY}" r="40" fill="#${theme.bg}"/>
   ${legend}
@@ -195,76 +202,12 @@ function generateDonutVerticalSvg(
     borderRadius: number;
   },
 ) {
-  const langs = languages.slice(0, Math.min(options.langsCount, 6));
+  const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
   const width = 300;
-  const height = 200;
-  const centerX = 100;
-  const centerY = 100;
-  const radius = 60;
-
-  let currentAngle = -90;
-  const segments = langs.map((lang) => {
-    const angle = (lang.percent / 100) * 360;
-    const startAngle = currentAngle;
-    const endAngle = currentAngle + angle;
-    currentAngle = endAngle;
-
-    const startRad = (startAngle * Math.PI) / 180;
-    const endRad = (endAngle * Math.PI) / 180;
-
-    const x1 = centerX + radius * Math.cos(startRad);
-    const y1 = centerY + radius * Math.sin(startRad);
-    const x2 = centerX + radius * Math.cos(endRad);
-    const y2 = centerY + radius * Math.sin(endRad);
-
-    const largeArc = angle > 180 ? 1 : 0;
-
-    return `<path d="M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="#${lang.color}"/>`;
-  });
-
-  const legend = langs
-    .map(
-      (lang, i) => `
-    <g transform="translate(180, ${50 + i * 25})">
-      <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
-      <text x="15" y="9" class="lang-name">${lang.name}</text>
-    </g>
-  `,
-    )
-    .join('');
-
-  return `
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
-  <style>
-    .header { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
-    .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-  </style>
-
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
-
-  <text x="25" y="25" class="header">Most Used Languages</text>
-  <g>${segments.join('')}</g>
-  <circle cx="${centerX}" cy="${centerY}" r="35" fill="#${theme.bg}"/>
-  ${legend}
-</svg>
-  `.trim();
-}
-
-// Pie chart - full circle pie with legend
-function generatePieSvg(
-  languages: LanguageData[],
-  theme: { bg: string; title: string; text: string; border: string },
-  options: {
-    hideBorder: boolean;
-    langsCount: number;
-    borderRadius: number;
-  },
-) {
-  const langs = languages.slice(0, Math.min(options.langsCount, 8));
-  const width = 350;
-  const height = Math.max(200, 50 + langs.length * 25 + 20);
-  const centerX = 100;
-  const centerY = 100;
+  // Chart area is ~200px, legend is 20px per item
+  const height = 210 + langs.length * 20 + 30;
+  const centerX = 150;
+  const centerY = 110;
   const radius = 70;
 
   let currentAngle = -90;
@@ -283,17 +226,16 @@ function generatePieSvg(
     const y2 = centerY + radius * Math.sin(endRad);
 
     const largeArc = angle > 180 ? 1 : 0;
-
     return `<path d="M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="#${lang.color}"/>`;
   });
 
   const legend = langs
     .map(
       (lang, i) => `
-    <g transform="translate(200, ${30 + i * 22})">
-      <rect x="0" y="0" width="12" height="12" rx="2" fill="#${lang.color}"/>
-      <text x="18" y="10" class="lang-name">${lang.name}</text>
-      <text x="130" y="10" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+    <g transform="translate(60, ${210 + i * 20})">
+      <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
+      <text x="15" y="9" class="lang-name">${lang.name}</text>
+      <text x="180" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -302,14 +244,80 @@ function generatePieSvg(
   return `
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .header { font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
+    .header { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
     .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
+    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; text-anchor: end; }
   </style>
 
   <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
 
-  <text x="25" y="25" class="header">Most Used Languages</text>
+  <text x="150" y="35" text-anchor="middle" class="header">Most Used Languages</text>
+  <g>${segments.join('')}</g>
+  <circle cx="${centerX}" cy="${centerY}" r="40" fill="#${theme.bg}"/>
+  ${legend}
+</svg>
+  `.trim();
+}
+
+// Pie chart - full circle pie with legend
+function generatePieSvg(
+  languages: LanguageData[],
+  theme: { bg: string; title: string; text: string; border: string },
+  options: {
+    hideBorder: boolean;
+    langsCount: number;
+    borderRadius: number;
+  },
+) {
+  const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
+  const width = 350;
+  const height = Math.max(220, 45 + langs.length * 25 + 20);
+  const centerX = 90;
+  const centerY = height / 2 + 10;
+  const radius = 75;
+
+  let currentAngle = -90;
+  const segments = langs.map((lang) => {
+    const angle = (lang.percent / 100) * 360;
+    const startAngle = currentAngle;
+    const endAngle = currentAngle + angle;
+    currentAngle = endAngle;
+
+    const startRad = (startAngle * Math.PI) / 180;
+    const endRad = (endAngle * Math.PI) / 180;
+
+    const x1 = centerX + radius * Math.cos(startRad);
+    const y1 = centerY + radius * Math.sin(startRad);
+    const x2 = centerX + radius * Math.cos(endRad);
+    const y2 = centerY + radius * Math.sin(endRad);
+
+    const largeArc = angle > 180 ? 1 : 0;
+    return `<path d="M ${centerX} ${centerY} L ${x1} ${y1} A ${radius} ${radius} 0 ${largeArc} 1 ${x2} ${y2} Z" fill="#${lang.color}"/>`;
+  });
+
+  const legend = langs
+    .map(
+      (lang, i) => `
+    <g transform="translate(185, ${55 + i * 25})">
+      <rect x="0" y="0" width="10" height="10" rx="2" fill="#${lang.color}"/>
+      <text x="18" y="10" class="lang-name">${lang.name}</text>
+      <text x="140" y="10" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+    </g>
+  `,
+    )
+    .join('');
+
+  return `
+<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  <style>
+    .header { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; }
+    .lang-name { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
+    .lang-percent { font: 400 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; text-anchor: end; }
+  </style>
+
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+
+  <text x="25" y="35" class="header">Most Used Languages</text>
   <g>${segments.join('')}</g>
   ${legend}
 </svg>
