@@ -1,94 +1,18 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchContributionCalendar } from '@/lib/github';
+import { getActivityTheme } from '@/lib/themes';
 
-const themes: Record<
-  string,
-  {
-    bg: string;
-    color: string;
-    line: string;
-    point: string;
-    area: string;
-    border: string;
-  }
-> = {
-  'tokyo-night': {
-    bg: '1a1b27',
-    color: '70a5fd',
-    line: 'bf91f3',
-    point: '70a5fd',
-    area: '70a5fd30',
-    border: 'e4e2e2',
-  },
-  dracula: {
-    bg: '282a36',
-    color: 'ff6e96',
-    line: 'bd93f9',
-    point: 'ff6e96',
-    area: 'ff6e9630',
-    border: 'e4e2e2',
-  },
-  github: {
-    bg: 'ffffff',
-    color: '24292e',
-    line: '2188ff',
-    point: '24292e',
-    area: '2188ff30',
-    border: 'e4e2e2',
-  },
-  'github-dark': {
-    bg: '0d1117',
-    color: 'c9d1d9',
-    line: '58a6ff',
-    point: 'c9d1d9',
-    area: '58a6ff30',
-    border: '30363d',
-  },
-  rogue: {
-    bg: '172030',
-    color: 'a3b09a',
-    line: 'b18bb1',
-    point: 'a3b09a',
-    area: 'b18bb130',
-    border: 'e4e2e2',
-  },
-  merko: {
-    bg: '0a0f0b',
-    color: 'abd200',
-    line: 'b7d364',
-    point: 'abd200',
-    area: 'abd20030',
-    border: 'e4e2e2',
-  },
-  vue: {
-    bg: 'ecf0f1',
-    color: '2c3e50',
-    line: '41b883',
-    point: '2c3e50',
-    area: '41b88330',
-    border: 'e4e2e2',
-  },
-  'react-dark': {
-    bg: '20232a',
-    color: 'ffffff',
-    line: '61dafb',
-    point: 'ffffff',
-    area: '61dafb30',
-    border: 'e4e2e2',
-  },
-  'high-contrast': {
-    bg: '000000',
-    color: 'ffffff',
-    line: '00ff00',
-    point: 'ffffff',
-    area: '00ff0030',
-    border: 'ffffff',
-  },
-};
-
-function getTheme(themeName: string) {
-  return themes[themeName] || themes['tokyo-night'];
+function toGraphTheme(themeName: string) {
+  const theme = getActivityTheme(themeName);
+  return {
+    bg: theme.bg,
+    color: theme.text,
+    line: theme.color3,
+    point: theme.color4,
+    area: `${theme.color2}30`,
+    border: theme.border,
+  };
 }
 
 function generateActivityGraph(
@@ -197,7 +121,7 @@ export async function GET(request: NextRequest) {
   const themeName = searchParams.get('theme') || 'tokyo-night';
   const hideBorder = searchParams.get('hide_border') === 'true';
 
-  let theme = getTheme(themeName);
+  let theme = toGraphTheme(themeName);
 
   if (searchParams.get('bg_color')) {
     theme = { ...theme, bg: searchParams.get('bg_color')!.replace('#', '') };

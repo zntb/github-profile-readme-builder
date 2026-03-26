@@ -1100,19 +1100,76 @@ export const activityThemes: Record<string, ActivityTheme> = {
   },
 };
 
+const THEME_ALIASES: Record<string, string> = {
+  'github-dark': 'github_dark',
+  github: 'default',
+  'tokyo-night': 'tokyonight',
+  'high-contrast': 'highcontrast',
+  'react-dark': 'react',
+};
+
+function resolveThemeKey<T>(themeName: string, themes: Record<string, T>): string | undefined {
+  const normalizedName = themeName.toLowerCase();
+  const candidates = [
+    normalizedName,
+    THEME_ALIASES[normalizedName],
+    normalizedName.replace(/-/g, '_'),
+    normalizedName.replace(/_/g, '-'),
+    THEME_ALIASES[normalizedName.replace(/-/g, '_')],
+    THEME_ALIASES[normalizedName.replace(/_/g, '-')],
+  ].filter(Boolean) as string[];
+
+  return candidates.find((candidate) => candidate in themes);
+}
+
+function deriveStreakTheme(theme: StatsTheme): StreakTheme {
+  return {
+    bg: theme.bg,
+    text: theme.text,
+    fire: theme.icon,
+    ring: theme.title,
+    currStreak: theme.title,
+    sideNums: theme.icon,
+    sideLabels: theme.text,
+    dates: theme.text,
+    border: theme.border,
+  };
+}
+
+function deriveActivityTheme(theme: StatsTheme): ActivityTheme {
+  return {
+    bg: theme.bg,
+    text: theme.text,
+    border: theme.border,
+    color0: theme.bg,
+    color1: theme.border,
+    color2: theme.text,
+    color3: theme.icon,
+    color4: theme.title,
+  };
+}
+
 // Helper functions
 export function getStatsTheme(themeName: string): StatsTheme {
-  return statsThemes[themeName] || statsThemes.default;
+  const key = resolveThemeKey(themeName, statsThemes);
+  return key ? statsThemes[key] : statsThemes.default;
 }
 
 export function getLangTheme(themeName: string): LangTheme {
-  return langThemes[themeName] || langThemes.default;
+  const key = resolveThemeKey(themeName, langThemes);
+  return key ? langThemes[key] : langThemes.default;
 }
 
 export function getStreakTheme(themeName: string): StreakTheme {
-  return streakThemes[themeName] || streakThemes.default;
+  const key = resolveThemeKey(themeName, streakThemes);
+  if (key) return streakThemes[key];
+
+  return deriveStreakTheme(getStatsTheme(themeName));
 }
 
 export function getActivityTheme(themeName: string): ActivityTheme {
-  return activityThemes[themeName] || activityThemes.default;
+  const key = resolveThemeKey(themeName, activityThemes);
+  if (key) return activityThemes[key];
+
+  return deriveActivityTheme(getStatsTheme(themeName));
 }

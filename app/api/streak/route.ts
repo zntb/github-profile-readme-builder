@@ -1,103 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
 import { calculateStreakStats, fetchContributionCalendar } from '@/lib/github';
-
-const themes: Record<
-  string,
-  {
-    bg: string;
-    text: string;
-    fire: string;
-    ring: string;
-    currStreak: string;
-    sideNums: string;
-    sideLabels: string;
-    dates: string;
-    border: string;
-  }
-> = {
-  default: {
-    bg: 'fffefe',
-    text: '434d58',
-    fire: 'f5700c',
-    ring: '4c71f2',
-    currStreak: '151515',
-    sideNums: '434d58',
-    sideLabels: '434d58',
-    dates: '434d58',
-    border: 'e4e2e2',
-  },
-  dark: {
-    bg: '151515',
-    text: '9f9f9f',
-    fire: 'f5700c',
-    ring: '79ff97',
-    currStreak: 'fff',
-    sideNums: '9f9f9f',
-    sideLabels: '9f9f9f',
-    dates: '9f9f9f',
-    border: 'e4e2e2',
-  },
-  tokyonight: {
-    bg: '1a1b27',
-    text: '38bdae',
-    fire: 'bf91f3',
-    ring: '70a5fd',
-    currStreak: '70a5fd',
-    sideNums: 'bf91f3',
-    sideLabels: '38bdae',
-    dates: '38bdae',
-    border: 'e4e2e2',
-  },
-  dracula: {
-    bg: '282a36',
-    text: 'f8f8f2',
-    fire: 'ffb86c',
-    ring: 'ff6e96',
-    currStreak: 'ff6e96',
-    sideNums: 'bd93f9',
-    sideLabels: 'f8f8f2',
-    dates: 'f8f8f2',
-    border: 'e4e2e2',
-  },
-  radical: {
-    bg: '141321',
-    text: 'a9fef7',
-    fire: 'f8d847',
-    ring: 'fe428e',
-    currStreak: 'fe428e',
-    sideNums: 'f8d847',
-    sideLabels: 'a9fef7',
-    dates: 'a9fef7',
-    border: 'e4e2e2',
-  },
-  github_dark: {
-    bg: '0d1117',
-    text: 'c9d1d9',
-    fire: 'f5700c',
-    ring: '58a6ff',
-    currStreak: '58a6ff',
-    sideNums: '1f6feb',
-    sideLabels: 'c9d1d9',
-    dates: 'c9d1d9',
-    border: '30363d',
-  },
-  catppuccin_mocha: {
-    bg: '1e1e2e',
-    text: 'cdd6f4',
-    fire: 'fab387',
-    ring: '89b4fa',
-    currStreak: '89b4fa',
-    sideNums: '94e2d5',
-    sideLabels: 'cdd6f4',
-    dates: 'cdd6f4',
-    border: '313244',
-  },
-};
-
-function getTheme(themeName: string) {
-  return themes[themeName] || themes.default;
-}
+import { getStreakTheme, type StreakTheme } from '@/lib/themes';
 
 function formatDate(date: Date | null): string {
   if (!date) return 'N/A';
@@ -118,17 +22,7 @@ function generateStreakSvg(
     longestStreakStart: Date | null;
     longestStreakEnd: Date | null;
   },
-  theme: {
-    bg: string;
-    text: string;
-    fire: string;
-    ring: string;
-    currStreak: string;
-    sideNums: string;
-    sideLabels: string;
-    dates: string;
-    border: string;
-  },
+  theme: StreakTheme,
   options: { hideBorder: boolean; borderRadius: number },
 ) {
   const width = 495;
@@ -228,7 +122,7 @@ export async function GET(request: NextRequest) {
   const hideBorder = searchParams.get('hide_border') === 'true';
   const borderRadius = parseInt(searchParams.get('border_radius') || '10');
 
-  let theme = getTheme(themeName);
+  let theme = getStreakTheme(themeName);
 
   if (searchParams.get('background')) {
     theme = { ...theme, bg: searchParams.get('background')!.replace('#', '') };
