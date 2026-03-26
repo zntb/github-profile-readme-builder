@@ -109,7 +109,6 @@ function formatDate(date: Date | null): string {
 }
 
 function generateStreakSvg(
-  username: string,
   streakStats: {
     currentStreak: number;
     longestStreak: number;
@@ -133,53 +132,49 @@ function generateStreakSvg(
   options: { hideBorder: boolean; borderRadius: number },
 ) {
   const width = 495;
-  const height = 195;
+  const height = 230;
 
   const { currentStreak, longestStreak, totalContributions } = streakStats;
 
-  // ── Layout constants ──────────────────────────────────────────────────────
-  // Three equal sections separated at x=165 and x=330
-  const leftCX = 82; // centre of left section  (0–165)
-  const midCX = 247; // centre of middle section (165–330)
-  const rightCX = 413; // centre of right section  (330–495)
+  // Column centres
+  const leftCX = 82;
+  const midCX = 247;
+  const rightCX = 412;
 
-  // Ring geometry (centre section)
-  const ringCY = 91;
-  const ringR = 38;
+  // Ring dimensions
+  const ringCY = 98;
+  const ringR = 40;
   const circumference = +(2 * Math.PI * ringR).toFixed(2);
   const progress = longestStreak > 0 ? currentStreak / longestStreak : 0;
   const dashOffset = +(circumference * (1 - progress)).toFixed(2);
+  const ringTop = ringCY - ringR; // y=58
+  const ringBottom = ringCY + ringR; // y=138
 
-  // Flame icon positioned just above the ring with a small gap
+  // Flame icon: 20x20, positioned 4px above ring top
   const flameSize = 20;
-  const flameX = midCX - flameSize / 2;
-  const flameY = ringCY - ringR - flameSize - 4; // 4 px gap between flame bottom and ring top
+  const flameX = midCX - flameSize / 2; // 237
+  const flameY = ringTop - flameSize - 4; // 34
 
-  // Text positions relative to ring bottom
-  const ringBottom = ringCY + ringR;
-  const labelY = ringBottom + 18;
-  const dateY = ringBottom + 33;
+  // Centre column text — number inside ring, label+date strictly below ring
+  const currNumY = ringCY + 10; // 108
+  const centLabelY = ringBottom + 20; // 158
+  const centDateY = centLabelY + 16; // 174
 
-  // Side-section text positions (vertically centred in the card)
-  const sideNumY = 72;
-  const sideLabelY = 92;
-  const sideDateY = 108;
+  // Side columns — vertically centred in the 230px card
+  const sideNumY = 95;
+  const sideLabelY = 115;
+  const sideDateY = 133;
 
   const currentYear = new Date().getFullYear();
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const _username = username; // kept for future use (e.g. title text)
-
-  return `
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+  return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
     .side-num   { font: 800 22px 'Segoe UI', Ubuntu, Sans-Serif; }
     .curr-num   { font: 800 28px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.currStreak}; }
     .stat-label { font: 600 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .date-label { font: 400 10px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.dates}; }
+    .date-label { font: 400 10px  'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.dates}; }
   </style>
 
-  <!-- Background -->
   <rect x="0.5" y="0.5"
     rx="${options.borderRadius}" ry="${options.borderRadius}"
     width="${width - 1}" height="${height - 1}"
@@ -187,46 +182,38 @@ function generateStreakSvg(
     stroke="${options.hideBorder ? 'none' : '#' + theme.border}"
     stroke-width="${options.hideBorder ? 0 : 1}"/>
 
-  <!-- Section dividers -->
-  <line x1="165" y1="12"  x2="165" y2="183" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
-  <line x1="330" y1="12"  x2="330" y2="183" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="165" y1="12"  x2="165" y2="${height - 12}" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="330" y1="12"  x2="330" y2="${height - 12}" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
 
-  <!-- ── LEFT: Total Contributions ── -->
+  <!-- Left: Total Contributions -->
   <text x="${leftCX}" y="${sideNumY}"   text-anchor="middle" class="side-num"   fill="#${theme.sideNums}">${totalContributions.toLocaleString()}</text>
   <text x="${leftCX}" y="${sideLabelY}" text-anchor="middle" class="stat-label">Total Contributions</text>
   <text x="${leftCX}" y="${sideDateY}"  text-anchor="middle" class="date-label">Jan 1, ${currentYear} - Present</text>
 
-  <!-- ── CENTRE: Current Streak ── -->
-
-  <!-- Flame icon (centred above ring) -->
+  <!-- Centre: flame icon -->
   <svg x="${flameX}" y="${flameY}" width="${flameSize}" height="${flameSize}" viewBox="0 0 24 24" fill="none">
     <path d="M12 23a7.5 7.5 0 0 1-5.138-12.963C8.204 8.774 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.773.5 1.604.5 2.47A7.5 7.5 0 0 1 12 23z" fill="#${theme.fire}"/>
   </svg>
 
-  <!-- Ring: dim background track -->
-  <circle
-    cx="${midCX}" cy="${ringCY}" r="${ringR}"
-    fill="none"
-    stroke="#${theme.ring}" stroke-width="5" stroke-opacity="0.2"/>
+  <!-- Centre: ring track -->
+  <circle cx="${midCX}" cy="${ringCY}" r="${ringR}"
+    fill="none" stroke="#${theme.ring}" stroke-width="5" stroke-opacity="0.2"/>
 
-  <!-- Ring: progress arc -->
-  <circle
-    cx="${midCX}" cy="${ringCY}" r="${ringR}"
-    fill="none"
-    stroke="#${theme.ring}" stroke-width="5"
-    stroke-dasharray="${circumference}"
-    stroke-dashoffset="${dashOffset}"
+  <!-- Centre: ring progress arc -->
+  <circle cx="${midCX}" cy="${ringCY}" r="${ringR}"
+    fill="none" stroke="#${theme.ring}" stroke-width="5"
+    stroke-dasharray="${circumference}" stroke-dashoffset="${dashOffset}"
     stroke-linecap="round"
     transform="rotate(-90 ${midCX} ${ringCY})"/>
 
-  <!-- Current streak number (inside ring) -->
-  <text x="${midCX}" y="${ringCY + 10}" text-anchor="middle" class="curr-num">${currentStreak}</text>
+  <!-- Centre: streak number (inside ring) -->
+  <text x="${midCX}" y="${currNumY}" text-anchor="middle" class="curr-num">${currentStreak}</text>
 
-  <!-- Label and date BELOW the ring -->
-  <text x="${midCX}" y="${labelY}" text-anchor="middle" class="stat-label">Current Streak</text>
-  <text x="${midCX}" y="${dateY}"  text-anchor="middle" class="date-label">${formatDate(streakStats.currentStreakStart)} - ${formatDate(streakStats.currentStreakEnd)}</text>
+  <!-- Centre: label and date (below ring, no overlap) -->
+  <text x="${midCX}" y="${centLabelY}" text-anchor="middle" class="stat-label">Current Streak</text>
+  <text x="${midCX}" y="${centDateY}"  text-anchor="middle" class="date-label">${formatDate(streakStats.currentStreakStart)} - ${formatDate(streakStats.currentStreakEnd)}</text>
 
-  <!-- ── RIGHT: Longest Streak ── -->
+  <!-- Right: Longest Streak -->
   <text x="${rightCX}" y="${sideNumY}"   text-anchor="middle" class="side-num"   fill="#${theme.sideNums}">${longestStreak}</text>
   <text x="${rightCX}" y="${sideLabelY}" text-anchor="middle" class="stat-label">Longest Streak</text>
   <text x="${rightCX}" y="${sideDateY}"  text-anchor="middle" class="date-label">${formatDate(streakStats.longestStreakStart)} - ${formatDate(streakStats.longestStreakEnd)}</text>
@@ -243,7 +230,6 @@ export async function GET(request: NextRequest) {
 
   let theme = getTheme(themeName);
 
-  // Override colours if provided
   if (searchParams.get('background')) {
     theme = { ...theme, bg: searchParams.get('background')!.replace('#', '') };
   }
@@ -272,8 +258,7 @@ export async function GET(request: NextRequest) {
     try {
       const calendar = await fetchContributionCalendar(username, token);
       const streakStats = calculateStreakStats(calendar);
-
-      const svg = generateStreakSvg(username, streakStats, theme, { hideBorder, borderRadius });
+      const svg = generateStreakSvg(streakStats, theme, { hideBorder, borderRadius });
 
       return new NextResponse(svg, {
         headers: {
