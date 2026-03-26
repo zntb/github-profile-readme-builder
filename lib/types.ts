@@ -156,6 +156,9 @@ export interface SkillIconsProps {
 export interface StatsCardProps {
   username: string;
   theme: string;
+  layoutWidth?: 'half' | 'full';
+  cardWidth?: string;
+  cardHeight?: string;
   showIcons: boolean;
   hideBorder: boolean;
   hideTitle: boolean;
@@ -170,6 +173,9 @@ export interface StatsCardProps {
 export interface TopLanguagesProps {
   username: string;
   theme: string;
+  layoutWidth?: 'half' | 'full';
+  cardWidth?: string;
+  cardHeight?: string;
   layout: 'compact' | 'normal' | 'donut' | 'donut-vertical' | 'pie';
   hideBorder: boolean;
   hideProgress: boolean;
@@ -183,6 +189,9 @@ export interface TopLanguagesProps {
 export interface StreakStatsProps {
   username: string;
   theme: string;
+  layoutWidth?: 'half' | 'full';
+  cardWidth?: string;
+  cardHeight?: string;
   hideBorder: boolean;
   borderRadius: number;
   bgColor?: string;

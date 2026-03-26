@@ -30,6 +30,16 @@ import { useBuilderStore } from '@/lib/store';
 
 import { CanvasBlock } from './canvas-block';
 
+function isHalfWidthBlock(block: { type: string; props: Record<string, unknown> }) {
+  const layoutWidth = block.props.layoutWidth as string | undefined;
+  if (layoutWidth === 'half') return true;
+  if (layoutWidth === 'full') return false;
+
+  // Backward compatibility with existing saved layouts:
+  // stats cards were previously the only half-width cards.
+  return block.type === 'stats-card';
+}
+
 export function Canvas() {
   const { blocks, setBlocks, selectBlock, selectedBlockId } = useBuilderStore();
 
@@ -118,8 +128,18 @@ export function Canvas() {
                 {blocks.map((block, index) => (
                   <div
                     key={block.id}
-                    className={block.type === 'stats-card' ? 'animate-slide-up' : 'animate-slide-up lg:col-span-2'}
-                    style={{ animationDelay: `${index * 50}ms` }}
+                    className={
+                      isHalfWidthBlock(block)
+                        ? 'animate-slide-up'
+                        : 'animate-slide-up lg:col-span-2'
+                    }
+                    style={{
+                      animationDelay: `${index * 50}ms`,
+                      width: block.props.blockWidth ? `${String(block.props.blockWidth)}%` : undefined,
+                      height: block.props.blockHeight
+                        ? `${String(block.props.blockHeight)}px`
+                        : undefined,
+                    }}
                   >
                     <CanvasBlock
                       block={block}
