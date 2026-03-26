@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { fetchContributionCalendar, calculateStreakStats } from '@/lib/github';
+import { calculateStreakStats, fetchContributionCalendar } from '@/lib/github';
 
 const themes: Record<
   string,
@@ -137,46 +137,100 @@ function generateStreakSvg(
 
   const { currentStreak, longestStreak, totalContributions } = streakStats;
 
+  // ── Layout constants ──────────────────────────────────────────────────────
+  // Three equal sections separated at x=165 and x=330
+  const leftCX = 82; // centre of left section  (0–165)
+  const midCX = 247; // centre of middle section (165–330)
+  const rightCX = 413; // centre of right section  (330–495)
+
+  // Ring geometry (centre section)
+  const ringCY = 91;
+  const ringR = 38;
+  const circumference = +(2 * Math.PI * ringR).toFixed(2);
+  const progress = longestStreak > 0 ? currentStreak / longestStreak : 0;
+  const dashOffset = +(circumference * (1 - progress)).toFixed(2);
+
+  // Flame icon positioned just above the ring with a small gap
+  const flameSize = 20;
+  const flameX = midCX - flameSize / 2;
+  const flameY = ringCY - ringR - flameSize - 4; // 4 px gap between flame bottom and ring top
+
+  // Text positions relative to ring bottom
+  const ringBottom = ringCY + ringR;
+  const labelY = ringBottom + 18;
+  const dateY = ringBottom + 33;
+
+  // Side-section text positions (vertically centred in the card)
+  const sideNumY = 72;
+  const sideLabelY = 92;
+  const sideDateY = 108;
+
+  const currentYear = new Date().getFullYear();
+
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const _username = username; // kept for future use (e.g. title text)
+
   return `
 <svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
-    .header { font: 600 18px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .stat-value { font: 800 28px 'Segoe UI', Ubuntu, Sans-Serif; }
-    .stat-label { font: 600 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
-    .date-range { font: 400 10px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.dates}; }
+    .side-num   { font: 800 22px 'Segoe UI', Ubuntu, Sans-Serif; }
+    .curr-num   { font: 800 28px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.currStreak}; }
+    .stat-label { font: 600 11px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; }
+    .date-label { font: 400 10px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.dates}; }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <!-- Background -->
+  <rect x="0.5" y="0.5"
+    rx="${options.borderRadius}" ry="${options.borderRadius}"
+    width="${width - 1}" height="${height - 1}"
+    fill="#${theme.bg}"
+    stroke="${options.hideBorder ? 'none' : '#' + theme.border}"
+    stroke-width="${options.hideBorder ? 0 : 1}"/>
 
-  <!-- Total Contributions -->
-  <g transform="translate(50, 50)">
-    <text class="stat-value" fill="#${theme.sideNums}" text-anchor="middle" x="45" y="30">${totalContributions.toLocaleString()}</text>
-    <text class="stat-label" text-anchor="middle" x="45" y="50">Total Contributions</text>
-    <text class="date-range" text-anchor="middle" x="45" y="68">Jan 1, ${new Date().getFullYear()} - Present</text>
-  </g>
+  <!-- Section dividers -->
+  <line x1="165" y1="12"  x2="165" y2="183" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
+  <line x1="330" y1="12"  x2="330" y2="183" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
 
-  <!-- Current Streak -->
-  <g transform="translate(200, 35)">
-    <svg x="25" y="-5" width="40" height="40" viewBox="0 0 24 24" fill="none">
-      <path d="M12 23a7.5 7.5 0 0 1-5.138-12.963C8.204 8.774 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.773.5 1.604.5 2.47A7.5 7.5 0 0 1 12 23z" fill="#${theme.fire}"/>
-    </svg>
-    <text class="stat-value" fill="#${theme.currStreak}" text-anchor="middle" x="45" y="65">${currentStreak}</text>
-    <text class="stat-label" text-anchor="middle" x="45" y="85">Current Streak</text>
-    <text class="date-range" text-anchor="middle" x="45" y="103">${formatDate(streakStats.currentStreakStart)} - ${formatDate(streakStats.currentStreakEnd)}</text>
-    
-    <!-- Ring -->
-    <circle cx="45" cy="52" r="45" stroke="#${theme.ring}" stroke-width="5" fill="none" stroke-opacity="0.2"/>
-    <circle cx="45" cy="52" r="45" stroke="#${theme.ring}" stroke-width="5" fill="none" stroke-dasharray="283" stroke-dashoffset="${longestStreak > 0 ? 283 - (currentStreak / longestStreak) * 283 : 283}" transform="rotate(-90 45 52)"/>
-  </g>
+  <!-- ── LEFT: Total Contributions ── -->
+  <text x="${leftCX}" y="${sideNumY}"   text-anchor="middle" class="side-num"   fill="#${theme.sideNums}">${totalContributions.toLocaleString()}</text>
+  <text x="${leftCX}" y="${sideLabelY}" text-anchor="middle" class="stat-label">Total Contributions</text>
+  <text x="${leftCX}" y="${sideDateY}"  text-anchor="middle" class="date-label">Jan 1, ${currentYear} - Present</text>
 
-  <!-- Longest Streak -->
-  <g transform="translate(360, 50)">
-    <text class="stat-value" fill="#${theme.sideNums}" text-anchor="middle" x="45" y="30">${longestStreak}</text>
-    <text class="stat-label" text-anchor="middle" x="45" y="50">Longest Streak</text>
-    <text class="date-range" text-anchor="middle" x="45" y="68">${formatDate(streakStats.longestStreakStart)} - ${formatDate(streakStats.longestStreakEnd)}</text>
-  </g>
-</svg>
-  `.trim();
+  <!-- ── CENTRE: Current Streak ── -->
+
+  <!-- Flame icon (centred above ring) -->
+  <svg x="${flameX}" y="${flameY}" width="${flameSize}" height="${flameSize}" viewBox="0 0 24 24" fill="none">
+    <path d="M12 23a7.5 7.5 0 0 1-5.138-12.963C8.204 8.774 11.5 6.5 11 1.5c6 4 9 8 3 14 1 0 2.5 0 5-2.47.27.773.5 1.604.5 2.47A7.5 7.5 0 0 1 12 23z" fill="#${theme.fire}"/>
+  </svg>
+
+  <!-- Ring: dim background track -->
+  <circle
+    cx="${midCX}" cy="${ringCY}" r="${ringR}"
+    fill="none"
+    stroke="#${theme.ring}" stroke-width="5" stroke-opacity="0.2"/>
+
+  <!-- Ring: progress arc -->
+  <circle
+    cx="${midCX}" cy="${ringCY}" r="${ringR}"
+    fill="none"
+    stroke="#${theme.ring}" stroke-width="5"
+    stroke-dasharray="${circumference}"
+    stroke-dashoffset="${dashOffset}"
+    stroke-linecap="round"
+    transform="rotate(-90 ${midCX} ${ringCY})"/>
+
+  <!-- Current streak number (inside ring) -->
+  <text x="${midCX}" y="${ringCY + 10}" text-anchor="middle" class="curr-num">${currentStreak}</text>
+
+  <!-- Label and date BELOW the ring -->
+  <text x="${midCX}" y="${labelY}" text-anchor="middle" class="stat-label">Current Streak</text>
+  <text x="${midCX}" y="${dateY}"  text-anchor="middle" class="date-label">${formatDate(streakStats.currentStreakStart)} - ${formatDate(streakStats.currentStreakEnd)}</text>
+
+  <!-- ── RIGHT: Longest Streak ── -->
+  <text x="${rightCX}" y="${sideNumY}"   text-anchor="middle" class="side-num"   fill="#${theme.sideNums}">${longestStreak}</text>
+  <text x="${rightCX}" y="${sideLabelY}" text-anchor="middle" class="stat-label">Longest Streak</text>
+  <text x="${rightCX}" y="${sideDateY}"  text-anchor="middle" class="date-label">${formatDate(streakStats.longestStreakStart)} - ${formatDate(streakStats.longestStreakEnd)}</text>
+</svg>`.trim();
 }
 
 export async function GET(request: NextRequest) {
@@ -189,7 +243,7 @@ export async function GET(request: NextRequest) {
 
   let theme = getTheme(themeName);
 
-  // Override colors if provided
+  // Override colours if provided
   if (searchParams.get('background')) {
     theme = { ...theme, bg: searchParams.get('background')!.replace('#', '') };
   }
@@ -200,19 +254,13 @@ export async function GET(request: NextRequest) {
     theme = { ...theme, ring: searchParams.get('ring')!.replace('#', '') };
   }
   if (searchParams.get('currStreakNum')) {
-    theme = {
-      ...theme,
-      currStreak: searchParams.get('currStreakNum')!.replace('#', ''),
-    };
+    theme = { ...theme, currStreak: searchParams.get('currStreakNum')!.replace('#', '') };
   }
   if (searchParams.get('sideNums')) {
     theme = { ...theme, sideNums: searchParams.get('sideNums')!.replace('#', '') };
   }
   if (searchParams.get('sideLabels')) {
-    theme = {
-      ...theme,
-      sideLabels: searchParams.get('sideLabels')!.replace('#', ''),
-    };
+    theme = { ...theme, sideLabels: searchParams.get('sideLabels')!.replace('#', '') };
   }
   if (searchParams.get('dates')) {
     theme = { ...theme, dates: searchParams.get('dates')!.replace('#', '') };
@@ -225,10 +273,7 @@ export async function GET(request: NextRequest) {
       const calendar = await fetchContributionCalendar(username, token);
       const streakStats = calculateStreakStats(calendar);
 
-      const svg = generateStreakSvg(username, streakStats, theme, {
-        hideBorder,
-        borderRadius,
-      });
+      const svg = generateStreakSvg(username, streakStats, theme, { hideBorder, borderRadius });
 
       return new NextResponse(svg, {
         headers: {

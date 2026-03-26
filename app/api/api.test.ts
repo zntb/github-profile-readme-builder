@@ -5,6 +5,7 @@ import { describe, expect, it } from '@jest/globals';
 // test the API route logic directly by importing the handlers.
 
 // Test helper to simulate API request
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 async function simulateApiCall(
   path: string,
 ): Promise<{ status: number; contentType: string; body: string }> {
