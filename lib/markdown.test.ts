@@ -415,7 +415,7 @@ describe('renderMarkdown', () => {
     ];
 
     const result = renderMarkdown(blocks);
-    expect((result.match(/<table>/g) || []).length).toBe(1);
+    expect((result.match(/<div align="center">/g) || []).length).toBe(1);
     expect((result.match(/alt="GitHub Stats"/g) || []).length).toBe(2);
     expect(result).toContain('username=user-one');
     expect(result).toContain('username=user-two');

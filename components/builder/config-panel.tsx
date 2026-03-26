@@ -64,7 +64,9 @@ export function ConfigPanel() {
               value={blockWidth ?? 100}
               onChange={(e) => {
                 const value = Number(e.target.value);
-                updateBlock(selectedBlock.id, { blockWidth: Math.min(100, Math.max(1, value || 100)) });
+                updateBlock(selectedBlock.id, {
+                  blockWidth: Math.min(100, Math.max(1, value || 100)),
+                });
               }}
             />
           </FieldGroup>

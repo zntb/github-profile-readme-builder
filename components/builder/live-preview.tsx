@@ -63,7 +63,11 @@ export function LivePreview({ blocks }: LivePreviewProps) {
               }
 
               items.push(
-                <div key={block.id} className="animate-in" style={{ animationDelay: `${i * 30}ms` }}>
+                <div
+                  key={block.id}
+                  className="animate-in"
+                  style={{ animationDelay: `${i * 30}ms` }}
+                >
                   <PreviewBlock block={block} />
                 </div>,
               );
@@ -97,7 +101,13 @@ function resolvePreviewImageSize(block: Block): CSSProperties {
   };
 }
 
-function PreviewBlock({ block, wrapperClassName = 'mb-4' }: { block: Block; wrapperClassName?: string }) {
+function PreviewBlock({
+  block,
+  wrapperClassName = 'mb-4',
+}: {
+  block: Block;
+  wrapperClassName?: string;
+}) {
   const { type, props, children } = block;
   const globalUsername = useBuilderStore((state) => state.username);
   const imageSizeStyle = resolvePreviewImageSize(block);
@@ -410,7 +420,11 @@ function PreviewBlock({ block, wrapperClassName = 'mb-4' }: { block: Block; wrap
         });
         return (
           <div className="text-center">
-            <img src={`/api/stats?${statsParams.toString()}`} alt="GitHub Stats" style={imageSizeStyle} />
+            <img
+              src={`/api/stats?${statsParams.toString()}`}
+              alt="GitHub Stats"
+              style={imageSizeStyle}
+            />
           </div>
         );
 
@@ -443,7 +457,11 @@ function PreviewBlock({ block, wrapperClassName = 'mb-4' }: { block: Block; wrap
         });
         return (
           <div className="text-center">
-            <img src={`/api/streak?${streakParams.toString()}`} alt="GitHub Streak" style={imageSizeStyle} />
+            <img
+              src={`/api/streak?${streakParams.toString()}`}
+              alt="GitHub Streak"
+              style={imageSizeStyle}
+            />
           </div>
         );
 
