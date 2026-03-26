@@ -2,13 +2,21 @@
 'use client';
 
 import { Eye } from 'lucide-react';
-import { JSX, useMemo } from 'react';
+import { JSX, useMemo, type CSSProperties } from 'react';
 
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
 
 interface LivePreviewProps {
   blocks: Block[];
+}
+
+function isHalfWidthGithubCard(block: Block): boolean {
+  if (!['stats-card', 'top-languages', 'streak-stats'].includes(block.type)) return false;
+  const layoutWidth = block.props.layoutWidth as string | undefined;
+  if (layoutWidth === 'half') return true;
+  if (layoutWidth === 'full') return false;
+  return block.type === 'stats-card';
 }
 
 export function LivePreview({ blocks }: LivePreviewProps) {
@@ -33,24 +41,66 @@ export function LivePreview({ blocks }: LivePreviewProps) {
     <div className="h-full overflow-y-auto overflow-x-hidden">
       <div className="p-3 sm:p-6">
         <div className="mx-auto max-w-3xl rounded-xl border border-border/50 bg-card/50 backdrop-blur-sm p-3 sm:p-6 shadow-lg shadow-muted/10 github-preview">
-          {blocks.map((block, index) => (
-            <div
-              key={block.id}
-              className="animate-in"
-              style={{ animationDelay: `${index * 30}ms` }}
-            >
-              <PreviewBlock block={block} />
-            </div>
-          ))}
+          {(() => {
+            const items: JSX.Element[] = [];
+            for (let i = 0; i < blocks.length; i += 1) {
+              const block = blocks[i];
+              const nextBlock = blocks[i + 1];
+
+              if (isHalfWidthGithubCard(block) && nextBlock && isHalfWidthGithubCard(nextBlock)) {
+                items.push(
+                  <div
+                    key={`${block.id}-${nextBlock.id}`}
+                    className="mb-4 flex flex-wrap items-start justify-center gap-2 animate-in"
+                    style={{ animationDelay: `${i * 30}ms` }}
+                  >
+                    <PreviewBlock block={block} wrapperClassName="mb-0" />
+                    <PreviewBlock block={nextBlock} wrapperClassName="mb-0" />
+                  </div>,
+                );
+                i += 1;
+                continue;
+              }
+
+              items.push(
+                <div key={block.id} className="animate-in" style={{ animationDelay: `${i * 30}ms` }}>
+                  <PreviewBlock block={block} />
+                </div>,
+              );
+            }
+            return items;
+          })()}
         </div>
       </div>
     </div>
   );
 }
 
-function PreviewBlock({ block }: { block: Block }) {
+function resolvePreviewImageSize(block: Block): CSSProperties {
+  const width = block.props.cardWidth as string | number | undefined;
+  const height = block.props.cardHeight as string | number | undefined;
+  const fallbackWidth = isHalfWidthGithubCard(block) ? '49%' : undefined;
+  const widthValue = width ?? fallbackWidth;
+
+  const toCssSize = (value?: string | number) => {
+    if (value === undefined) return undefined;
+    if (typeof value === 'number') return `${value}px`;
+    const trimmed = value.trim();
+    if (!trimmed) return undefined;
+    return /^[0-9]+$/.test(trimmed) ? `${trimmed}px` : trimmed;
+  };
+
+  return {
+    width: toCssSize(widthValue),
+    height: toCssSize(height),
+    maxWidth: '100%',
+  };
+}
+
+function PreviewBlock({ block, wrapperClassName = 'mb-4' }: { block: Block; wrapperClassName?: string }) {
   const { type, props, children } = block;
   const globalUsername = useBuilderStore((state) => state.username);
+  const imageSizeStyle = resolvePreviewImageSize(block);
 
   const renderBlock = useMemo(() => {
     // Helper function to get username with global fallback
@@ -360,7 +410,7 @@ function PreviewBlock({ block }: { block: Block }) {
         });
         return (
           <div className="text-center">
-            <img src={`/api/stats?${statsParams.toString()}`} alt="GitHub Stats" />
+            <img src={`/api/stats?${statsParams.toString()}`} alt="GitHub Stats" style={imageSizeStyle} />
           </div>
         );
 
@@ -376,7 +426,11 @@ function PreviewBlock({ block }: { block: Block }) {
         });
         return (
           <div className="text-center">
-            <img src={`/api/top-langs?${langsParams.toString()}`} alt="Top Languages" />
+            <img
+              src={`/api/top-langs?${langsParams.toString()}`}
+              alt="Top Languages"
+              style={imageSizeStyle}
+            />
           </div>
         );
 
@@ -389,7 +443,7 @@ function PreviewBlock({ block }: { block: Block }) {
         });
         return (
           <div className="text-center">
-            <img src={`/api/streak?${streakParams.toString()}`} alt="GitHub Streak" />
+            <img src={`/api/streak?${streakParams.toString()}`} alt="GitHub Streak" style={imageSizeStyle} />
           </div>
         );
 
@@ -461,7 +515,7 @@ function PreviewBlock({ block }: { block: Block }) {
       default:
         return null;
     }
-  }, [type, props, children, globalUsername]);
+  }, [type, props, children, globalUsername, imageSizeStyle]);
 
-  return <div className="mb-4">{renderBlock}</div>;
+  return <div className={wrapperClassName}>{renderBlock}</div>;
 }

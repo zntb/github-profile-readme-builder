@@ -233,79 +233,13 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'top-languages': {
-      const globalUsername = useBuilderStore.getState().username;
-      const {
-        username: blockUsername,
-        theme,
-        layout,
-        hideBorder,
-        hideProgress,
-        langs_count,
-        bgColor,
-        textColor,
-        titleColor,
-        borderRadius,
-      } = props as Record<string, unknown>;
-      // Use global username if block username is empty or is the default placeholder
-      const username =
-        (!blockUsername || blockUsername === 'github') && globalUsername
-          ? globalUsername
-          : blockUsername;
-      const params = {
-        username,
-        theme,
-        layout,
-        hide_border: hideBorder ? 'true' : 'false',
-        hide_progress: hideProgress ? 'true' : 'false',
-        langs_count,
-        bg_color: bgColor,
-        text_color: textColor,
-        title_color: titleColor,
-        border_radius: borderRadius,
-      };
-      const url = origin
-        ? buildExternalUrl('top-langs', params, origin)
-        : buildInternalUrl('top-langs', params);
-      return `<div align="center">\n  <img src="${url}" alt="Top Languages" />\n</div>`;
+      const imageTag = renderTopLanguagesImageTag(block, origin);
+      return `<div align="center">\n  ${imageTag}\n</div>`;
     }
 
     case 'streak-stats': {
-      const globalUsername = useBuilderStore.getState().username;
-      const {
-        username: blockUsername,
-        theme,
-        hideBorder,
-        borderRadius,
-        bgColor,
-        fireColor,
-        ringColor,
-        currStreakColor,
-        sideNumColor,
-        sideLabelColor,
-        datesColor,
-      } = props as Record<string, unknown>;
-      // Use global username if block username is empty or is the default placeholder
-      const username =
-        (!blockUsername || blockUsername === 'github') && globalUsername
-          ? globalUsername
-          : blockUsername;
-      const params = {
-        username,
-        theme,
-        hide_border: hideBorder ? 'true' : 'false',
-        border_radius: borderRadius,
-        background: bgColor,
-        fire: fireColor,
-        ring: ringColor,
-        currStreakNum: currStreakColor,
-        sideNums: sideNumColor,
-        sideLabels: sideLabelColor,
-        dates: datesColor,
-      };
-      const url = origin
-        ? buildExternalUrl('streak', params, origin)
-        : buildInternalUrl('streak', params);
-      return `<div align="center">\n  <img src="${url}" alt="GitHub Streak" />\n</div>`;
+      const imageTag = renderStreakStatsImageTag(block, origin);
+      return `<div align="center">\n  ${imageTag}\n</div>`;
     }
 
     case 'activity-graph': {
@@ -439,7 +373,105 @@ function renderStatsCardImageTag(block: Block, origin: string): string {
     border_radius: borderRadius,
   };
   const url = origin ? buildExternalUrl('stats', params, origin) : buildInternalUrl('stats', params);
-  return `<img src="${url}" alt="GitHub Stats" />`;
+  return `<img src="${url}" alt="GitHub Stats"${buildCardSizeAttributes(block)} />`;
+}
+
+function renderTopLanguagesImageTag(block: Block, origin: string): string {
+  const globalUsername = useBuilderStore.getState().username;
+  const {
+    username: blockUsername,
+    theme,
+    layout,
+    hideBorder,
+    hideProgress,
+    langs_count,
+    bgColor,
+    textColor,
+    titleColor,
+    borderRadius,
+  } = block.props as Record<string, unknown>;
+  const username =
+    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+  const params = {
+    username,
+    theme,
+    layout,
+    hide_border: hideBorder ? 'true' : 'false',
+    hide_progress: hideProgress ? 'true' : 'false',
+    langs_count,
+    bg_color: bgColor,
+    text_color: textColor,
+    title_color: titleColor,
+    border_radius: borderRadius,
+  };
+  const url = origin ? buildExternalUrl('top-langs', params, origin) : buildInternalUrl('top-langs', params);
+  return `<img src="${url}" alt="Top Languages"${buildCardSizeAttributes(block)} />`;
+}
+
+function renderStreakStatsImageTag(block: Block, origin: string): string {
+  const globalUsername = useBuilderStore.getState().username;
+  const {
+    username: blockUsername,
+    theme,
+    hideBorder,
+    borderRadius,
+    bgColor,
+    fireColor,
+    ringColor,
+    currStreakColor,
+    sideNumColor,
+    sideLabelColor,
+    datesColor,
+  } = block.props as Record<string, unknown>;
+  const username =
+    (!blockUsername || blockUsername === 'github') && globalUsername ? globalUsername : blockUsername;
+  const params = {
+    username,
+    theme,
+    hide_border: hideBorder ? 'true' : 'false',
+    border_radius: borderRadius,
+    background: bgColor,
+    fire: fireColor,
+    ring: ringColor,
+    currStreakNum: currStreakColor,
+    sideNums: sideNumColor,
+    sideLabels: sideLabelColor,
+    dates: datesColor,
+  };
+  const url = origin ? buildExternalUrl('streak', params, origin) : buildInternalUrl('streak', params);
+  return `<img src="${url}" alt="GitHub Streak"${buildCardSizeAttributes(block)} />`;
+}
+
+function buildCardSizeAttributes(block: Block): string {
+  const width = block.props.cardWidth as string | number | undefined;
+  const height = block.props.cardHeight as string | number | undefined;
+  const fallbackWidth = isHalfWidthCard(block) ? '49%' : undefined;
+  const resolvedWidth = width ?? fallbackWidth;
+
+  const widthAttr = resolvedWidth ? ` width="${String(resolvedWidth)}"` : '';
+  const heightAttr = height ? ` height="${String(height)}"` : '';
+
+  return `${widthAttr}${heightAttr}`;
+}
+
+function isHalfWidthCard(block: Block): boolean {
+  const layoutWidth = block.props.layoutWidth as string | undefined;
+  if (layoutWidth === 'half') return true;
+  if (layoutWidth === 'full') return false;
+  return block.type === 'stats-card';
+}
+
+function getHalfWidthCardImageTag(block: Block, origin: string): string | null {
+  switch (block.type) {
+    case 'stats-card':
+      return renderStatsCardImageTag(block, origin);
+    case 'top-languages':
+      return renderTopLanguagesImageTag(block, origin);
+    case 'streak-stats':
+      return renderStreakStatsImageTag(block, origin);
+    default:
+      return null;
+  }
 }
 
 // Render all blocks to markdown
@@ -449,11 +481,13 @@ export function renderMarkdown(blocks: Block[], origin: string = ''): string {
   for (let i = 0; i < blocks.length; i += 1) {
     const block = blocks[i];
 
-    if (block.type === 'stats-card') {
+    const imageTag = getHalfWidthCardImageTag(block, origin);
+    if (imageTag && isHalfWidthCard(block)) {
       const nextBlock = blocks[i + 1];
-      if (nextBlock?.type === 'stats-card') {
-        const imageTags = [block, nextBlock].map((statsBlock) => renderStatsCardImageTag(statsBlock, origin));
-        rendered.push(`<div align="center">\n  ${imageTags.join('\n  ')}\n</div>`);
+      const nextImageTag =
+        nextBlock && isHalfWidthCard(nextBlock) ? getHalfWidthCardImageTag(nextBlock, origin) : null;
+      if (nextImageTag) {
+        rendered.push(`<div align="center">\n  ${imageTag}\n  ${nextImageTag}\n</div>`);
         i += 1;
         continue;
       }

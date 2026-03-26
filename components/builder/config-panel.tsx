@@ -72,6 +72,45 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     updateBlock(id, { [key]: value });
   };
 
+  const renderCardWidthField = () => (
+    <FieldGroup>
+      <Label>Card Width</Label>
+      <Select
+        value={(props.layoutWidth as string) || (type === 'stats-card' ? 'half' : 'full')}
+        onValueChange={(value) => update('layoutWidth', value)}
+      >
+        <SelectTrigger>
+          <SelectValue />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="half">Half (2 cards per row)</SelectItem>
+          <SelectItem value="full">Full (1 card per row)</SelectItem>
+        </SelectContent>
+      </Select>
+    </FieldGroup>
+  );
+
+  const renderCardSizeFields = () => (
+    <>
+      <FieldGroup>
+        <Label>Card Image Width</Label>
+        <Input
+          value={(props.cardWidth as string) || ''}
+          onChange={(e) => update('cardWidth', e.target.value)}
+          placeholder={((props.layoutWidth as string) || (type === 'stats-card' ? 'half' : 'full')) === 'half' ? '49%' : '420'}
+        />
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Card Image Height</Label>
+        <Input
+          value={(props.cardHeight as string) || ''}
+          onChange={(e) => update('cardHeight', e.target.value)}
+          placeholder="auto / 180"
+        />
+      </FieldGroup>
+    </>
+  );
+
   switch (type) {
     case 'container':
       return (
@@ -750,6 +789,8 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'stats-card':
       return (
         <>
+          {renderCardWidthField()}
+          {renderCardSizeFields()}
           <FieldGroup>
             <Label>Theme</Label>
             <Select
@@ -829,6 +870,8 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'top-languages':
       return (
         <>
+          {renderCardWidthField()}
+          {renderCardSizeFields()}
           <FieldGroup>
             <Label>Theme</Label>
             <Select
@@ -904,6 +947,8 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     case 'streak-stats':
       return (
         <>
+          {renderCardWidthField()}
+          {renderCardSizeFields()}
           <FieldGroup>
             <Label>Theme</Label>
             <Select
