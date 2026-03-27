@@ -501,10 +501,8 @@ function isHalfWidthCard(block: Block): boolean {
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
-  // Default to true for these card types
-  return (
-    block.type === 'stats-card' || block.type === 'top-languages' || block.type === 'streak-stats'
-  );
+  // Default to full width (100%) for all card types
+  return false;
 }
 
 function getHalfWidthCardImageTag(block: Block, origin: string): string | null {

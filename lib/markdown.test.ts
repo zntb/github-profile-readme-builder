@@ -410,8 +410,16 @@ describe('renderMarkdown', () => {
 
   it('should render adjacent stats cards in one centered row', () => {
     const blocks: Block[] = [
-      { id: '1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },
-      { id: '2', type: 'stats-card', props: { username: 'user-two', theme: 'radical' } },
+      {
+        id: '1',
+        type: 'stats-card',
+        props: { username: 'user-one', theme: 'dark', layoutWidth: 'half' },
+      },
+      {
+        id: '2',
+        type: 'stats-card',
+        props: { username: 'user-two', theme: 'radical', layoutWidth: 'half' },
+      },
     ];
 
     const result = renderMarkdown(blocks);

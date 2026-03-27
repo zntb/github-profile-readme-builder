@@ -1,41 +1,41 @@
 'use client';
 
 import {
+  Activity,
+  AlignLeft,
+  Award,
+  Badge,
+  BarChart2,
+  Box,
+  ChevronDown,
+  ChevronRight,
+  Code,
+  Columns2,
+  Eye,
+  Film,
+  Flame,
+  Hand,
+  Heading,
+  Image,
+  Layers,
   Layout,
   Minus,
+  PanelBottom,
+  PieChart,
+  Quote,
+  Search,
+  Share2,
   Space,
   Sparkles,
-  User,
-  Hand,
   Type,
-  Heading,
-  AlignLeft,
-  ChevronDown,
-  Code,
-  Image,
-  Film,
-  Share2,
-  Badge,
-  Layers,
-  BarChart2,
-  PieChart,
-  Flame,
-  Activity,
-  Award,
-  Eye,
-  Quote,
-  PanelBottom,
-  Search,
-  ChevronRight,
-  Box,
-  Columns2,
+  User,
 } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { useBuilderStore, generateId } from '@/lib/store';
+import { generateId, useBuilderStore } from '@/lib/store';
 import { BLOCK_CATEGORIES, type Block, type BlockType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 

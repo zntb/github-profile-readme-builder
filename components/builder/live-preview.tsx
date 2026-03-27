@@ -16,7 +16,8 @@ function isHalfWidthGithubCard(block: Block): boolean {
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
-  return block.type === 'stats-card';
+  // Default to full width (100%) for all card types
+  return false;
 }
 
 export function LivePreview({ blocks }: LivePreviewProps) {

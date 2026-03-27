@@ -139,7 +139,7 @@ function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockCon
             hideBorder: false,
             hideTitle: false,
             hideRank: false,
-            layoutWidth: 'half',
+            layoutWidth: 'full',
           },
         };
       case 'top-languages':
@@ -152,11 +152,15 @@ function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockCon
             hideBorder: false,
             hideProgress: false,
             langs_count: 8,
-            layoutWidth: 'half',
+            layoutWidth: 'full',
           },
         };
       case 'streak-stats':
-        return { id: baseId, type: 'streak-stats', props: { ...baseProps, hideBorder: false } };
+        return {
+          id: baseId,
+          type: 'streak-stats',
+          props: { ...baseProps, hideBorder: false, layoutWidth: 'full' },
+        };
     }
   };
 

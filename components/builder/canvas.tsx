@@ -36,9 +36,8 @@ function isHalfWidthBlock(block: { type: string; props: Record<string, unknown> 
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
 
-  // Backward compatibility with existing saved layouts:
-  // stats cards were previously the only half-width cards.
-  return block.type === 'stats-card';
+  // Default to full width (100%) for all card types
+  return false;
 }
 
 export function Canvas() {
