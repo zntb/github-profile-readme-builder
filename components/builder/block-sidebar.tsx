@@ -129,19 +129,52 @@ export function BlockSidebar() {
     if (
       selectedBlock?.type === 'stats-row' &&
       STATS_ROW_CHILD_BLOCKS.includes(type) &&
-      selectedStatsRowChildCount < 2
+      selectedBlock.children &&
+      selectedBlock.children.length < 2
     ) {
       addChildBlock(selectedBlock.id, createBlock(type, defaultProps));
-      // Keep parent stats-row selected so a second click adds the sibling card
-      // instead of inserting a new top-level block.
-      selectBlock(selectedBlock.id);
       return;
     }
 
     const block = createBlock(type, defaultProps);
+    const blockUsername = (block.props.username as string) || 'github';
+    const defaultChildren: Block[] | undefined =
+      type === 'stats-row'
+        ? [
+            {
+              id: generateId(),
+              type: 'stats-card',
+              props: {
+                username: blockUsername,
+                theme: 'tokyonight',
+                showIcons: true,
+                hideBorder: false,
+                hideTitle: false,
+                hideRank: false,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+            {
+              id: generateId(),
+              type: 'top-languages',
+              props: {
+                username: blockUsername,
+                theme: 'tokyonight',
+                layout: 'compact',
+                hideBorder: false,
+                hideProgress: false,
+                langs_count: 8,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+          ]
+        : undefined;
+
     addBlock({
       ...block,
-      children: type === 'stats-row' ? [] : block.children,
+      children: type === 'stats-row' ? defaultChildren : block.children,
     });
   };
 
