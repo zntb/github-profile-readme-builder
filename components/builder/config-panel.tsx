@@ -16,7 +16,7 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { findBlock, useBuilderStore } from '@/lib/store';
+import { findBlock, generateId, useBuilderStore } from '@/lib/store';
 import { SKILL_ICONS, STATS_THEMES, type Block } from '@/lib/types';
 
 export function ConfigPanel() {
@@ -126,7 +126,7 @@ function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockCon
   const statsChildTypes: StatsChildType[] = ['stats-card', 'top-languages', 'streak-stats'];
 
   const createDefaultStatsChild = (statsType: StatsChildType): Block => {
-    const baseId = `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const baseId = generateId();
     const baseProps = { username: 'github', theme: 'tokyonight', borderRadius: 10 };
     switch (statsType) {
       case 'stats-card':
@@ -271,6 +271,85 @@ function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockCon
           nextSlots.filter((child): child is Block => Boolean(child)),
         );
       };
+      const updateCardProps = (slotIndex: 0 | 1, updates: Record<string, unknown>) => {
+        const nextSlots: Array<Block | undefined> = [statsChildren[0], statsChildren[1]];
+        const targetCard = nextSlots[slotIndex];
+        if (!targetCard) return;
+        nextSlots[slotIndex] = {
+          ...targetCard,
+          props: {
+            ...targetCard.props,
+            ...updates,
+          },
+        };
+        updateBlockChildren(
+          id,
+          nextSlots.filter((child): child is Block => Boolean(child)),
+        );
+      };
+
+      const renderCardSettings = (slotIndex: 0 | 1) => {
+        const card = statsChildren[slotIndex];
+        if (!card) {
+          return <p className="text-xs text-muted-foreground">Select a card to configure it.</p>;
+        }
+
+        return (
+          <div className="space-y-3 rounded-md border border-border/60 p-3">
+            <FieldGroup>
+              <Label>Theme</Label>
+              <Select
+                value={(card.props.theme as string) || 'default'}
+                onValueChange={(value) => updateCardProps(slotIndex, { theme: value })}
+              >
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {STATS_THEMES.map((theme) => (
+                    <SelectItem key={`${card.id}-${theme}`} value={theme}>
+                      {theme}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </FieldGroup>
+
+            {(card.type === 'stats-card' ||
+              card.type === 'top-languages' ||
+              card.type === 'streak-stats') && (
+              <FieldGroup>
+                <div className="flex items-center justify-between">
+                  <Label>Hide Border</Label>
+                  <Switch
+                    checked={Boolean(card.props.hideBorder)}
+                    onCheckedChange={(checked) =>
+                      updateCardProps(slotIndex, { hideBorder: checked })
+                    }
+                  />
+                </div>
+              </FieldGroup>
+            )}
+
+            {(card.type === 'stats-card' || card.type === 'streak-stats') && (
+              <FieldGroup>
+                <Label>Border Radius ({String(card.props.borderRadius ?? 10)}px)</Label>
+                <Input
+                  type="number"
+                  value={Number(card.props.borderRadius) || 10}
+                  onChange={(e) =>
+                    updateCardProps(slotIndex, {
+                      borderRadius: Math.min(20, Math.max(0, parseInt(e.target.value, 10) || 10)),
+                    })
+                  }
+                  min={0}
+                  max={20}
+                />
+              </FieldGroup>
+            )}
+          </div>
+        );
+      };
       return (
         <>
           <FieldGroup>
@@ -353,6 +432,14 @@ function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockCon
                 <SelectItem value="streak-stats">Streak Stats</SelectItem>
               </SelectContent>
             </Select>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Card 1 Settings</Label>
+            {renderCardSettings(0)}
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Card 2 Settings</Label>
+            {renderCardSettings(1)}
           </FieldGroup>
           <p className="text-xs text-muted-foreground">
             Configure up to two cards here, or select Stats Row and add cards from the sidebar.
