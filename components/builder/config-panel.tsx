@@ -287,49 +287,8 @@ function BlockConfigFields({
       );
 
     case 'stats-row':
-      const statsRowChildren = block.children ?? [];
-      const hasStatsCard = statsRowChildren.some((child) => child.type === 'stats-card');
-      const hasTopLanguages = statsRowChildren.some((child) => child.type === 'top-languages');
-      const hasStreakStats = statsRowChildren.some((child) => child.type === 'streak-stats');
-      const toggleStatsChild = (cardType: 'stats-card' | 'top-languages' | 'streak-stats') => {
-        const existing = statsRowChildren.find((child) => child.type === cardType);
-        if (existing) {
-          updateBlockChildren(
-            id,
-            statsRowChildren.filter((child) => child.id !== existing.id),
-          );
-          return;
-        }
-        updateBlockChildren(id, [...statsRowChildren, getDefaultStatsChild(cardType)]);
-      };
       return (
         <>
-          <FieldGroup>
-            <Label>Cards</Label>
-            <div className="space-y-2 rounded-md border border-border p-3">
-              <label className="flex items-center justify-between">
-                <span className="text-sm">Stats Card</span>
-                <Switch
-                  checked={hasStatsCard}
-                  onCheckedChange={() => toggleStatsChild('stats-card')}
-                />
-              </label>
-              <label className="flex items-center justify-between">
-                <span className="text-sm">Top Languages</span>
-                <Switch
-                  checked={hasTopLanguages}
-                  onCheckedChange={() => toggleStatsChild('top-languages')}
-                />
-              </label>
-              <label className="flex items-center justify-between">
-                <span className="text-sm">Streak Stats</span>
-                <Switch
-                  checked={hasStreakStats}
-                  onCheckedChange={() => toggleStatsChild('streak-stats')}
-                />
-              </label>
-            </div>
-          </FieldGroup>
           <FieldGroup>
             <Label>Direction</Label>
             <Select
