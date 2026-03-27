@@ -2,7 +2,16 @@
 
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Copy, Trash2 } from 'lucide-react';
+import {
+  AlignCenter,
+  AlignLeft,
+  AlignRight,
+  Copy,
+  GripHorizontal,
+  GripVertical,
+  Trash2,
+} from 'lucide-react';
+import { useCallback, useRef, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { useBuilderStore } from '@/lib/store';
@@ -18,15 +27,26 @@ interface CanvasBlockProps {
 }
 
 export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
-  const { removeBlock, duplicateBlock } = useBuilderStore();
+  const { removeBlock, duplicateBlock, updateBlock } = useBuilderStore();
+  const blockRef = useRef<HTMLDivElement>(null);
+  const [isResizing, setIsResizing] = useState(false);
+
+  // Get block style properties
+  const blockWidth = block.props.blockWidth as number | undefined;
+  const blockHeight = block.props.blockHeight as number | undefined;
+  const blockAlignment = block.props.blockAlignment as string | undefined;
 
   const { attributes, listeners, setNodeRef, transform, transition, isDragging } = useSortable({
     id: block.id,
   });
 
-  const style = {
+  const style: React.CSSProperties = {
     transform: CSS.Transform.toString(transform),
     transition,
+    width: blockWidth ? `${blockWidth}%` : undefined,
+    minHeight: blockHeight ? `${blockHeight}px` : undefined,
+    alignSelf:
+      blockAlignment === 'left' ? 'flex-start' : blockAlignment === 'right' ? 'flex-end' : 'center',
   };
 
   const handleDelete = (e: React.MouseEvent) => {
@@ -39,9 +59,60 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
     duplicateBlock(block.id);
   };
 
+  const handleAlignment = (alignment: 'left' | 'center' | 'right') => {
+    updateBlock(block.id, { blockAlignment: alignment });
+  };
+
+  // Resize handlers
+  const handleResizeStart = useCallback(
+    (e: React.MouseEvent, direction: 'right' | 'bottom' | 'corner') => {
+      e.preventDefault();
+      e.stopPropagation();
+      setIsResizing(true);
+
+      const startX = e.clientX;
+      const startY = e.clientY;
+      const startWidth = blockRef.current?.offsetWidth || 0;
+      const startHeight = blockRef.current?.offsetHeight || 0;
+      const containerWidth = blockRef.current?.parentElement?.offsetWidth || 1;
+
+      const handleMouseMove = (moveEvent: MouseEvent) => {
+        if (!blockRef.current) return;
+
+        if (direction === 'right' || direction === 'corner') {
+          const deltaX = moveEvent.clientX - startX;
+          const newWidthPercent = Math.min(
+            100,
+            Math.max(10, ((startWidth + deltaX) / containerWidth) * 100),
+          );
+          updateBlock(block.id, { blockWidth: Math.round(newWidthPercent) });
+        }
+
+        if (direction === 'bottom' || direction === 'corner') {
+          const deltaY = moveEvent.clientY - startY;
+          const newHeight = Math.max(30, startHeight + deltaY);
+          updateBlock(block.id, { blockHeight: Math.round(newHeight) });
+        }
+      };
+
+      const handleMouseUp = () => {
+        setIsResizing(false);
+        document.removeEventListener('mousemove', handleMouseMove);
+        document.removeEventListener('mouseup', handleMouseUp);
+      };
+
+      document.addEventListener('mousemove', handleMouseMove);
+      document.addEventListener('mouseup', handleMouseUp);
+    },
+    [block.id, updateBlock],
+  );
+
   return (
     <div
-      ref={setNodeRef}
+      ref={(node) => {
+        setNodeRef(node);
+        if (node) blockRef.current = node;
+      }}
       style={style}
       className={cn(
         'group relative rounded-xl border bg-card/80 backdrop-blur-sm transition-all duration-200',
@@ -49,13 +120,14 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
           ? 'border-primary shadow-lg shadow-primary/10 ring-2 ring-primary/20'
           : 'border-border/50 hover:border-muted-foreground/30 hover:shadow-md hover:shadow-muted/20',
         isDragging && 'opacity-60 shadow-xl scale-[1.02] ring-2 ring-primary/40',
+        isResizing && 'ring-2 ring-primary/50 cursornwse-resize',
       )}
       onClick={onSelect}
     >
       {/* Drag Handle - Desktop: left side, Mobile: top-left corner */}
       <div
         className={cn(
-          'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200',
+          'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200 z-10',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
           isSelected && 'sm:opacity-100',
         )}
@@ -72,7 +144,7 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       {/* Quick Actions - Desktop: right side, Mobile: top-right corner */}
       <div
         className={cn(
-          'absolute top-2 right-2 sm:-right-10 sm:top-1/2 sm:-translate-y-1/2 flex sm:flex-col items-center gap-1 transition-all duration-200',
+          'absolute top-2 right-2 sm:-right-10 sm:top-1/2 sm:-translate-y-1/2 flex sm:flex-col items-center gap-1 transition-all duration-200 z-10',
           'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
           isSelected && 'sm:opacity-100',
         )}
@@ -95,8 +167,78 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         </Button>
       </div>
 
+      {/* Alignment Controls - Show when selected */}
+      {isSelected && (
+        <div
+          className={cn(
+            'absolute -top-10 left-1/2 -translate-x-1/2 flex items-center gap-0.5 bg-card border rounded-lg p-0.5 shadow-md z-20',
+          )}
+        >
+          <Button
+            variant={blockAlignment === 'left' ? 'default' : 'ghost'}
+            size="icon"
+            className="h-6 w-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAlignment('left');
+            }}
+          >
+            <AlignLeft className="h-3 w-3" />
+          </Button>
+          <Button
+            variant={blockAlignment === 'center' || !blockAlignment ? 'default' : 'ghost'}
+            size="icon"
+            className="h-6 w-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAlignment('center');
+            }}
+          >
+            <AlignCenter className="h-3 w-3" />
+          </Button>
+          <Button
+            variant={blockAlignment === 'right' ? 'default' : 'ghost'}
+            size="icon"
+            className="h-6 w-6"
+            onClick={(e) => {
+              e.stopPropagation();
+              handleAlignment('right');
+            }}
+          >
+            <AlignRight className="h-3 w-3" />
+          </Button>
+        </div>
+      )}
+
+      {/* Resize Handles - Show when selected */}
+      {isSelected && (
+        <>
+          {/* Right resize handle */}
+          <div
+            className="absolute top-0 right-0 w-3 h-full cursor-ew-resize hover:bg-primary/30 rounded-r-xl transition-colors"
+            onMouseDown={(e) => handleResizeStart(e, 'right')}
+          >
+            <GripHorizontal className="absolute top-1/2 -translate-y-1/2 right-0.5 h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100" />
+          </div>
+          {/* Bottom resize handle */}
+          <div
+            className="absolute bottom-0 left-0 w-full h-3 cursor-ns-resize hover:bg-primary/30 rounded-b-xl transition-colors"
+            onMouseDown={(e) => handleResizeStart(e, 'bottom')}
+          >
+            <GripHorizontal className="absolute left-1/2 -translate-x-1/2 bottom-0.5 h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100 rotate-90" />
+          </div>
+          {/* Corner resize handle */}
+          <div
+            className="absolute bottom-0 right-0 w-4 h-4 cursor-nwse-resize hover:bg-primary/30 rounded-br-xl transition-colors"
+            onMouseDown={(e) => handleResizeStart(e, 'corner')}
+          >
+            <GripHorizontal className="absolute bottom-0.5 right-0.5 h-3 w-3 text-muted-foreground opacity-0 group-hover:opacity-100" />
+          </div>
+        </>
+      )}
+
       {/* Block Type Label */}
-      <div className="absolute -top-2.5 left-3 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-card/90 rounded-md border border-border/30">
+      <div className="absolute -top-2.5 left-3 px-2.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-muted-foreground bg-card/90 rounded-md border border-border/30 z-10">
         {block.type.replace(/-/g, ' ')}
       </div>
 
