@@ -132,6 +132,8 @@ function BlockConfigFields({
   setBlocks,
 }: BlockConfigFieldsProps) {
   const { type, props, id } = block;
+  type StatsChildType = 'stats-card' | 'top-languages' | 'streak-stats';
+  const statsChildTypes: StatsChildType[] = ['stats-card', 'top-languages', 'streak-stats'];
 
   const update = (key: string, value: unknown) => {
     updateBlock(id, { [key]: value });
@@ -141,9 +143,7 @@ function BlockConfigFields({
     const numericValue = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(numericValue) ? numericValue : fallback;
   };
-  const getDefaultStatsChild = (
-    cardType: 'stats-card' | 'top-languages' | 'streak-stats',
-  ): Block => {
+  const createDefaultStatsChild = (cardType: StatsChildType): Block => {
     const childUsername = username || 'github';
     if (cardType === 'stats-card') {
       return {
@@ -202,7 +202,25 @@ function BlockConfigFields({
       });
     setBlocks(updateChildrenInArray(blocks));
   };
-
+  function updateStatsRowCardSlot(slotIndex: 0 | 1, value: string) {
+    const currentStatsChildren =
+      block.children?.filter((child): child is Block & { type: StatsChildType } =>
+        statsChildTypes.includes(child.type as StatsChildType),
+      ) ?? [];
+    const nextSlots: Array<Block | undefined> = [currentStatsChildren[0], currentStatsChildren[1]];
+    if (value === 'none') {
+      nextSlots[slotIndex] = undefined;
+    } else {
+      const selectedType = value as StatsChildType;
+      const existing = nextSlots[slotIndex];
+      nextSlots[slotIndex] =
+        existing?.type === selectedType ? existing : createDefaultStatsChild(selectedType);
+    }
+    updateBlockChildren(
+      id,
+      nextSlots.filter((child): child is Block => Boolean(child)),
+    );
+  }
   const renderCardWidthField = () => (
     <>
       <FieldGroup>
@@ -286,7 +304,11 @@ function BlockConfigFields({
         </>
       );
 
-    case 'stats-row':
+    case 'stats-row': {
+      const statsChildren =
+        block.children?.filter((child): child is Block & { type: StatsChildType } =>
+          statsChildTypes.includes(child.type as StatsChildType),
+        ) ?? [];
       return (
         <>
           <FieldGroup>
@@ -336,11 +358,46 @@ function BlockConfigFields({
               placeholder="195"
             />
           </FieldGroup>
+          <FieldGroup>
+            <Label>Card 1</Label>
+            <Select
+              value={statsChildren[0]?.type ?? 'none'}
+              onValueChange={(value) => updateStatsRowCardSlot(0, value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="stats-card">Stats</SelectItem>
+                <SelectItem value="top-languages">Top Languages</SelectItem>
+                <SelectItem value="streak-stats">Streak Stats</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Card 2</Label>
+            <Select
+              value={statsChildren[1]?.type ?? 'none'}
+              onValueChange={(value) => updateStatsRowCardSlot(1, value)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="none">None</SelectItem>
+                <SelectItem value="stats-card">Stats</SelectItem>
+                <SelectItem value="top-languages">Top Languages</SelectItem>
+                <SelectItem value="streak-stats">Streak Stats</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
           <p className="text-xs text-muted-foreground">
-            Add Stats Row to render its child cards side by side with matching size.
+            Configure up to two cards here, or select Stats Row and add cards from the sidebar.
           </p>
         </>
       );
+    }
 
     case 'divider':
       return (
