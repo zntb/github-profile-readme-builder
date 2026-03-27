@@ -16,12 +16,11 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { findBlock, generateId, useBuilderStore } from '@/lib/store';
+import { findBlock, useBuilderStore } from '@/lib/store';
 import { SKILL_ICONS, STATS_THEMES, type Block } from '@/lib/types';
 
 export function ConfigPanel() {
-  const { blocks, selectedBlockId, selectBlock, updateBlock, setBlocks, username } =
-    useBuilderStore();
+  const { blocks, selectedBlockId, selectBlock, updateBlock } = useBuilderStore();
 
   if (!selectedBlockId) {
     return (
@@ -103,13 +102,7 @@ export function ConfigPanel() {
               placeholder="auto"
             />
           </FieldGroup>
-          <BlockConfigFields
-            block={selectedBlock}
-            blocks={blocks}
-            username={username}
-            updateBlock={updateBlock}
-            setBlocks={setBlocks}
-          />
+          <BlockConfigFields block={selectedBlock} updateBlock={updateBlock} />
         </div>
       </ScrollArea>
     </div>
@@ -118,19 +111,10 @@ export function ConfigPanel() {
 
 interface BlockConfigFieldsProps {
   block: Block;
-  blocks: Block[];
-  username: string;
   updateBlock: (id: string, props: Record<string, unknown>) => void;
-  setBlocks: (blocks: Block[]) => void;
 }
 
-function BlockConfigFields({
-  block,
-  blocks,
-  username,
-  updateBlock,
-  setBlocks,
-}: BlockConfigFieldsProps) {
+function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
   const { type, props, id } = block;
   type StatsChildType = 'stats-card' | 'top-languages' | 'streak-stats';
   const statsChildTypes: StatsChildType[] = ['stats-card', 'top-languages', 'streak-stats'];
@@ -143,84 +127,6 @@ function BlockConfigFields({
     const numericValue = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(numericValue) ? numericValue : fallback;
   };
-  const createDefaultStatsChild = (cardType: StatsChildType): Block => {
-    const childUsername = username || 'github';
-    if (cardType === 'stats-card') {
-      return {
-        id: generateId(),
-        type: 'stats-card',
-        props: {
-          username: childUsername,
-          theme: 'tokyonight',
-          showIcons: true,
-          hideBorder: false,
-          hideTitle: false,
-          hideRank: false,
-          borderRadius: 10,
-          layoutWidth: 'half',
-        },
-      };
-    }
-    if (cardType === 'top-languages') {
-      return {
-        id: generateId(),
-        type: 'top-languages',
-        props: {
-          username: childUsername,
-          theme: 'tokyonight',
-          layout: 'compact',
-          hideBorder: false,
-          hideProgress: false,
-          langs_count: 8,
-          borderRadius: 10,
-          layoutWidth: 'half',
-        },
-      };
-    }
-    return {
-      id: generateId(),
-      type: 'streak-stats',
-      props: {
-        username: childUsername,
-        theme: 'tokyonight',
-        hideBorder: false,
-        borderRadius: 10,
-        layoutWidth: 'half',
-      },
-    };
-  };
-  const updateBlockChildren = (blockId: string, nextChildren: Block[]) => {
-    const updateChildrenInArray = (items: Block[]): Block[] =>
-      items.map((item) => {
-        if (item.id === blockId) {
-          return { ...item, children: nextChildren };
-        }
-        if (item.children) {
-          return { ...item, children: updateChildrenInArray(item.children) };
-        }
-        return item;
-      });
-    setBlocks(updateChildrenInArray(blocks));
-  };
-  function updateStatsRowCardSlot(slotIndex: 0 | 1, value: string) {
-    const currentStatsChildren =
-      block.children?.filter((child): child is Block & { type: StatsChildType } =>
-        statsChildTypes.includes(child.type as StatsChildType),
-      ) ?? [];
-    const nextSlots: Array<Block | undefined> = [currentStatsChildren[0], currentStatsChildren[1]];
-    if (value === 'none') {
-      nextSlots[slotIndex] = undefined;
-    } else {
-      const selectedType = value as StatsChildType;
-      const existing = nextSlots[slotIndex];
-      nextSlots[slotIndex] =
-        existing?.type === selectedType ? existing : createDefaultStatsChild(selectedType);
-    }
-    updateBlockChildren(
-      id,
-      nextSlots.filter((child): child is Block => Boolean(child)),
-    );
-  }
   const renderCardWidthField = () => (
     <>
       <FieldGroup>
