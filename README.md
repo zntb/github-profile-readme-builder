@@ -12,7 +12,7 @@
 
 <br/>
 
-**[🚀 Live Demo](#getting-started) · [📖 Documentation](#documentation) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)**
+**[🚀 Live Demo](https://github-profile-readme-builder-lovat.vercel.app/) · [📖 Documentation](#documentation) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)**
 
 </div>
 

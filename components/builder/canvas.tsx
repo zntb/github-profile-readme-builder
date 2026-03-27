@@ -1,8 +1,8 @@
 'use client';
 
 import {
-  DndContext,
   closestCenter,
+  DndContext,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -11,8 +11,8 @@ import {
 } from '@dnd-kit/core';
 import {
   arrayMove,
-  SortableContext,
   rectSortingStrategy,
+  SortableContext,
   sortableKeyboardCoordinates,
 } from '@dnd-kit/sortable';
 import { Layers, Sparkles } from 'lucide-react';
@@ -20,13 +20,14 @@ import { useCallback } from 'react';
 
 import {
   Empty,
+  EmptyContent,
+  EmptyDescription,
   EmptyMedia,
   EmptyTitle,
-  EmptyDescription,
-  EmptyContent,
 } from '@/components/ui/empty';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore } from '@/lib/store';
+import { cn } from '@/lib/utils';
 
 import { CanvasBlock } from './canvas-block';
 
@@ -124,15 +125,14 @@ export function Canvas() {
             onDragEnd={handleDragEnd}
           >
             <SortableContext items={blocks.map((b) => b.id)} strategy={rectSortingStrategy}>
-              <div className="grid grid-cols-1 gap-3 lg:grid-cols-2">
+              <div className="flex flex-col gap-3 items-stretch lg:items-center">
                 {blocks.map((block, index) => (
                   <div
                     key={block.id}
-                    className={
-                      isHalfWidthBlock(block)
-                        ? 'animate-slide-up'
-                        : 'animate-slide-up lg:col-span-2'
-                    }
+                    className={cn(
+                      'animate-slide-up',
+                      isHalfWidthBlock(block) ? 'lg:w-1/2' : 'w-full',
+                    )}
                     style={{ animationDelay: `${index * 50}ms` }}
                   >
                     <CanvasBlock

@@ -41,6 +41,7 @@ export function ConfigPanel() {
   if (!selectedBlock) return null;
   const blockWidth = selectedBlock.props.blockWidth as number | undefined;
   const blockHeight = selectedBlock.props.blockHeight as number | undefined;
+  const blockAlignment = selectedBlock.props.blockAlignment as string | undefined;
 
   return (
     <div className="flex h-full w-full flex-col border-l border-border bg-sidebar">
@@ -55,6 +56,22 @@ export function ConfigPanel() {
 
       <ScrollArea className="flex-1">
         <div className="p-4 space-y-4">
+          <FieldGroup>
+            <Label>Alignment</Label>
+            <Select
+              value={blockAlignment ?? 'center'}
+              onValueChange={(value) => updateBlock(selectedBlock.id, { blockAlignment: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="left">Left</SelectItem>
+                <SelectItem value="center">Center</SelectItem>
+                <SelectItem value="right">Right</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
           <FieldGroup>
             <Label>Block Width (%)</Label>
             <Input
