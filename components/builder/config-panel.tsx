@@ -209,6 +209,62 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
         </>
       );
 
+    case 'stats-row':
+      return (
+        <>
+          <FieldGroup>
+            <Label>Direction</Label>
+            <Select
+              value={(props.direction as string) ?? 'row'}
+              onValueChange={(v) => update('direction', v)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="row">Row (side by side)</SelectItem>
+                <SelectItem value="column">Column (stacked)</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Gap (px)</Label>
+            <Input
+              type="number"
+              min={0}
+              max={48}
+              step={2}
+              value={(props.gap as number) ?? 12}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val)) {
+                  update('gap', Math.min(48, Math.max(0, val)));
+                }
+              }}
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Card Width</Label>
+            <Input
+              value={(props.cardWidth as string) ?? '49%'}
+              onChange={(e) => update('cardWidth', e.target.value)}
+              placeholder="49%"
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Force Card Height (optional)</Label>
+            <Input
+              value={(props.cardHeight as string) ?? ''}
+              onChange={(e) => update('cardHeight', e.target.value || undefined)}
+              placeholder="195"
+            />
+          </FieldGroup>
+          <p className="text-xs text-muted-foreground">
+            Add Stats Row to render its child cards side by side with matching size.
+          </p>
+        </>
+      );
+
     case 'divider':
       return (
         <>

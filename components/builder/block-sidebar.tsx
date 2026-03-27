@@ -28,6 +28,7 @@ import {
   Search,
   ChevronRight,
   Box,
+  Columns2,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -35,7 +36,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore, generateId } from '@/lib/store';
-import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
+import { BLOCK_CATEGORIES, type Block, type BlockType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -64,6 +65,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Quote,
   PanelBottom,
   Box,
+  Columns2,
 };
 
 export function BlockSidebar() {
@@ -95,11 +97,50 @@ export function BlockSidebar() {
     if (username && GITHUB_STATS_BLOCKS.includes(type)) {
       props.username = username;
     }
+    const defaultChildren: Block[] | undefined =
+      type === 'stats-row'
+        ? [
+            {
+              id: generateId(),
+              type: 'stats-card',
+              props: {
+                username: props.username || 'github',
+                theme: 'tokyonight',
+                showIcons: true,
+                hideBorder: false,
+                hideTitle: false,
+                hideRank: false,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+            {
+              id: generateId(),
+              type: 'top-languages',
+              props: {
+                username: props.username || 'github',
+                theme: 'tokyonight',
+                layout: 'compact',
+                hideBorder: false,
+                hideProgress: false,
+                langs_count: 8,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+          ]
+        : undefined;
+
     addBlock({
       id: generateId(),
       type,
       props,
-      children: type === 'container' || type === 'collapsible' ? [] : undefined,
+      children:
+        type === 'container' || type === 'collapsible'
+          ? []
+          : type === 'stats-row'
+            ? defaultChildren
+            : undefined,
     });
   };
 
