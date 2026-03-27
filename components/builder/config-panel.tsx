@@ -16,11 +16,12 @@ import {
 import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
-import { findBlock, useBuilderStore } from '@/lib/store';
+import { findBlock, generateId, useBuilderStore } from '@/lib/store';
 import { SKILL_ICONS, STATS_THEMES, type Block } from '@/lib/types';
 
 export function ConfigPanel() {
-  const { blocks, selectedBlockId, selectBlock, updateBlock } = useBuilderStore();
+  const { blocks, selectedBlockId, selectBlock, updateBlock, setBlocks, username } =
+    useBuilderStore();
 
   if (!selectedBlockId) {
     return (
@@ -102,7 +103,13 @@ export function ConfigPanel() {
               placeholder="auto"
             />
           </FieldGroup>
-          <BlockConfigFields block={selectedBlock} updateBlock={updateBlock} />
+          <BlockConfigFields
+            block={selectedBlock}
+            blocks={blocks}
+            username={username}
+            updateBlock={updateBlock}
+            setBlocks={setBlocks}
+          />
         </div>
       </ScrollArea>
     </div>
@@ -111,10 +118,19 @@ export function ConfigPanel() {
 
 interface BlockConfigFieldsProps {
   block: Block;
+  blocks: Block[];
+  username: string;
   updateBlock: (id: string, props: Record<string, unknown>) => void;
+  setBlocks: (blocks: Block[]) => void;
 }
 
-function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
+function BlockConfigFields({
+  block,
+  blocks,
+  username,
+  updateBlock,
+  setBlocks,
+}: BlockConfigFieldsProps) {
   const { type, props, id } = block;
 
   const update = (key: string, value: unknown) => {
@@ -124,6 +140,67 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
     const value = props[key];
     const numericValue = typeof value === 'number' ? value : Number(value);
     return Number.isFinite(numericValue) ? numericValue : fallback;
+  };
+  const getDefaultStatsChild = (
+    cardType: 'stats-card' | 'top-languages' | 'streak-stats',
+  ): Block => {
+    const childUsername = username || 'github';
+    if (cardType === 'stats-card') {
+      return {
+        id: generateId(),
+        type: 'stats-card',
+        props: {
+          username: childUsername,
+          theme: 'tokyonight',
+          showIcons: true,
+          hideBorder: false,
+          hideTitle: false,
+          hideRank: false,
+          borderRadius: 10,
+          layoutWidth: 'half',
+        },
+      };
+    }
+    if (cardType === 'top-languages') {
+      return {
+        id: generateId(),
+        type: 'top-languages',
+        props: {
+          username: childUsername,
+          theme: 'tokyonight',
+          layout: 'compact',
+          hideBorder: false,
+          hideProgress: false,
+          langs_count: 8,
+          borderRadius: 10,
+          layoutWidth: 'half',
+        },
+      };
+    }
+    return {
+      id: generateId(),
+      type: 'streak-stats',
+      props: {
+        username: childUsername,
+        theme: 'tokyonight',
+        hideBorder: false,
+        borderRadius: 10,
+        layoutWidth: 'half',
+      },
+    };
+  };
+  const updateBlockChildren = (blockId: string, nextChildren: Block[]) => {
+    const updateChildrenInArray = (items: Block[]): Block[] =>
+      items.map((item) => {
+        if (item.id === blockId) {
+          return { ...item, children: nextChildren };
+        }
+        if (item.children) {
+          return { ...item, children: updateChildrenInArray(item.children) };
+        }
+        return item;
+      });
+    setBlocks(updateChildrenInArray(blocks));
   };
 
   const renderCardWidthField = () => (
@@ -206,6 +283,103 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
               }}
             />
           </FieldGroup>
+        </>
+      );
+
+    case 'stats-row':
+      const statsRowChildren = block.children ?? [];
+      const hasStatsCard = statsRowChildren.some((child) => child.type === 'stats-card');
+      const hasTopLanguages = statsRowChildren.some((child) => child.type === 'top-languages');
+      const hasStreakStats = statsRowChildren.some((child) => child.type === 'streak-stats');
+      const toggleStatsChild = (cardType: 'stats-card' | 'top-languages' | 'streak-stats') => {
+        const existing = statsRowChildren.find((child) => child.type === cardType);
+        if (existing) {
+          updateBlockChildren(
+            id,
+            statsRowChildren.filter((child) => child.id !== existing.id),
+          );
+          return;
+        }
+        updateBlockChildren(id, [...statsRowChildren, getDefaultStatsChild(cardType)]);
+      };
+      return (
+        <>
+          <FieldGroup>
+            <Label>Cards</Label>
+            <div className="space-y-2 rounded-md border border-border p-3">
+              <label className="flex items-center justify-between">
+                <span className="text-sm">Stats Card</span>
+                <Switch
+                  checked={hasStatsCard}
+                  onCheckedChange={() => toggleStatsChild('stats-card')}
+                />
+              </label>
+              <label className="flex items-center justify-between">
+                <span className="text-sm">Top Languages</span>
+                <Switch
+                  checked={hasTopLanguages}
+                  onCheckedChange={() => toggleStatsChild('top-languages')}
+                />
+              </label>
+              <label className="flex items-center justify-between">
+                <span className="text-sm">Streak Stats</span>
+                <Switch
+                  checked={hasStreakStats}
+                  onCheckedChange={() => toggleStatsChild('streak-stats')}
+                />
+              </label>
+            </div>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Direction</Label>
+            <Select
+              value={(props.direction as string) ?? 'row'}
+              onValueChange={(v) => update('direction', v)}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="row">Row (side by side)</SelectItem>
+                <SelectItem value="column">Column (stacked)</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Gap (px)</Label>
+            <Input
+              type="number"
+              min={0}
+              max={48}
+              step={2}
+              value={(props.gap as number) ?? 12}
+              onChange={(e) => {
+                const val = parseInt(e.target.value, 10);
+                if (!isNaN(val)) {
+                  update('gap', Math.min(48, Math.max(0, val)));
+                }
+              }}
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Card Width</Label>
+            <Input
+              value={(props.cardWidth as string) ?? '49%'}
+              onChange={(e) => update('cardWidth', e.target.value)}
+              placeholder="49%"
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Force Card Height (optional)</Label>
+            <Input
+              value={(props.cardHeight as string) ?? ''}
+              onChange={(e) => update('cardHeight', e.target.value || undefined)}
+              placeholder="195"
+            />
+          </FieldGroup>
+          <p className="text-xs text-muted-foreground">
+            Add Stats Row to render its child cards side by side with matching size.
+          </p>
         </>
       );
 
