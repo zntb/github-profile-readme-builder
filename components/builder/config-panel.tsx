@@ -624,14 +624,21 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({String(props.borderRadius)}px)</Label>
-            <Slider
-              value={[props.borderRadius as number]}
-              onValueChange={([v]) => update('borderRadius', v)}
-              min={0}
-              max={50}
-              step={2}
-            />
+            <Label>Border Radius</Label>
+            <div className="flex gap-2 items-center">
+              <Input
+                type="number"
+                min={0}
+                max={100}
+                value={props.borderRadius as number}
+                onChange={(e) => {
+                  const value = Number(e.target.value);
+                  update('borderRadius', Math.max(0, Math.min(100, value || 0)));
+                }}
+                className="w-20"
+              />
+              <span className="text-xs text-muted-foreground">px</span>
+            </div>
           </FieldGroup>
           <FieldGroup>
             <Label>Alignment</Label>
@@ -1282,13 +1289,18 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Height ({String(props.height)}px)</Label>
-            <Slider
-              value={[props.height as number]}
-              onValueChange={([v]) => update('height', v)}
-              min={60}
-              max={200}
-              step={10}
+            <Label>Height (px)</Label>
+            <Input
+              type="number"
+              value={props.height as number}
+              onChange={(e) => {
+                const val = parseInt(e.target.value);
+                if (!isNaN(val) && val > 0) {
+                  update('height', val);
+                }
+              }}
+              min={1}
+              placeholder="80"
             />
           </FieldGroup>
         </>
