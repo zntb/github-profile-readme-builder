@@ -84,7 +84,8 @@ export function BlockSidebar() {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     BLOCK_CATEGORIES.map((c) => c.name),
   );
-  const { addBlock, addChildBlock, blocks, selectedBlockId, username } = useBuilderStore();
+  const { addBlock, addChildBlock, blocks, selectedBlockId, selectBlock, username } =
+    useBuilderStore();
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
@@ -103,57 +104,44 @@ export function BlockSidebar() {
   ];
   const STATS_ROW_CHILD_BLOCKS: BlockType[] = ['stats-card', 'top-languages', 'streak-stats'];
   const selectedBlock = selectedBlockId ? findBlockById(blocks, selectedBlockId) : null;
+  const selectedStatsRowChildCount =
+    selectedBlock?.type === 'stats-row' ? (selectedBlock.children?.length ?? 0) : 0;
 
-  const handleAddBlock = (type: BlockType, defaultProps: Record<string, unknown>) => {
-    // If username is set and this is a GitHub stats block, use the username
+  const createBlock = (type: BlockType, defaultProps: Record<string, unknown>): Block => {
     const props = { ...defaultProps };
     if (username && GITHUB_STATS_BLOCKS.includes(type)) {
       props.username = username;
     }
-    const defaultChildren: Block[] | undefined =
-      type === 'stats-row'
-        ? [
-            {
-              id: generateId(),
-              type: 'stats-card',
-              props: {
-                username: props.username || 'github',
-                theme: 'tokyonight',
-                showIcons: true,
-                hideBorder: false,
-                hideTitle: false,
-                hideRank: false,
-                borderRadius: 10,
-                layoutWidth: 'half',
-              },
-            },
-            {
-              id: generateId(),
-              type: 'top-languages',
-              props: {
-                username: props.username || 'github',
-                theme: 'tokyonight',
-                layout: 'compact',
-                hideBorder: false,
-                hideProgress: false,
-                langs_count: 8,
-                borderRadius: 10,
-                layoutWidth: 'half',
-              },
-            },
-          ]
-        : undefined;
 
-    addBlock({
+    if (STATS_ROW_CHILD_BLOCKS.includes(type)) {
+      props.layoutWidth = 'half';
+    }
+
+    return {
       id: generateId(),
       type,
       props,
-      children:
-        type === 'container' || type === 'collapsible'
-          ? []
-          : type === 'stats-row'
-            ? defaultChildren
-            : undefined,
+      children: type === 'container' || type === 'collapsible' ? [] : undefined,
+    };
+  };
+
+  const handleAddBlock = (type: BlockType, defaultProps: Record<string, unknown>) => {
+    if (
+      selectedBlock?.type === 'stats-row' &&
+      STATS_ROW_CHILD_BLOCKS.includes(type) &&
+      selectedStatsRowChildCount < 2
+    ) {
+      addChildBlock(selectedBlock.id, createBlock(type, defaultProps));
+      // Keep parent stats-row selected so a second click adds the sibling card
+      // instead of inserting a new top-level block.
+      selectBlock(selectedBlock.id);
+      return;
+    }
+
+    const block = createBlock(type, defaultProps);
+    addBlock({
+      ...block,
+      children: type === 'stats-row' ? [] : block.children,
     });
   };
 
@@ -238,7 +226,8 @@ export function BlockSidebar() {
       <div className="border-t border-border p-4 bg-gradient-to-t from-card/50 to-transparent">
         {selectedBlock?.type === 'stats-row' ? (
           <p className="text-xs text-muted-foreground text-center">
-            Stats Row selected: click Stats Card, Top Languages, or Streak Stats to add as child
+            Stats Row selected: click Stats Card / Top Languages / Streak Stats to add as child (up
+            to 2 cards for side-by-side layout)
           </p>
         ) : (
           <p className="text-xs text-muted-foreground text-center">
