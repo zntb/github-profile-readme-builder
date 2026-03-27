@@ -103,6 +103,11 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
   const update = (key: string, value: unknown) => {
     updateBlock(id, { [key]: value });
   };
+  const getNumberProp = (key: string, fallback: number) => {
+    const value = props[key];
+    const numericValue = typeof value === 'number' ? value : Number(value);
+    return Number.isFinite(numericValue) ? numericValue : fallback;
+  };
 
   const renderCardWidthField = () => (
     <>
@@ -123,12 +128,11 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       </FieldGroup>
       <FieldGroup>
         <Label>Custom Width (%)</Label>
-        <input
+        <Input
           type="text"
           value={(props.width as string) || ''}
           onChange={(e) => update('width', e.target.value || undefined)}
           placeholder="e.g., 48%"
-          className="w-full px-2 py-1 border rounded"
         />
       </FieldGroup>
     </>
@@ -240,6 +244,7 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       );
 
     case 'capsule-header':
+      const capsuleHeight = getNumberProp('height', 200);
       return (
         <>
           <FieldGroup>
@@ -284,9 +289,9 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Height ({String(props.height)}px)</Label>
+            <Label>Height ({capsuleHeight}px)</Label>
             <Slider
-              value={[props.height as number]}
+              value={[capsuleHeight]}
               onValueChange={([v]) => update('height', v)}
               min={100}
               max={400}
@@ -297,6 +302,8 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
       );
 
     case 'avatar':
+      const avatarSize = getNumberProp('size', 150);
+      const avatarBorderRadius = getNumberProp('borderRadius', 50);
       return (
         <>
           <FieldGroup>
@@ -307,9 +314,9 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Size ({String(props.size)}px)</Label>
+            <Label>Size ({avatarSize}px)</Label>
             <Slider
-              value={[props.size as number]}
+              value={[avatarSize]}
               onValueChange={([v]) => update('size', v)}
               min={50}
               max={300}
@@ -317,9 +324,9 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
             />
           </FieldGroup>
           <FieldGroup>
-            <Label>Border Radius ({String(props.borderRadius)}%)</Label>
+            <Label>Border Radius ({avatarBorderRadius}%)</Label>
             <Slider
-              value={[props.borderRadius as number]}
+              value={[avatarBorderRadius]}
               onValueChange={([v]) => update('borderRadius', v)}
               min={0}
               max={50}
@@ -855,56 +862,47 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Show Icons</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.showIcons)}
-                onChange={(e) => update('showIcons', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('showIcons', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideBorder)}
-                onChange={(e) => update('hideBorder', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideBorder', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Title</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideTitle)}
-                onChange={(e) => update('hideTitle', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideTitle', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Rank</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideRank)}
-                onChange={(e) => update('hideRank', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideRank', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <Label>Border Radius ({String(props.borderRadius ?? 10)}px)</Label>
-            <input
+            <Input
               type="number"
               value={Number(props.borderRadius) || 10}
               onChange={(e) => update('borderRadius', parseInt(e.target.value) || 10)}
               min={0}
               max={20}
-              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
         </>
@@ -952,34 +950,29 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Languages Count ({String(props.langs_count ?? 8)})</Label>
-            <input
+            <Input
               type="number"
               value={Number(props.langs_count) || 8}
               onChange={(e) => update('langs_count', parseInt(e.target.value) || 8)}
               min={1}
               max={20}
-              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideBorder)}
-                onChange={(e) => update('hideBorder', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideBorder', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Progress</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideProgress)}
-                onChange={(e) => update('hideProgress', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideProgress', checked)}
               />
             </div>
           </FieldGroup>
@@ -1011,23 +1004,20 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideBorder)}
-                onChange={(e) => update('hideBorder', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideBorder', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <Label>Border Radius ({String(props.borderRadius ?? 10)}px)</Label>
-            <input
+            <Input
               type="number"
               value={Number(props.borderRadius) || 10}
               onChange={(e) => update('borderRadius', parseInt(e.target.value) || 10)}
               min={0}
               max={20}
-              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
         </>
@@ -1057,11 +1047,9 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>Hide Border</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.hideBorder)}
-                onChange={(e) => update('hideBorder', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('hideBorder', checked)}
               />
             </div>
           </FieldGroup>
@@ -1091,45 +1079,39 @@ function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
           </FieldGroup>
           <FieldGroup>
             <Label>Columns ({String(props.column ?? 4)})</Label>
-            <input
+            <Input
               type="number"
               value={Number(props.column) || 4}
               onChange={(e) => update('column', parseInt(e.target.value) || 4)}
               min={1}
               max={10}
-              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
           <FieldGroup>
             <Label>Rows ({String(props.row ?? 2)})</Label>
-            <input
+            <Input
               type="number"
               value={Number(props.row) || 2}
               onChange={(e) => update('row', parseInt(e.target.value) || 2)}
               min={1}
               max={4}
-              className="w-full px-2 py-1 border rounded"
             />
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>No Frame</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.noFrame)}
-                onChange={(e) => update('noFrame', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('noFrame', checked)}
               />
             </div>
           </FieldGroup>
           <FieldGroup>
             <div className="flex items-center justify-between">
               <Label>No Background</Label>
-              <input
-                type="checkbox"
+              <Switch
                 checked={Boolean(props.noBg)}
-                onChange={(e) => update('noBg', e.target.checked)}
-                className="h-4 w-4"
+                onCheckedChange={(checked) => update('noBg', checked)}
               />
             </div>
           </FieldGroup>
