@@ -28,6 +28,7 @@ import {
   Search,
   ChevronRight,
   Box,
+  Columns2,
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -35,7 +36,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore, generateId } from '@/lib/store';
-import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
+import { BLOCK_CATEGORIES, type Block, type BlockType } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -64,14 +65,26 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Quote,
   PanelBottom,
   Box,
+  Columns2,
 };
+
+function findBlockById(items: Block[], id: string): Block | null {
+  for (const item of items) {
+    if (item.id === id) return item;
+    if (item.children?.length) {
+      const nested = findBlockById(item.children, id);
+      if (nested) return nested;
+    }
+  }
+  return null;
+}
 
 export function BlockSidebar() {
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     BLOCK_CATEGORIES.map((c) => c.name),
   );
-  const { addBlock, username } = useBuilderStore();
+  const { addBlock, addChildBlock, blocks, selectedBlockId, username } = useBuilderStore();
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
@@ -88,6 +101,8 @@ export function BlockSidebar() {
     'trophies',
     'visitor-counter',
   ];
+  const STATS_ROW_CHILD_BLOCKS: BlockType[] = ['stats-card', 'top-languages', 'streak-stats'];
+  const selectedBlock = selectedBlockId ? findBlockById(blocks, selectedBlockId) : null;
 
   const handleAddBlock = (type: BlockType, defaultProps: Record<string, unknown>) => {
     // If username is set and this is a GitHub stats block, use the username
@@ -95,12 +110,62 @@ export function BlockSidebar() {
     if (username && GITHUB_STATS_BLOCKS.includes(type)) {
       props.username = username;
     }
-    addBlock({
+    const defaultChildren: Block[] | undefined =
+      type === 'stats-row'
+        ? [
+            {
+              id: generateId(),
+              type: 'stats-card',
+              props: {
+                username: props.username || 'github',
+                theme: 'tokyonight',
+                showIcons: true,
+                hideBorder: false,
+                hideTitle: false,
+                hideRank: false,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+            {
+              id: generateId(),
+              type: 'top-languages',
+              props: {
+                username: props.username || 'github',
+                theme: 'tokyonight',
+                layout: 'compact',
+                hideBorder: false,
+                hideProgress: false,
+                langs_count: 8,
+                borderRadius: 10,
+                layoutWidth: 'half',
+              },
+            },
+          ]
+        : undefined;
+
+    const newBlock: Block = {
       id: generateId(),
       type,
       props,
-      children: type === 'container' || type === 'collapsible' ? [] : undefined,
-    });
+      children:
+        type === 'container' || type === 'collapsible'
+          ? []
+          : type === 'stats-row'
+            ? defaultChildren
+            : undefined,
+    };
+
+    const canNestInsideStatsRow =
+      selectedBlock?.type === 'stats-row' &&
+      STATS_ROW_CHILD_BLOCKS.includes(type) &&
+      type !== 'stats-row';
+    if (canNestInsideStatsRow) {
+      addChildBlock(selectedBlock.id, newBlock);
+      return;
+    }
+
+    addBlock(newBlock);
   };
 
   const filteredCategories = BLOCK_CATEGORIES.map((category) => ({
@@ -182,9 +247,15 @@ export function BlockSidebar() {
       </ScrollArea>
 
       <div className="border-t border-border p-4 bg-gradient-to-t from-card/50 to-transparent">
-        <p className="text-xs text-muted-foreground text-center">
-          Click a block to add it to your README
-        </p>
+        {selectedBlock?.type === 'stats-row' ? (
+          <p className="text-xs text-muted-foreground text-center">
+            Stats Row selected: click Stats Card, Top Languages, or Streak Stats to add as child
+          </p>
+        ) : (
+          <p className="text-xs text-muted-foreground text-center">
+            Click a block to add it to your README
+          </p>
+        )}
       </div>
     </div>
   );

@@ -491,4 +491,43 @@ describe('renderMarkdown', () => {
     expect(result).toContain('alt="GitHub Stats"');
     expect(result).toContain('alt="GitHub Streak"');
   });
+
+  it('should render stats-row children side by side', () => {
+    const blocks: Block[] = [
+      {
+        id: 'row-1',
+        type: 'stats-row',
+        props: { direction: 'row', cardWidth: '49%', cardHeight: '195', gap: 12 },
+        children: [
+          { id: 's1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },
+          { id: 'l1', type: 'top-languages', props: { username: 'user-one', theme: 'dark' } },
+        ],
+      },
+    ];
+
+    const result = renderMarkdown(blocks);
+    expect(result).toContain('width="49%"');
+    expect(result).toContain('height="195"');
+    expect(result).toContain('alt="GitHub Stats"');
+    expect(result).toContain('alt="Top Languages"');
+  });
+
+  it('should render stats-row children in a column when configured', () => {
+    const blocks: Block[] = [
+      {
+        id: 'row-1',
+        type: 'stats-row',
+        props: { direction: 'column', gap: 8 },
+        children: [
+          { id: 's1', type: 'stats-card', props: { username: 'user-one', theme: 'dark' } },
+          { id: 's2', type: 'streak-stats', props: { username: 'user-one', theme: 'dark' } },
+        ],
+      },
+    ];
+
+    const result = renderMarkdown(blocks);
+    expect((result.match(/alt="GitHub Stats"/g) || []).length).toBe(1);
+    expect((result.match(/alt="GitHub Streak"/g) || []).length).toBe(1);
+    expect((result.match(/<div align="center">/g) || []).length).toBeGreaterThanOrEqual(1);
+  });
 });

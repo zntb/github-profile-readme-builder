@@ -24,6 +24,7 @@ export type BlockType =
   // Tech Stack
   | 'skill-icons'
   // GitHub Stats
+  | 'stats-row'
   | 'stats-card'
   | 'top-languages'
   | 'streak-stats'
@@ -168,6 +169,13 @@ export interface StatsCardProps {
   titleColor?: string;
   iconColor?: string;
   borderRadius: number;
+}
+
+export interface StatsRowProps {
+  direction: 'row' | 'column';
+  gap: number;
+  cardWidth?: string;
+  cardHeight?: string;
 }
 
 export interface TopLanguagesProps {
@@ -596,6 +604,16 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
     name: 'GitHub Stats',
     description: 'Showcase your activity',
     blocks: [
+      {
+        type: 'stats-row',
+        label: 'Stats Row',
+        icon: 'Columns2',
+        defaultProps: {
+          direction: 'row',
+          gap: 12,
+          cardWidth: '49%',
+        },
+      },
       {
         type: 'stats-card',
         label: 'Stats Card',
