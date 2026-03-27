@@ -226,7 +226,7 @@ export async function GET(request: NextRequest) {
           Set GITHUB_TOKEN environment variable
         </text>
         <text x="425" y="90" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="11" opacity="0.7">
-          to fetch real streak for @${username}
+          to fetch real streak for @${escapeXml(username)}
         </text>
       </svg>`,
       {
