@@ -20,7 +20,8 @@ import { findBlock, useBuilderStore } from '@/lib/store';
 import { SKILL_ICONS, STATS_THEMES, type Block } from '@/lib/types';
 
 export function ConfigPanel() {
-  const { blocks, selectedBlockId, selectBlock, updateBlock } = useBuilderStore();
+  const { blocks, selectedBlockId, selectBlock, updateBlock, updateBlockChildren } =
+    useBuilderStore();
 
   if (!selectedBlockId) {
     return (
@@ -102,7 +103,11 @@ export function ConfigPanel() {
               placeholder="auto"
             />
           </FieldGroup>
-          <BlockConfigFields block={selectedBlock} updateBlock={updateBlock} />
+          <BlockConfigFields
+            block={selectedBlock}
+            updateBlock={updateBlock}
+            updateBlockChildren={updateBlockChildren}
+          />
         </div>
       </ScrollArea>
     </div>
@@ -112,12 +117,48 @@ export function ConfigPanel() {
 interface BlockConfigFieldsProps {
   block: Block;
   updateBlock: (id: string, props: Record<string, unknown>) => void;
+  updateBlockChildren: (id: string, children: Block[]) => void;
 }
 
-function BlockConfigFields({ block, updateBlock }: BlockConfigFieldsProps) {
+function BlockConfigFields({ block, updateBlock, updateBlockChildren }: BlockConfigFieldsProps) {
   const { type, props, id } = block;
   type StatsChildType = 'stats-card' | 'top-languages' | 'streak-stats';
   const statsChildTypes: StatsChildType[] = ['stats-card', 'top-languages', 'streak-stats'];
+
+  const createDefaultStatsChild = (statsType: StatsChildType): Block => {
+    const baseId = `block-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const baseProps = { username: 'github', theme: 'tokyonight', borderRadius: 10 };
+    switch (statsType) {
+      case 'stats-card':
+        return {
+          id: baseId,
+          type: 'stats-card',
+          props: {
+            ...baseProps,
+            showIcons: true,
+            hideBorder: false,
+            hideTitle: false,
+            hideRank: false,
+            layoutWidth: 'half',
+          },
+        };
+      case 'top-languages':
+        return {
+          id: baseId,
+          type: 'top-languages',
+          props: {
+            ...baseProps,
+            layout: 'compact',
+            hideBorder: false,
+            hideProgress: false,
+            langs_count: 8,
+            layoutWidth: 'half',
+          },
+        };
+      case 'streak-stats':
+        return { id: baseId, type: 'streak-stats', props: { ...baseProps, hideBorder: false } };
+    }
+  };
 
   const update = (key: string, value: unknown) => {
     updateBlock(id, { [key]: value });

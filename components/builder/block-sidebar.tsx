@@ -84,8 +84,7 @@ export function BlockSidebar() {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     BLOCK_CATEGORIES.map((c) => c.name),
   );
-  const { addBlock, addChildBlock, blocks, selectedBlockId, selectBlock, username } =
-    useBuilderStore();
+  const { addBlock, addChildBlock, blocks, selectedBlockId, username } = useBuilderStore();
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>
@@ -104,8 +103,6 @@ export function BlockSidebar() {
   ];
   const STATS_ROW_CHILD_BLOCKS: BlockType[] = ['stats-card', 'top-languages', 'streak-stats'];
   const selectedBlock = selectedBlockId ? findBlockById(blocks, selectedBlockId) : null;
-  const selectedStatsRowChildCount =
-    selectedBlock?.type === 'stats-row' ? (selectedBlock.children?.length ?? 0) : 0;
 
   const createBlock = (type: BlockType, defaultProps: Record<string, unknown>): Block => {
     const props = { ...defaultProps };
