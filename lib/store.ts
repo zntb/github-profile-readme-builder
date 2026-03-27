@@ -13,6 +13,7 @@ interface BuilderState {
   addBlock: (block: Block, index?: number) => void;
   removeBlock: (id: string) => void;
   updateBlock: (id: string, props: Record<string, unknown>) => void;
+  updateBlockChildren: (id: string, children: Block[]) => void;
   moveBlock: (fromIndex: number, toIndex: number) => void;
   selectBlock: (id: string | null) => void;
   setBlocks: (blocks: Block[]) => void;
@@ -73,6 +74,23 @@ export const useBuilderStore = create<BuilderState>()(
             return blocks.map((block) => {
               if (block.id === id) {
                 return { ...block, props: { ...block.props, ...props } };
+              }
+              if (block.children) {
+                return { ...block, children: updateInArray(block.children) };
+              }
+              return block;
+            });
+          };
+          return { blocks: updateInArray(state.blocks) };
+        });
+      },
+
+      updateBlockChildren: (id, children) => {
+        set((state) => {
+          const updateInArray = (blocks: Block[]): Block[] => {
+            return blocks.map((block) => {
+              if (block.id === id) {
+                return { ...block, children };
               }
               if (block.children) {
                 return { ...block, children: updateInArray(block.children) };
