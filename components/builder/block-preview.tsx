@@ -258,6 +258,19 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
 
+      case 'stats-row':
+        return (
+          <div className="rounded-lg border border-border bg-muted/40 p-3 text-center">
+            <div className="text-sm font-medium">Stats Row</div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {String(props.direction ?? 'row')} • {String(props.gap ?? 12)}px gap
+            </div>
+            <div className="text-xs text-muted-foreground mt-1">
+              {block.children?.length ?? 0} child card(s)
+            </div>
+          </div>
+        );
+
       case 'top-languages':
         return (
           <div className="flex justify-center">

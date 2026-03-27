@@ -43,6 +43,41 @@ export function renderBlock(block: Block, origin: string = ''): string {
       return childrenMd;
     }
 
+    case 'stats-row': {
+      const direction = (props.direction as string) || 'row';
+      const gap = Number(props.gap ?? 12);
+      const cardWidth = (props.cardWidth as string) || '49%';
+      const cardHeight = props.cardHeight as string | undefined;
+      const statsChildren =
+        children?.filter((child) =>
+          ['stats-card', 'top-languages', 'streak-stats'].includes(child.type),
+        ) || [];
+
+      if (statsChildren.length === 0) return '';
+
+      if (direction === 'column') {
+        return `<div align="center">\n\n${statsChildren.map((child) => renderBlock(child, origin)).join('\n\n')}\n\n</div>`;
+      }
+
+      const widthStyle = toCssSize(cardWidth) ?? '49%';
+      const heightStyle = toCssSize(cardHeight);
+      const spacingStyle = `margin-right: ${gap}px;`;
+      const images = statsChildren
+        .map((child, index) => {
+          const imageTag = getHalfWidthCardImageTag(child, origin);
+          if (!imageTag) return '';
+          const src = imageTag.match(/src="([^"]+)"/)?.[1];
+          const alt = imageTag.match(/alt="([^"]+)"/)?.[1] ?? 'GitHub Stats Card';
+          if (!src) return '';
+          const marginStyle = index < statsChildren.length - 1 ? spacingStyle : '';
+          const heightAttr = heightStyle ? ` height="${heightStyle}"` : '';
+          return `  <img src="${src}" alt="${alt}" width="${widthStyle}"${heightAttr} style="${marginStyle}" />`;
+        })
+        .filter(Boolean);
+
+      return `<div align="center">\n${images.join('\n')}\n</div>`;
+    }
+
     case 'divider': {
       if (props.type === 'gif' && props.gifUrl) {
         return `<img src="${props.gifUrl}" width="100%" />`;
@@ -340,6 +375,14 @@ export function renderBlock(block: Block, origin: string = ''): string {
     default:
       return '';
   }
+}
+
+function toCssSize(value: string | number | undefined): string | undefined {
+  if (value === undefined) return undefined;
+  if (typeof value === 'number') return `${value}`;
+  const trimmed = value.trim();
+  if (!trimmed) return undefined;
+  return /^[0-9]+$/.test(trimmed) ? trimmed : trimmed;
 }
 
 function renderStatsCardImageTag(block: Block, origin: string): string {

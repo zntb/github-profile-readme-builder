@@ -104,13 +104,15 @@ function resolvePreviewImageSize(block: Block): CSSProperties {
 function PreviewBlock({
   block,
   wrapperClassName = 'mb-4',
+  imageStyleOverride,
 }: {
   block: Block;
   wrapperClassName?: string;
+  imageStyleOverride?: CSSProperties;
 }) {
   const { type, props, children } = block;
   const globalUsername = useBuilderStore((state) => state.username);
-  const imageSizeStyle = resolvePreviewImageSize(block);
+  const imageSizeStyle = imageStyleOverride ?? resolvePreviewImageSize(block);
 
   const renderBlock = useMemo(() => {
     // Helper function to get username with global fallback
@@ -143,6 +145,38 @@ function PreviewBlock({
             ))}
           </div>
         );
+
+      case 'stats-row': {
+        const direction = (props.direction as 'row' | 'column') ?? 'row';
+        const gap = Number(props.gap ?? 12);
+        const cardWidth = (props.cardWidth as string) || '49%';
+        const cardHeight = props.cardHeight as string | undefined;
+        return (
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: direction,
+              gap: `${gap}px`,
+              justifyContent: 'center',
+              alignItems: direction === 'row' ? 'stretch' : 'center',
+              width: '100%',
+            }}
+          >
+            {children?.map((child) => (
+              <PreviewBlock
+                key={child.id}
+                block={child}
+                wrapperClassName="mb-0 flex-1"
+                imageStyleOverride={{
+                  width: direction === 'row' ? cardWidth : '100%',
+                  height: cardHeight,
+                  maxWidth: '100%',
+                }}
+              />
+            ))}
+          </div>
+        );
+      }
 
       case 'divider':
         return props.type === 'gif' && props.gifUrl ? (
