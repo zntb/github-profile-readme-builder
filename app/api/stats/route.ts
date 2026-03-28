@@ -115,7 +115,7 @@ function generateStandardStatsSvg(
     ? ''
     : `
     ${options.showIcons ? makeStatIcon('star', 25, 18, theme.icon) : ''}
-    <text x="${options.showIcons ? 46 : 25}" y="32" class="std-header">${escapeHtml(username)}'s GitHub Stats</text>
+    <text x="${options.showIcons ? 46 : 25}" y="32" class="std-header">${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}'s GitHub Stats</text>
     <line x1="25" y1="46" x2="${width - 25}" y2="46" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
   `;
 
@@ -236,7 +236,7 @@ function generateStatsSvg(
 
   ${
     !options.hideTitle
-      ? `<text x="26" y="36" class="header">${escapeHtml(username)}'s GitHub Stats</text>
+      ? `<text x="26" y="36" class="header">${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}'s GitHub Stats</text>
          <text x="26" y="54" class="subheader">Updated for ${currentYear}</text>
          <line x1="26" y1="66" x2="469" y2="66" class="divider"/>`
       : ''
