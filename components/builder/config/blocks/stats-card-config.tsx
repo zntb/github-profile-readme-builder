@@ -2,6 +2,13 @@
 
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 
 import { CardWidthField } from '../card-width-field';
@@ -9,6 +16,7 @@ import { FieldGroup } from '../field-group';
 import { ThemeField } from '../theme-field';
 
 interface StatsCardConfigProps {
+  layoutStyle: 'standard' | 'compact';
   layoutWidth: string;
   width: string;
   theme: string;
@@ -17,6 +25,7 @@ interface StatsCardConfigProps {
   hideTitle: boolean;
   hideRank: boolean;
   borderRadius: number;
+  onLayoutStyleChange: (value: 'standard' | 'compact') => void;
   onLayoutWidthChange: (value: string) => void;
   onWidthChange: (value: string | undefined) => void;
   onThemeChange: (value: string) => void;
@@ -28,6 +37,7 @@ interface StatsCardConfigProps {
 }
 
 export function StatsCardConfig({
+  layoutStyle,
   layoutWidth,
   width,
   theme,
@@ -36,6 +46,7 @@ export function StatsCardConfig({
   hideTitle,
   hideRank,
   borderRadius,
+  onLayoutStyleChange,
   onLayoutWidthChange,
   onWidthChange,
   onThemeChange,
@@ -47,6 +58,23 @@ export function StatsCardConfig({
 }: StatsCardConfigProps) {
   return (
     <>
+      {/* Card style variant */}
+      <FieldGroup>
+        <Label>Card Style</Label>
+        <Select
+          value={layoutStyle}
+          onValueChange={(v) => onLayoutStyleChange(v as 'standard' | 'compact')}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="standard">Standard — list view (195 px tall)</SelectItem>
+            <SelectItem value="compact">Compact — grid view (305 px tall)</SelectItem>
+          </SelectContent>
+        </Select>
+      </FieldGroup>
+
       <CardWidthField
         layoutWidth={layoutWidth}
         width={width}

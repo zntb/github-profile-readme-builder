@@ -157,6 +157,8 @@ export interface SkillIconsProps {
 export interface StatsCardProps {
   username: string;
   theme: string;
+  /** 'standard' = list-style 195px card (default). 'compact' = grid-style 305px card. */
+  layoutStyle?: 'standard' | 'compact';
   layoutWidth?: 'half' | 'full';
   cardWidth?: string;
   cardHeight?: string;
@@ -622,6 +624,7 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         defaultProps: {
           username: 'github',
           theme: 'tokyonight',
+          layoutStyle: 'standard',
           showIcons: true,
           hideBorder: false,
           hideTitle: false,

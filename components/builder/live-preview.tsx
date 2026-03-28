@@ -2,7 +2,7 @@
 'use client';
 
 import { Eye } from 'lucide-react';
-import { JSX, useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { JSX, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
 
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
@@ -21,22 +21,41 @@ function isHalfWidthGithubCard(block: Block): boolean {
 }
 
 // Inline SVG stats card component that fetches and renders SVG directly
+// Using key to force remount when params change - avoids setState in effect for resetting
 function StatsCardInline({ params, style }: { params: string; style?: CSSProperties }) {
+  // Force remount when params change to reset state naturally
+  return <StatsCardInlineCore key={params} params={params} style={style} />;
+}
+
+// Core component that actually renders the content
+function StatsCardInlineCore({ params, style }: { params: string; style?: CSSProperties }) {
   const [svgContent, setSvgContent] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
+  const mountedRef = useRef(true);
+
   useEffect(() => {
-    fetch(`/api/stats?${params}`)
+    const controller = new AbortController();
+
+    fetch(`/api/stats?${params}`, { signal: controller.signal })
       .then((res) => res.text())
       .then((svg) => {
-        setSvgContent(svg);
-        setLoading(false);
+        if (mountedRef.current) {
+          setSvgContent(svg);
+          setLoading(false);
+        }
       })
-      .catch(() => {
+      .catch((err) => {
+        if (err.name === 'AbortError' || !mountedRef.current) return;
         setError(true);
         setLoading(false);
       });
+
+    return () => {
+      mountedRef.current = false;
+      controller.abort();
+    };
   }, [params]);
 
   if (loading) {
@@ -492,9 +511,12 @@ function PreviewBlock({
         );
 
       case 'stats-card': {
+        // Forward layoutStyle → layout query param ('standard' | 'compact')
+        const layoutStyle = (props.layoutStyle as string | undefined) ?? 'standard';
         const statsParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
+          layout: layoutStyle,
           show_icons: props.showIcons ? 'true' : 'false',
           hide_border: props.hideBorder ? 'true' : 'false',
           hide_title: props.hideTitle ? 'true' : 'false',
