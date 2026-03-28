@@ -22,9 +22,9 @@ function generateCompactSvg(
   },
 ) {
   const langs = languages.slice(0, options.langsCount);
-  const width = 350;
-  // Increase internal available width for two columns (350 total - 50 margin = 300)
-  const colWidth = 150;
+  const width = 495;
+  // Two columns: (495 - 50 margin) / 2 = 222 per column
+  const colWidth = 222;
   const height = Math.max(170, 55 + Math.ceil(langs.length / 2) * 25 + 20);
 
   const progressBar = !options.hideProgress
@@ -92,7 +92,7 @@ function generateNormalSvg(
   },
 ) {
   const langs = languages.slice(0, options.langsCount);
-  const width = 350;
+  const width = 495;
   const height = Math.max(170, 45 + langs.length * 30 + 20);
 
   const langList = langs
@@ -101,8 +101,8 @@ function generateNormalSvg(
     <g transform="translate(0, ${i * 30 + 45})">
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
-      <text x="280" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
-      ${!options.hideProgress ? `<rect x="0" y="14" width="${(lang.percent / 100) * 320}" height="6" fill="#${lang.color}" rx="3"/>` : ''}
+      <text x="430" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      ${!options.hideProgress ? `<rect x="0" y="14" width="${(lang.percent / 100) * 445}" height="6" fill="#${lang.color}" rx="3"/>` : ''}
     </g>
   `,
     )
@@ -136,10 +136,10 @@ function generateDonutSvg(
   },
 ) {
   const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
-  const width = 350;
+  const width = 495;
   // Calculate height: base 100px + (number of langs * line height) + padding
   const height = Math.max(200, 45 + langs.length * 25 + 20);
-  const centerX = 90;
+  const centerX = 120;
   const centerY = height / 2 + 10; // Keep chart centered vertically relative to dynamic height
   const radius = 70;
 
@@ -165,10 +165,10 @@ function generateDonutSvg(
   const legend = langs
     .map(
       (lang, i) => `
-    <g transform="translate(185, ${55 + i * 25})">
+    <g transform="translate(265, ${55 + i * 25})">
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
-      <text x="140" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      <text x="210" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -203,10 +203,10 @@ function generateDonutVerticalSvg(
   },
 ) {
   const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
-  const width = 300;
+  const width = 400;
   // Chart area is ~200px, legend is 20px per item
   const height = 210 + langs.length * 20 + 30;
-  const centerX = 150;
+  const centerX = 200;
   const centerY = 110;
   const radius = 70;
 
@@ -232,10 +232,10 @@ function generateDonutVerticalSvg(
   const legend = langs
     .map(
       (lang, i) => `
-    <g transform="translate(60, ${210 + i * 20})">
+    <g transform="translate(80, ${210 + i * 20})">
       <circle cx="5" cy="5" r="5" fill="#${lang.color}"/>
       <text x="15" y="9" class="lang-name">${lang.name}</text>
-      <text x="180" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      <text x="240" y="9" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -251,7 +251,7 @@ function generateDonutVerticalSvg(
 
   <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
 
-  <text x="150" y="35" text-anchor="middle" class="header">Most Used Languages</text>
+  <text x="200" y="35" text-anchor="middle" class="header">Most Used Languages</text>
   <g>${segments.join('')}</g>
   <circle cx="${centerX}" cy="${centerY}" r="40" fill="#${theme.bg}"/>
   ${legend}
@@ -270,9 +270,9 @@ function generatePieSvg(
   },
 ) {
   const langs = languages.slice(0, options.langsCount); // Removed hardcoded limit
-  const width = 350;
+  const width = 495;
   const height = Math.max(220, 45 + langs.length * 25 + 20);
-  const centerX = 90;
+  const centerX = 120;
   const centerY = height / 2 + 10;
   const radius = 75;
 
@@ -298,10 +298,10 @@ function generatePieSvg(
   const legend = langs
     .map(
       (lang, i) => `
-    <g transform="translate(185, ${55 + i * 25})">
+    <g transform="translate(265, ${55 + i * 25})">
       <rect x="0" y="0" width="10" height="10" rx="2" fill="#${lang.color}"/>
       <text x="18" y="10" class="lang-name">${lang.name}</text>
-      <text x="140" y="10" class="lang-percent">${lang.percent.toFixed(1)}%</text>
+      <text x="210" y="10" class="lang-percent">${lang.percent.toFixed(1)}%</text>
     </g>
   `,
     )
@@ -368,12 +368,12 @@ export async function GET(request: NextRequest) {
     } catch (error) {
       console.error('Error fetching language stats:', error);
       return new NextResponse(
-        `<svg width="350" height="120" xmlns="http://www.w3.org/2000/svg">
-          <rect width="350" height="120" fill="#${theme.bg}" rx="10"/>
-          <text x="175" y="50" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14">
+        `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
+          <rect width="495" height="120" fill="#${theme.bg}" rx="10"/>
+          <text x="247.5" y="50" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14">
             Error fetching languages for @${username}
           </text>
-          <text x="175" y="75" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" opacity="0.7">
+          <text x="247.5" y="75" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" opacity="0.7">
             User may not exist or API rate limit exceeded
           </text>
         </svg>`,
@@ -387,15 +387,15 @@ export async function GET(request: NextRequest) {
     }
   } else {
     return new NextResponse(
-      `<svg width="350" height="120" xmlns="http://www.w3.org/2000/svg">
-        <rect width="350" height="120" fill="#${theme.bg}" rx="10" stroke="#${theme.border}"/>
-        <text x="175" y="45" text-anchor="middle" fill="#${theme.title}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14" font-weight="600">
+      `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
+        <rect width="495" height="120" fill="#${theme.bg}" rx="10" stroke="#${theme.border}"/>
+        <text x="247.5" y="45" text-anchor="middle" fill="#${theme.title}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14" font-weight="600">
           GitHub Token Required
         </text>
-        <text x="175" y="70" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
+        <text x="247.5" y="70" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
           Set GITHUB_TOKEN environment variable
         </text>
-        <text x="175" y="90" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="11" opacity="0.7">
+        <text x="247.5" y="90" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="11" opacity="0.7">
           to fetch real languages for @${username}
         </text>
       </svg>`,

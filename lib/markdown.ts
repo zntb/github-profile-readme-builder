@@ -361,8 +361,14 @@ export function renderBlock(block: Block, origin: string = ''): string {
         // Custom quote
         return `<div align="center">\n\n> "${quote}"\n> — ${author}\n\n</div>`;
       }
-      // Random quote from API
-      const url = `https://quotes-github-readme.vercel.app/api?type=${type}&theme=${theme}`;
+      // Random quote from local API
+      const params = {
+        type,
+        theme,
+      };
+      const url = origin
+        ? buildExternalUrl('quotes', params, origin)
+        : buildInternalUrl('quotes', params);
       return `<div align="center">\n  <img src="${url}" alt="Quote" />\n</div>`;
     }
 

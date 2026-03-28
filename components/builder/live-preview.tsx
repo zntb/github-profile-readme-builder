@@ -2,7 +2,7 @@
 'use client';
 
 import { Eye } from 'lucide-react';
-import { JSX, useMemo, type CSSProperties } from 'react';
+import { JSX, useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
@@ -18,6 +18,54 @@ function isHalfWidthGithubCard(block: Block): boolean {
   if (layoutWidth === 'full') return false;
   // Default to full width (100%) for all card types
   return false;
+}
+
+// Inline SVG stats card component that fetches and renders SVG directly
+function StatsCardInline({ params, style }: { params: string; style?: CSSProperties }) {
+  const [svgContent, setSvgContent] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch(`/api/stats?${params}`)
+      .then((res) => res.text())
+      .then((svg) => {
+        setSvgContent(svg);
+        setLoading(false);
+      })
+      .catch(() => {
+        setError(true);
+        setLoading(false);
+      });
+  }, [params]);
+
+  if (loading) {
+    return <div className="text-center p-4 text-muted-foreground">Loading...</div>;
+  }
+  if (error || !svgContent) {
+    return (
+      <div className="text-center p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20">
+        <p className="text-muted-foreground text-sm">Failed to load stats</p>
+      </div>
+    );
+  }
+
+  // Extract maxWidth from style to constrain the SVG
+  const maxWidth = style?.maxWidth;
+  const containerStyle: CSSProperties = {
+    ...style,
+    width: maxWidth || '100%',
+    maxWidth: maxWidth || '100%',
+  };
+
+  return (
+    <div className="text-center" style={containerStyle}>
+      <div
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+        style={{ width: '100%', height: 'auto', maxWidth: '100%' }}
+      />
+    </div>
+  );
 }
 
 export function LivePreview({ blocks }: LivePreviewProps) {
@@ -84,7 +132,7 @@ export function LivePreview({ blocks }: LivePreviewProps) {
 function resolvePreviewImageSize(block: Block): CSSProperties {
   const width = block.props.cardWidth as string | number | undefined;
   const height = block.props.cardHeight as string | number | undefined;
-  const fallbackWidth = isHalfWidthGithubCard(block) ? '49%' : undefined;
+  const fallbackWidth = isHalfWidthGithubCard(block) ? '48%' : undefined;
   const widthValue = width ?? fallbackWidth;
 
   const toCssSize = (value?: string | number) => {
@@ -98,7 +146,7 @@ function resolvePreviewImageSize(block: Block): CSSProperties {
   return {
     width: toCssSize(widthValue),
     height: toCssSize(height),
-    maxWidth: '100%',
+    maxWidth: '350px',
   };
 }
 
@@ -150,7 +198,7 @@ function PreviewBlock({
       case 'stats-row': {
         const direction = (props.direction as 'row' | 'column') ?? 'row';
         const gap = Number(props.gap ?? 12);
-        const cardWidth = (props.cardWidth as string) || '49%';
+        const cardWidth = (props.cardWidth as string) || '48%';
         const cardHeight = props.cardHeight as string | undefined;
         return (
           <div
@@ -171,7 +219,7 @@ function PreviewBlock({
                 imageStyleOverride={{
                   width: direction === 'row' ? cardWidth : '100%',
                   height: cardHeight,
-                  maxWidth: '100%',
+                  maxWidth: '350px',
                 }}
               />
             ))}
@@ -443,7 +491,7 @@ function PreviewBlock({
           </div>
         );
 
-      case 'stats-card':
+      case 'stats-card': {
         const statsParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
@@ -453,15 +501,21 @@ function PreviewBlock({
           hide_rank: props.hideRank ? 'true' : 'false',
           border_radius: String(props.borderRadius),
         });
+        const username = getUsername(props.username as string);
+        if (!username || username === 'github') {
+          return (
+            <div className="text-center p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20">
+              <p className="text-muted-foreground text-sm">Enter a GitHub username to see stats</p>
+            </div>
+          );
+        }
+        // Use fetch to get SVG content and render inline
         return (
           <div className="text-center">
-            <img
-              src={`/api/stats?${statsParams.toString()}`}
-              alt="GitHub Stats"
-              style={imageSizeStyle}
-            />
+            <StatsCardInline params={statsParams.toString()} style={imageSizeStyle} />
           </div>
         );
+      }
 
       case 'top-languages':
         const langsParams = new URLSearchParams({
@@ -550,10 +604,13 @@ function PreviewBlock({
             </blockquote>
           );
         }
-        const quoteUrl = `https://quotes-github-readme.vercel.app/api?type=${props.type}&theme=${props.theme}`;
+        const quoteParams = new URLSearchParams({
+          type: props.type as string,
+          theme: props.theme as string,
+        });
         return (
           <div className="text-center">
-            <img src={quoteUrl} alt="Quote" />
+            <img src={`/api/quotes?${quoteParams.toString()}`} alt="Quote" />
           </div>
         );
 
