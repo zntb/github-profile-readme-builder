@@ -2,7 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { calculateRank, fetchUserStats, type GitHubStats } from '@/lib/github';
 import { getStatsTheme } from '@/lib/themes';
-import { escapeHtml } from '@/lib/utils';
+import { escapeSvg } from '@/lib/utils';
+
+/**
+ * Validate that a string is a valid hex color (3 or 6 characters).
+ */
+function isValidHexColor(color: string): boolean {
+  return /^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/.test(color);
+}
 
 function formatCompact(num: number): string {
   if (num >= 1_000_000) return `${(num / 1_000_000).toFixed(1)}M`;
@@ -115,7 +122,7 @@ function generateStandardStatsSvg(
     ? ''
     : `
     ${options.showIcons ? makeStatIcon('star', 25, 18, theme.icon) : ''}
-    <text x="${options.showIcons ? 46 : 25}" y="32" class="std-header">${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}'s GitHub Stats</text>
+    <text x="${options.showIcons ? 46 : 25}" y="32" class="std-header">${escapeSvg(username)}'s GitHub Stats</text>
     <line x1="25" y1="46" x2="${width - 25}" y2="46" stroke="#${theme.border}" stroke-width="1" stroke-opacity="0.5"/>
   `;
 
@@ -236,7 +243,7 @@ function generateStatsSvg(
 
   ${
     !options.hideTitle
-      ? `<text x="26" y="36" class="header">${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}'s GitHub Stats</text>
+      ? `<text x="26" y="36" class="header">${escapeSvg(username)}'s GitHub Stats</text>
          <text x="26" y="54" class="subheader">Updated for ${currentYear}</text>
          <line x1="26" y1="66" x2="469" y2="66" class="divider"/>`
       : ''
@@ -307,12 +314,23 @@ export async function GET(request: NextRequest) {
 
   const theme = getStatsTheme(themeName);
 
-  // Per-request colour overrides
-  if (searchParams.get('bg_color')) theme.bg = searchParams.get('bg_color')!.replace('#', '');
-  if (searchParams.get('text_color')) theme.text = searchParams.get('text_color')!.replace('#', '');
-  if (searchParams.get('title_color'))
-    theme.title = searchParams.get('title_color')!.replace('#', '');
-  if (searchParams.get('icon_color')) theme.icon = searchParams.get('icon_color')!.replace('#', '');
+  // Per-request colour overrides (with validation)
+  const bgColor = searchParams.get('bg_color');
+  if (bgColor && isValidHexColor(bgColor.replace('#', ''))) {
+    theme.bg = bgColor.replace('#', '');
+  }
+  const textColor = searchParams.get('text_color');
+  if (textColor && isValidHexColor(textColor.replace('#', ''))) {
+    theme.text = textColor.replace('#', '');
+  }
+  const titleColor = searchParams.get('title_color');
+  if (titleColor && isValidHexColor(titleColor.replace('#', ''))) {
+    theme.title = titleColor.replace('#', '');
+  }
+  const iconColor = searchParams.get('icon_color');
+  if (iconColor && isValidHexColor(iconColor.replace('#', ''))) {
+    theme.icon = iconColor.replace('#', '');
+  }
 
   const token = process.env.GITHUB_TOKEN;
 
@@ -326,11 +344,12 @@ export async function GET(request: NextRequest) {
     } catch {
       const errW = layout === 'standard' ? 495 : 350;
       const errH = layout === 'standard' ? 195 : 80;
+      const escapedUsername = escapeSvg(username);
       return new NextResponse(
         `<svg width="${errW}" height="${errH}" xmlns="http://www.w3.org/2000/svg">
           <rect width="${errW}" height="${errH}" fill="#${theme.bg}" rx="10"/>
           <text x="${errW / 2}" y="${errH / 2 - 8}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
-            Error fetching stats for @${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}
+            Error fetching stats for @${escapedUsername}
           </text>
           <text x="${errW / 2}" y="${errH / 2 + 12}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
             User may not exist or API rate limit exceeded
@@ -352,7 +371,7 @@ export async function GET(request: NextRequest) {
           Set GITHUB_TOKEN environment variable
         </text>
         <text x="${noTokW / 2}" y="${noTokH / 2 + 18}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
-          to fetch real stats for @${escapeHtml(username).replace(/&quot;/g, '&amp;quot;')}
+          to fetch real stats for @${escapeSvg(username)}
         </text>
       </svg>`,
       { headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=60' } },
