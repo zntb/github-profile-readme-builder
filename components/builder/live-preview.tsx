@@ -69,19 +69,19 @@ function StatsCardInlineCore({ params, style }: { params: string; style?: CSSPro
     );
   }
 
-  // Extract maxWidth from style to constrain the SVG
-  const maxWidth = style?.maxWidth;
+  const hasExplicitWidth = Boolean(style?.width || style?.maxWidth);
   const containerStyle: CSSProperties = {
     ...style,
-    width: maxWidth || '100%',
-    maxWidth: maxWidth || '100%',
+    display: 'inline-block',
+    width: hasExplicitWidth ? style?.width : undefined,
+    maxWidth: hasExplicitWidth ? style?.maxWidth : undefined,
   };
 
   return (
     <div className="text-center" style={containerStyle}>
       <div
         dangerouslySetInnerHTML={{ __html: svgContent }}
-        style={{ width: '100%', height: 'auto', maxWidth: '100%' }}
+        style={{ width: hasExplicitWidth ? '100%' : undefined, height: 'auto' }}
       />
     </div>
   );
@@ -165,7 +165,6 @@ function resolvePreviewImageSize(block: Block): CSSProperties {
   return {
     width: toCssSize(widthValue),
     height: toCssSize(height),
-    maxWidth: '350px',
   };
 }
 
@@ -238,7 +237,6 @@ function PreviewBlock({
                 imageStyleOverride={{
                   width: direction === 'row' ? cardWidth : '100%',
                   height: cardHeight,
-                  maxWidth: '350px',
                 }}
               />
             ))}
