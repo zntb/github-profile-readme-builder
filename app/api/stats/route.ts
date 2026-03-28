@@ -236,7 +236,7 @@ function generateStatsSvg(
 
   ${
     !options.hideTitle
-      ? `<text x="26" y="36" class="header">${username}'s GitHub Stats</text>
+      ? `<text x="26" y="36" class="header">${escapeHtml(username)}'s GitHub Stats</text>
          <text x="26" y="54" class="subheader">Updated for ${currentYear}</text>
          <line x1="26" y1="66" x2="469" y2="66" class="divider"/>`
       : ''
