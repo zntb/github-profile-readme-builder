@@ -327,6 +327,7 @@ export function BlockConfigFields({
     case 'stats-card':
       return (
         <StatsCardConfig
+          layoutStyle={((props.layoutStyle as string) ?? 'standard') as 'standard' | 'compact'}
           layoutWidth={(props.layoutWidth as string) ?? 'full'}
           width={(props.width as string) ?? ''}
           theme={(props.theme as string) ?? 'default'}
@@ -335,6 +336,7 @@ export function BlockConfigFields({
           hideTitle={Boolean(props.hideTitle)}
           hideRank={Boolean(props.hideRank)}
           borderRadius={Number(props.borderRadius) || 10}
+          onLayoutStyleChange={(v) => update('layoutStyle', v)}
           onLayoutWidthChange={(v) => update('layoutWidth', v)}
           onWidthChange={(v) => update('width', v)}
           onThemeChange={(v) => update('theme', v)}

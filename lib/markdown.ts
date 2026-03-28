@@ -396,6 +396,7 @@ function renderStatsCardImageTag(block: Block, origin: string): string {
   const {
     username: blockUsername,
     theme,
+    layoutStyle,
     showIcons,
     hideBorder,
     hideTitle,
@@ -413,6 +414,8 @@ function renderStatsCardImageTag(block: Block, origin: string): string {
   const params = {
     username,
     theme,
+    // 'layoutStyle' maps to the API's 'layout' param ('standard' | 'compact')
+    layout: (layoutStyle as string | undefined) ?? 'standard',
     show_icons: showIcons ? 'true' : 'false',
     hide_border: hideBorder ? 'true' : 'false',
     hide_title: hideTitle ? 'true' : 'false',
@@ -548,11 +551,9 @@ export function renderMarkdown(blocks: Block[], origin: string = ''): string {
         };
 
         // Get individual card widths from props, default to 50%
-        // Check for width property explicitly with different fallbacks
         const firstWidthRaw = block.props.width;
         const secondWidthRaw = nextBlock.props.width;
 
-        // Use width if it's a non-empty string, otherwise default to 50%
         const firstWidth =
           typeof firstWidthRaw === 'string' && firstWidthRaw.trim() !== ''
             ? firstWidthRaw.trim()
