@@ -34,6 +34,7 @@ function StatsCardInlineCore({ params, style }: { params: string; style?: CSSPro
   const [error, setError] = useState(false);
 
   const mountedRef = useRef(true);
+  const svgContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -58,6 +59,18 @@ function StatsCardInlineCore({ params, style }: { params: string; style?: CSSPro
     };
   }, [params]);
 
+  useEffect(() => {
+    const svg = svgContainerRef.current?.querySelector('svg');
+    if (!svg) return;
+
+    svg.setAttribute('width', '100%');
+    svg.removeAttribute('height');
+    svg.style.width = '100%';
+    svg.style.height = 'auto';
+    svg.style.display = 'block';
+    svg.style.maxWidth = '100%';
+  }, [svgContent]);
+
   if (loading) {
     return <div className="text-center p-4 text-muted-foreground">Loading...</div>;
   }
@@ -80,6 +93,7 @@ function StatsCardInlineCore({ params, style }: { params: string; style?: CSSPro
   return (
     <div className="text-center" style={containerStyle}>
       <div
+        ref={svgContainerRef}
         dangerouslySetInnerHTML={{ __html: svgContent }}
         style={{ width: hasExplicitWidth ? '100%' : undefined, height: 'auto' }}
       />
@@ -230,15 +244,23 @@ function PreviewBlock({
             }}
           >
             {children?.map((child) => (
-              <PreviewBlock
+              <div
                 key={child.id}
-                block={child}
-                wrapperClassName="mb-0 flex-1"
-                imageStyleOverride={{
+                style={{
                   width: direction === 'row' ? cardWidth : '100%',
-                  height: cardHeight,
+                  maxWidth: '100%',
                 }}
-              />
+              >
+                <PreviewBlock
+                  block={child}
+                  wrapperClassName="mb-0"
+                  imageStyleOverride={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    height: cardHeight,
+                  }}
+                />
+              </div>
             ))}
           </div>
         );
