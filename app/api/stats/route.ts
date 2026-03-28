@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { calculateRank, fetchUserStats, type GitHubStats } from '@/lib/github';
 import { getStatsTheme } from '@/lib/themes';
+import { escapeHtml } from '@/lib/utils';
 
 function generateStatsSvg(
   username: string,
@@ -160,7 +161,7 @@ export async function GET(request: NextRequest) {
         `<svg width="350" height="80" xmlns="http://www.w3.org/2000/svg">
           <rect width="350" height="80" fill="#${theme.bg}" rx="10"/>
           <text x="175" y="35" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
-            Error fetching stats for @${username}
+            Error fetching stats for @${escapeHtml(username)}
           </text>
           <text x="175" y="55" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
             User may not exist or API rate limit exceeded
@@ -186,7 +187,7 @@ export async function GET(request: NextRequest) {
           Set GITHUB_TOKEN environment variable
         </text>
         <text x="165" y="65" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
-          to fetch real stats for @${username}
+          to fetch real stats for @${escapeHtml(username)}
         </text>
       </svg>`,
       {

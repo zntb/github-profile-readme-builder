@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { fetchLanguageStats, languageColors } from '@/lib/github';
 import { getLangTheme } from '@/lib/themes';
+import { escapeHtml } from '@/lib/utils';
 
 interface LanguageData {
   name: string;
@@ -370,7 +371,7 @@ export async function GET(request: NextRequest) {
         `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="495" height="120" fill="#${theme.bg}" rx="10"/>
           <text x="247.5" y="50" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14">
-            Error fetching languages for @${username}
+            Error fetching languages for @${escapeHtml(username)}
           </text>
           <text x="247.5" y="75" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" opacity="0.7">
             User may not exist or API rate limit exceeded
@@ -395,7 +396,7 @@ export async function GET(request: NextRequest) {
           Set GITHUB_TOKEN environment variable
         </text>
         <text x="247.5" y="90" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="11" opacity="0.7">
-          to fetch real languages for @${username}
+          to fetch real languages for @${escapeHtml(username)}
         </text>
       </svg>`,
       {
