@@ -232,8 +232,8 @@ function generateTrophySvg(
     noBg: boolean;
   },
 ) {
-  const trophyWidth = 110;
-  const trophyHeight = 120;
+  const trophyWidth = 80;
+  const trophyHeight = 90;
   const { column, row, marginW, marginH } = options;
 
   const totalTrophies = Math.min(column * row, trophies.length);
@@ -262,14 +262,14 @@ function generateTrophySvg(
       return `
       <g transform="translate(${x}, ${y})">
         ${!options.noFrame ? `<rect x="0" y="0" width="${trophyWidth}" height="${trophyHeight}" rx="6" fill="${options.noBg ? 'none' : '#' + theme.bg}" stroke="#${theme.frame}" stroke-width="1"/>` : ''}
-        
+
         <!-- Trophy -->
-        <g transform="translate(${trophyWidth / 2}, 45)">
-          <path transform="translate(-20, -25)" d="M20 5 L25 15 L35 15 L27 22 L30 32 L20 26 L10 32 L13 22 L5 15 L15 15 Z" fill="#${rankColors[trophy.rank] || theme.trophy}"/>
+        <g transform="translate(${trophyWidth / 2}, 35)">
+          <path transform="translate(-15, -18)" d="M15 4 L19 11 L26 11 L20 16 L23 24 L15 19 L7 24 L10 16 L4 11 L11 11 Z" fill="#${rankColors[trophy.rank] || theme.trophy}"/>
         </g>
-        
-        <text x="${trophyWidth / 2}" y="72" text-anchor="middle" class="trophy-title">${trophy.name}</text>
-        <text x="${trophyWidth / 2}" y="92" text-anchor="middle" class="trophy-rank" fill="#${rankColors[trophy.rank] || theme.trophy}">${trophy.rank}</text>
+
+        <text x="${trophyWidth / 2}" y="55" text-anchor="middle" class="trophy-title">${trophy.name}</text>
+        <text x="${trophyWidth / 2}" y="70" text-anchor="middle" class="trophy-rank" fill="#${rankColors[trophy.rank] || theme.trophy}">${trophy.rank}</text>
       </g>
     `;
     })
@@ -283,7 +283,7 @@ function generateTrophySvg(
   </style>
 
   ${!options.noBg ? `<rect x="0" y="0" width="${width}" height="${height}" fill="#${theme.bg}" rx="10"/>` : ''}
-  
+
   ${trophyCards}
 </svg>
   `.trim();
@@ -294,8 +294,8 @@ export async function GET(request: NextRequest) {
 
   const username = searchParams.get('username') || 'github';
   const themeName = searchParams.get('theme') || 'default';
-  const column = parseInt(searchParams.get('column') || '6');
-  const row = parseInt(searchParams.get('row') || '1');
+  const column = parseInt(searchParams.get('column') || '4');
+  const row = parseInt(searchParams.get('row') || '2');
   const marginW = parseInt(searchParams.get('margin_w') || '15');
   const marginH = parseInt(searchParams.get('margin_h') || '15');
   const noFrame = searchParams.get('no_frame') === 'true';
@@ -324,8 +324,7 @@ export async function GET(request: NextRequest) {
           'Cache-Control': 'public, max-age=3600',
         },
       });
-    } catch (error) {
-      console.error('Error fetching trophies:', error);
+    } catch {
       return new NextResponse(
         `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="495" height="120" fill="#${theme.bg}" rx="10"/>

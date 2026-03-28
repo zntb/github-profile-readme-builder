@@ -84,7 +84,7 @@ function generateActivityGraph(
   </style>
 
   <rect x="0.5" y="0.5" rx="10" ry="10" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
-  
+
   <text x="25" y="28" class="header">${username}'s Contribution Graph</text>
 
   <!-- Grid -->
@@ -164,8 +164,7 @@ export async function GET(request: NextRequest) {
           'Cache-Control': 'public, max-age=3600',
         },
       });
-    } catch (error) {
-      console.error('Error fetching activity:', error);
+    } catch {
       return new NextResponse(
         `<svg width="850" height="120" xmlns="http://www.w3.org/2000/svg">
           <rect width="850" height="120" fill="#${theme.bg}" rx="10"/>

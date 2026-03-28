@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 
 import { calculateRank, fetchUserStats, type GitHubStats } from '@/lib/github';
 import { getStatsTheme } from '@/lib/themes';
+import { escapeHtml } from '@/lib/utils';
 
 function generateStatsSvg(
   username: string,
@@ -20,15 +21,28 @@ function generateStatsSvg(
   // Match the default Top Languages "normal" SVG height when langs_count=8.
   const height = 305;
 
-  const iconSvg = (x: number, y: number, path: string) =>
+  const iconSvg = (x: number, y: number, path: string, delay: number = 0): string =>
     options.showIcons
-      ? `<svg x="${x}" y="${y}" width="16" height="16" viewBox="0 0 16 16" fill="#${theme.icon}">${path}</svg>`
+      ? `<svg x="${x}" y="${y}" width="16" height="16" viewBox="0 0 16 16" fill="#${theme.icon}" class="icon" style="animation-delay: ${delay}ms">${path}</svg>`
       : '';
 
   const currentYear = new Date().getFullYear();
 
   return `
-<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <linearGradient id="cardGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#${theme.bg};stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#${theme.bg};stop-opacity:0.95" />
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="2" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
   <style>
     .header { font: 700 20px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.title}; animation: fadeInAnimation 0.8s ease-in-out forwards; }
     .subheader { font: 500 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #${theme.text}; opacity: 0.7; }
@@ -44,7 +58,7 @@ function generateStatsSvg(
     @keyframes fadeInAnimation { from { opacity: 0; } to { opacity: 1; } }
   </style>
 
-  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="#${theme.bg}" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}"/>
+  <rect x="0.5" y="0.5" rx="${options.borderRadius}" ry="${options.borderRadius}" width="${width - 1}" height="${height - 1}" fill="url(#cardGradient)" stroke="${options.hideBorder ? 'none' : '#' + theme.border}" stroke-width="${options.hideBorder ? 0 : 1}" class="hover-highlight"/>
 
   ${
     !options.hideTitle
@@ -114,7 +128,7 @@ export async function GET(request: NextRequest) {
   const hideBorder = searchParams.get('hide_border') === 'true';
   const hideTitle = searchParams.get('hide_title') === 'true';
   const hideRank = searchParams.get('hide_rank') === 'true';
-  const borderRadius = parseInt(searchParams.get('border_radius') || '10');
+  const borderRadius = parseInt(searchParams.get('border_radius') || '10', 10);
 
   const theme = getStatsTheme(themeName);
 
@@ -141,16 +155,15 @@ export async function GET(request: NextRequest) {
     try {
       stats = await fetchUserStats(username, token);
       rank = calculateRank(stats);
-    } catch (error) {
-      console.error('Error fetching GitHub stats:', error);
+    } catch {
       // Return error SVG
       return new NextResponse(
-        `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
-          <rect width="495" height="120" fill="#${theme.bg}" rx="10"/>
-          <text x="247.5" y="50" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14">
-            Error fetching stats for @${username}
+        `<svg width="350" height="80" xmlns="http://www.w3.org/2000/svg">
+          <rect width="350" height="80" fill="#${theme.bg}" rx="10"/>
+          <text x="175" y="35" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
+            Error fetching stats for @${escapeHtml(username)}
           </text>
-          <text x="247.5" y="75" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" opacity="0.7">
+          <text x="175" y="55" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
             User may not exist or API rate limit exceeded
           </text>
         </svg>`,
@@ -165,16 +178,16 @@ export async function GET(request: NextRequest) {
   } else {
     // No token - return message asking to set up token
     return new NextResponse(
-      `<svg width="495" height="120" xmlns="http://www.w3.org/2000/svg">
-        <rect width="495" height="120" fill="#${theme.bg}" rx="10" stroke="#${theme.border}"/>
-        <text x="247.5" y="45" text-anchor="middle" fill="#${theme.title}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="14" font-weight="600">
+      `<svg width="330" height="80" xmlns="http://www.w3.org/2000/svg">
+        <rect width="330" height="80" fill="#${theme.bg}" rx="10" stroke="#${theme.border}"/>
+        <text x="165" y="30" text-anchor="middle" fill="#${theme.title}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" font-weight="600">
           GitHub Token Required
         </text>
-        <text x="247.5" y="70" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
+        <text x="165" y="50" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10">
           Set GITHUB_TOKEN environment variable
         </text>
-        <text x="247.5" y="90" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="11" opacity="0.7">
-          to fetch real stats for @${username}
+        <text x="165" y="65" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
+          to fetch real stats for @${escapeHtml(username)}
         </text>
       </svg>`,
       {
