@@ -125,7 +125,6 @@ function PreviewBlock({
 
   const childrenKey = useMemo(() => children?.map((child) => child.id).join(',') ?? '', [children]);
 
-  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const renderBlock = useMemo(() => {
     const getUsername = (blockUsername: string) => {
       return (!blockUsername || blockUsername === 'github') && globalUsername
@@ -627,6 +626,7 @@ function PreviewBlock({
       default:
         return null;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [type, propsKey, childrenKey, globalUsername]);
 
   return <div className={wrapperClassName}>{renderBlock}</div>;
