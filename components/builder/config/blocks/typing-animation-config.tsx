@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { FieldGroup } from '../field-group';
+import { SimpleColorPicker } from '../gradient-color-picker';
 
 interface TypingAnimationConfigProps {
   lines: string[];
@@ -66,10 +67,12 @@ export function TypingAnimationConfig({
           </Button>
         </div>
       </FieldGroup>
-      <FieldGroup>
-        <Label>Color (hex without #)</Label>
-        <Input value={color} onChange={(e) => onColorChange(e.target.value)} placeholder="36BCF7" />
-      </FieldGroup>
+      <SimpleColorPicker
+        label="Color"
+        value={color}
+        onChange={onColorChange}
+        placeholder="36BCF7"
+      />
       <FieldGroup>
         <Label>Width (px)</Label>
         <Input
