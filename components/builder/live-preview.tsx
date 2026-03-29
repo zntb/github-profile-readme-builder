@@ -783,27 +783,36 @@ function PreviewBlock({
       }
 
       case 'quote': {
-        if (props.quote && props.author) {
-          return (
-            <blockquote className="border-l-4 border-primary pl-4 italic my-4">
-              <p>&ldquo;{props.quote as string}&rdquo;</p>
-              <cite className="text-muted-foreground">— {props.author as string}</cite>
-            </blockquote>
-          );
-        }
+        const quoteText = String(props.quote ?? '');
+        const quoteAuthor = String(props.author ?? '');
+        const quoteTheme = String(props.theme ?? 'tokyonight');
+        const quoteType = String(props.type ?? 'default');
+
         const quoteParams = new URLSearchParams({
-          type: props.type as string,
-          theme: props.theme as string,
+          type: quoteType,
+          theme: quoteTheme,
+          ...(quoteText ? { quote: quoteText } : {}),
+          ...(quoteAuthor ? { author: quoteAuthor } : {}),
         });
         const quoteUrl = `/api/quotes?${quoteParams.toString()}`;
-        const prefetchedSrc = getPrefetchedSrc(quoteUrl);
+
+        // Show custom quote text if available, otherwise show random quote image
+        if (quoteText && quoteAuthor) {
+          return (
+            <div className="text-center p-4 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg">
+              <p className="text-sm italic text-foreground">&ldquo;{quoteText}&rdquo;</p>
+              <p className="text-xs text-muted-foreground mt-1">— {quoteAuthor}</p>
+              <p className="text-xs text-muted-foreground/50 mt-2">Theme: {quoteTheme}</p>
+            </div>
+          );
+        }
+
         return (
           <div className="text-center">
-            <img
-              src={prefetchedSrc ?? quoteUrl}
-              alt="Quote"
-              style={{ maxWidth: '100%', height: 'auto' }}
-            />
+            <p className="text-xs text-muted-foreground mb-2">
+              Random Quote ({quoteType}, {quoteTheme})
+            </p>
+            <img src={quoteUrl} alt="Quote" style={{ maxWidth: '100%', height: 'auto' }} />
           </div>
         );
       }
