@@ -2,7 +2,7 @@
 'use client';
 
 import { Eye } from 'lucide-react';
-import { JSX, useEffect, useMemo, useRef, useState, type CSSProperties } from 'react';
+import { JSX, useMemo, type CSSProperties } from 'react';
 
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
@@ -16,82 +16,13 @@ function isHalfWidthGithubCard(block: Block): boolean {
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
-  // Default to full width (100%) for all card types
   return false;
-}
-
-// Inline SVG stats card component that fetches and renders SVG directly
-// Using key to force remount when params change - avoids setState in effect for resetting
-function StatsCardInline({ params, style }: { params: string; style?: CSSProperties }) {
-  // Force remount when params change to reset state naturally
-  return <StatsCardInlineCore key={params} params={params} style={style} />;
-}
-
-// Core component that actually renders the content
-function StatsCardInlineCore({ params, style }: { params: string; style?: CSSProperties }) {
-  const [svgContent, setSvgContent] = useState<string>('');
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(false);
-
-  const mountedRef = useRef(true);
-
-  useEffect(() => {
-    const controller = new AbortController();
-
-    fetch(`/api/stats?${params}`, { signal: controller.signal })
-      .then((res) => res.text())
-      .then((svg) => {
-        if (mountedRef.current) {
-          setSvgContent(svg);
-          setLoading(false);
-        }
-      })
-      .catch((err) => {
-        if (err.name === 'AbortError' || !mountedRef.current) return;
-        setError(true);
-        setLoading(false);
-      });
-
-    return () => {
-      mountedRef.current = false;
-      controller.abort();
-    };
-  }, [params]);
-
-  if (loading) {
-    return <div className="text-center p-4 text-muted-foreground">Loading...</div>;
-  }
-  if (error || !svgContent) {
-    return (
-      <div className="text-center p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20">
-        <p className="text-muted-foreground text-sm">Failed to load stats</p>
-      </div>
-    );
-  }
-
-  const hasExplicitWidth = Boolean(style?.width || style?.maxWidth);
-  const containerStyle: CSSProperties = {
-    ...style,
-    display: 'inline-block',
-    width: hasExplicitWidth ? style?.width : undefined,
-    maxWidth: hasExplicitWidth ? style?.maxWidth : undefined,
-  };
-
-  return (
-    <div className="text-center" style={containerStyle}>
-      <div
-        dangerouslySetInnerHTML={{ __html: svgContent }}
-        style={{ width: hasExplicitWidth ? '100%' : undefined, height: 'auto' }}
-      />
-    </div>
-  );
 }
 
 export function LivePreview({ blocks }: LivePreviewProps) {
   if (blocks.length === 0) {
     return (
       <div className="flex h-full items-center justify-center p-4 sm:p-8 relative">
-        {/* Background decoration */}
         <div className="absolute inset-0 opacity-20">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-primary/10 rounded-full blur-2xl" />
         </div>
@@ -115,15 +46,20 @@ export function LivePreview({ blocks }: LivePreviewProps) {
               const block = blocks[i];
               const nextBlock = blocks[i + 1];
 
+              // Render two adjacent half-width cards side by side, matching GitHub layout
               if (isHalfWidthGithubCard(block) && nextBlock && isHalfWidthGithubCard(nextBlock)) {
                 items.push(
                   <div
                     key={`${block.id}-${nextBlock.id}`}
-                    className="mb-4 flex flex-wrap items-start justify-center gap-2 animate-in"
-                    style={{ animationDelay: `${i * 30}ms` }}
+                    className="mb-4 animate-in"
+                    style={{ display: 'flex', gap: '8px', animationDelay: `${i * 30}ms` }}
                   >
-                    <PreviewBlock block={block} wrapperClassName="mb-0" />
-                    <PreviewBlock block={nextBlock} wrapperClassName="mb-0" />
+                    <div style={{ flex: '1 1 0', minWidth: 0 }}>
+                      <PreviewBlock block={block} wrapperClassName="mb-0" />
+                    </div>
+                    <div style={{ flex: '1 1 0', minWidth: 0 }}>
+                      <PreviewBlock block={nextBlock} wrapperClassName="mb-0" />
+                    </div>
                   </div>,
                 );
                 i += 1;
@@ -148,23 +84,23 @@ export function LivePreview({ blocks }: LivePreviewProps) {
   );
 }
 
+/**
+ * Resolve the img style for a stats card block.
+ * Default: fill the container width and let the SVG maintain its natural aspect ratio.
+ * An explicit imageStyleOverride (e.g. from stats-row) takes precedence.
+ */
 function resolvePreviewImageSize(block: Block): CSSProperties {
-  const width = block.props.cardWidth as string | number | undefined;
-  const height = block.props.cardHeight as string | number | undefined;
-  const fallbackWidth = isHalfWidthGithubCard(block) ? '48%' : undefined;
-  const widthValue = width ?? fallbackWidth;
-
-  const toCssSize = (value?: string | number) => {
-    if (value === undefined) return undefined;
-    if (typeof value === 'number') return `${value}px`;
-    const trimmed = value.trim();
-    if (!trimmed) return undefined;
-    return /^[0-9]+$/.test(trimmed) ? `${trimmed}px` : trimmed;
-  };
-
+  const cardHeight = block.props.cardHeight as string | number | undefined;
+  const heightValue =
+    cardHeight === undefined
+      ? 'auto'
+      : typeof cardHeight === 'number'
+        ? `${cardHeight}px`
+        : cardHeight;
   return {
-    width: toCssSize(widthValue),
-    height: toCssSize(height),
+    width: '100%',
+    height: heightValue,
+    display: 'block',
   };
 }
 
@@ -182,7 +118,6 @@ function PreviewBlock({
   const imageSizeStyle = imageStyleOverride ?? resolvePreviewImageSize(block);
 
   const renderBlock = useMemo(() => {
-    // Helper function to get username with global fallback
     const getUsername = (blockUsername: string) => {
       return (!blockUsername || blockUsername === 'github') && globalUsername
         ? globalUsername
@@ -216,8 +151,9 @@ function PreviewBlock({
       case 'stats-row': {
         const direction = (props.direction as 'row' | 'column') ?? 'row';
         const gap = Number(props.gap ?? 12);
-        const cardWidth = (props.cardWidth as string) || '48%';
-        const cardHeight = props.cardHeight as string | undefined;
+        const cardWidth = (props.cardWidth as string) || '49%';
+        // For the preview, let images maintain natural aspect ratio (height: auto).
+        // Forcing an explicit pixel height on SVG <img> can cause letterboxing.
         return (
           <div
             style={{
@@ -225,20 +161,25 @@ function PreviewBlock({
               flexDirection: direction,
               gap: `${gap}px`,
               justifyContent: 'center',
-              alignItems: direction === 'row' ? 'stretch' : 'center',
+              alignItems: 'flex-start',
               width: '100%',
             }}
           >
             {children?.map((child) => (
-              <PreviewBlock
+              <div
                 key={child.id}
-                block={child}
-                wrapperClassName="mb-0 flex-1"
-                imageStyleOverride={{
+                style={{
                   width: direction === 'row' ? cardWidth : '100%',
-                  height: cardHeight,
+                  minWidth: 0,
+                  flex: direction === 'row' ? `0 0 ${cardWidth}` : undefined,
                 }}
-              />
+              >
+                <PreviewBlock
+                  block={child}
+                  wrapperClassName="mb-0"
+                  imageStyleOverride={{ width: '100%', height: 'auto', display: 'block' }}
+                />
+              </div>
             ))}
           </div>
         );
@@ -246,7 +187,11 @@ function PreviewBlock({
 
       case 'divider':
         return props.type === 'gif' && props.gifUrl ? (
-          <img src={props.gifUrl as string} alt="Divider" className="w-full h-auto" />
+          <img
+            src={props.gifUrl as string}
+            alt="Divider"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         ) : (
           <hr className="my-4" />
         );
@@ -254,13 +199,16 @@ function PreviewBlock({
       case 'spacer':
         return <div style={{ height: `${props.height}px` }} />;
 
-      case 'capsule-header':
+      case 'capsule-header': {
         const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(String(props.color))}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
         return (
-          <div className="text-center">
-            <img src={capsuleUrl} alt="Header" className="w-full" />
-          </div>
+          <img
+            src={capsuleUrl}
+            alt="Header"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         );
+      }
 
       case 'avatar':
         return (
@@ -291,16 +239,17 @@ function PreviewBlock({
           </h1>
         );
 
-      case 'typing-animation':
+      case 'typing-animation': {
         const lines = props.lines as string[];
         const typingUrl = `https://readme-typing-svg.demolab.com?font=Fira+Code&size=22&duration=3000&pause=1000&color=${props.color}&center=true&vCenter=true&width=${props.width}&height=${props.height}&lines=${encodeURIComponent(lines.join(';'))}`;
         return (
           <div className="text-center">
-            <img src={typingUrl} alt="Typing Animation" />
+            <img src={typingUrl} alt="Typing Animation" style={{ height: 'auto' }} />
           </div>
         );
+      }
 
-      case 'heading':
+      case 'heading': {
         const HeadingTag = `h${props.level}` as keyof JSX.IntrinsicElements;
         return (
           <HeadingTag style={{ textAlign: props.alignment as 'left' | 'center' | 'right' }}>
@@ -308,6 +257,7 @@ function PreviewBlock({
             {props.text as string}
           </HeadingTag>
         );
+      }
 
       case 'paragraph':
         return (
@@ -337,11 +287,7 @@ function PreviewBlock({
 
       case 'image':
         return (
-          <div
-            style={{
-              textAlign: props.alignment as 'left' | 'center' | 'right',
-            }}
-          >
+          <div style={{ textAlign: props.alignment as 'left' | 'center' | 'right' }}>
             <img
               src={props.url as string}
               alt={props.alt as string}
@@ -362,16 +308,16 @@ function PreviewBlock({
             <img
               src={props.url as string}
               alt={props.alt as string}
-              style={{ width: props.width ? `${props.width}px` : 'auto' }}
+              style={{ width: props.width ? `${props.width}px` : 'auto', height: 'auto' }}
             />
           </div>
         );
 
-      case 'social-badges':
+      case 'social-badges': {
         const badges: JSX.Element[] = [];
-        const style = props.style as string;
+        const badgeStyle = props.style as string;
 
-        if (props.linkedin) {
+        if (props.linkedin)
           badges.push(
             <a
               key="linkedin"
@@ -380,13 +326,13 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/LinkedIn-0077B5?style=${style}&logo=linkedin&logoColor=white`}
+                src={`https://img.shields.io/badge/LinkedIn-0077B5?style=${badgeStyle}&logo=linkedin&logoColor=white`}
                 alt="LinkedIn"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.twitter) {
+        if (props.twitter)
           badges.push(
             <a
               key="twitter"
@@ -395,13 +341,13 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/Twitter-1DA1F2?style=${style}&logo=twitter&logoColor=white`}
+                src={`https://img.shields.io/badge/Twitter-1DA1F2?style=${badgeStyle}&logo=twitter&logoColor=white`}
                 alt="Twitter"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.github) {
+        if (props.github)
           badges.push(
             <a
               key="github"
@@ -410,13 +356,13 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/GitHub-100000?style=${style}&logo=github&logoColor=white`}
+                src={`https://img.shields.io/badge/GitHub-100000?style=${badgeStyle}&logo=github&logoColor=white`}
                 alt="GitHub"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.youtube) {
+        if (props.youtube)
           badges.push(
             <a
               key="youtube"
@@ -425,13 +371,13 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/YouTube-FF0000?style=${style}&logo=youtube&logoColor=white`}
+                src={`https://img.shields.io/badge/YouTube-FF0000?style=${badgeStyle}&logo=youtube&logoColor=white`}
                 alt="YouTube"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.instagram) {
+        if (props.instagram)
           badges.push(
             <a
               key="instagram"
@@ -440,13 +386,13 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/Instagram-E4405F?style=${style}&logo=instagram&logoColor=white`}
+                src={`https://img.shields.io/badge/Instagram-E4405F?style=${badgeStyle}&logo=instagram&logoColor=white`}
                 alt="Instagram"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.discord) {
+        if (props.discord)
           badges.push(
             <a
               key="discord"
@@ -455,23 +401,23 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/Discord-7289DA?style=${style}&logo=discord&logoColor=white`}
+                src={`https://img.shields.io/badge/Discord-7289DA?style=${badgeStyle}&logo=discord&logoColor=white`}
                 alt="Discord"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.email) {
+        if (props.email)
           badges.push(
             <a key="email" href={`mailto:${props.email}`}>
               <img
-                src={`https://img.shields.io/badge/Email-D14836?style=${style}&logo=gmail&logoColor=white`}
+                src={`https://img.shields.io/badge/Email-D14836?style=${badgeStyle}&logo=gmail&logoColor=white`}
                 alt="Email"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
-        if (props.portfolio) {
+        if (props.portfolio)
           badges.push(
             <a
               key="portfolio"
@@ -480,39 +426,60 @@ function PreviewBlock({
               rel="noopener noreferrer"
             >
               <img
-                src={`https://img.shields.io/badge/Portfolio-000000?style=${style}&logo=About.me&logoColor=white`}
+                src={`https://img.shields.io/badge/Portfolio-000000?style=${badgeStyle}&logo=About.me&logoColor=white`}
                 alt="Portfolio"
+                style={{ height: 'auto' }}
               />
             </a>,
           );
-        }
 
         return badges.length > 0 ? (
           <div className="flex flex-wrap gap-2 justify-center">{badges}</div>
         ) : null;
+      }
 
-      case 'custom-badge':
+      case 'custom-badge': {
         const badgeUrl = `https://img.shields.io/badge/${encodeURIComponent(props.label as string)}-${encodeURIComponent(props.message as string)}-${props.color}?style=${props.style}${props.logo ? `&logo=${props.logo}` : ''}`;
         return (
           <div className="text-center">
-            <img src={badgeUrl} alt={`${props.label}: ${props.message}`} />
+            <img
+              src={badgeUrl}
+              alt={`${props.label}: ${props.message}`}
+              style={{ height: 'auto' }}
+            />
           </div>
         );
+      }
 
-      case 'skill-icons':
+      case 'skill-icons': {
         const icons = props.icons as string[];
         const skillUrl = `https://skillicons.dev/icons?i=${icons.join(',')}&perline=${props.perLine}&theme=${props.theme}`;
         return (
           <div className="text-center">
-            <img src={skillUrl} alt="Skills" />
+            <img src={skillUrl} alt="Skills" style={{ maxWidth: '100%', height: 'auto' }} />
           </div>
         );
+      }
 
+      /**
+       * Stats card — uses <img> so the browser respects the SVG viewBox aspect ratio.
+       * The previous StatsCardInline approach (fetch + dangerouslySetInnerHTML) stripped
+       * the height attribute from the SVG, causing distorted proportions.
+       */
       case 'stats-card': {
-        // Forward layoutStyle → layout query param ('standard' | 'compact')
         const layoutStyle = (props.layoutStyle as string | undefined) ?? 'standard';
+        const username = getUsername(props.username as string);
+
+        if (!username || username === 'github') {
+          return (
+            <div className="p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20 text-center">
+              <p className="text-muted-foreground text-sm">Enter a GitHub username to see stats</p>
+            </div>
+          );
+        }
+
         const statsParams = new URLSearchParams({
-          username: getUsername(props.username as string),
+          username,
           theme: props.theme as string,
           layout: layoutStyle,
           show_icons: props.showIcons ? 'true' : 'false',
@@ -521,23 +488,17 @@ function PreviewBlock({
           hide_rank: props.hideRank ? 'true' : 'false',
           border_radius: String(props.borderRadius),
         });
-        const username = getUsername(props.username as string);
-        if (!username || username === 'github') {
-          return (
-            <div className="text-center p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20">
-              <p className="text-muted-foreground text-sm">Enter a GitHub username to see stats</p>
-            </div>
-          );
-        }
-        // Use fetch to get SVG content and render inline
+
         return (
-          <div className="text-center">
-            <StatsCardInline params={statsParams.toString()} style={imageSizeStyle} />
-          </div>
+          <img
+            src={`/api/stats?${statsParams.toString()}`}
+            alt="GitHub Stats"
+            style={imageSizeStyle}
+          />
         );
       }
 
-      case 'top-languages':
+      case 'top-languages': {
         const langsParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
@@ -548,16 +509,15 @@ function PreviewBlock({
           border_radius: String(props.borderRadius),
         });
         return (
-          <div className="text-center">
-            <img
-              src={`/api/top-langs?${langsParams.toString()}`}
-              alt="Top Languages"
-              style={imageSizeStyle}
-            />
-          </div>
+          <img
+            src={`/api/top-langs?${langsParams.toString()}`}
+            alt="Top Languages"
+            style={imageSizeStyle}
+          />
         );
+      }
 
-      case 'streak-stats':
+      case 'streak-stats': {
         const streakParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
@@ -565,32 +525,31 @@ function PreviewBlock({
           border_radius: String(props.borderRadius),
         });
         return (
-          <div className="text-center">
-            <img
-              src={`/api/streak?${streakParams.toString()}`}
-              alt="GitHub Streak"
-              style={imageSizeStyle}
-            />
-          </div>
+          <img
+            src={`/api/streak?${streakParams.toString()}`}
+            alt="GitHub Streak"
+            style={imageSizeStyle}
+          />
         );
+      }
 
-      case 'activity-graph':
+      case 'activity-graph': {
         const activityParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
           hide_border: props.hideBorder ? 'true' : 'false',
         });
         return (
-          <div className="text-center">
-            <img
-              src={`/api/activity?${activityParams.toString()}`}
-              alt="Activity Graph"
-              className="w-full"
-            />
-          </div>
+          // Activity graph SVG is 850 px wide — always fill the full container width
+          <img
+            src={`/api/activity?${activityParams.toString()}`}
+            alt="Activity Graph"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         );
+      }
 
-      case 'trophies':
+      case 'trophies': {
         const trophyParams = new URLSearchParams({
           username: getUsername(props.username as string),
           theme: props.theme as string,
@@ -603,24 +562,30 @@ function PreviewBlock({
         });
         return (
           <div className="text-center">
-            <img src={`/api/trophies?${trophyParams.toString()}`} alt="GitHub Trophies" />
+            <img
+              src={`/api/trophies?${trophyParams.toString()}`}
+              alt="GitHub Trophies"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
           </div>
         );
+      }
 
-      case 'visitor-counter':
+      case 'visitor-counter': {
         const visitorUrl = `https://komarev.com/ghpvc/?username=${getUsername(props.username as string)}&color=${props.color}&style=${props.style}&label=${encodeURIComponent(props.label as string)}`;
         return (
           <div className="text-center">
-            <img src={visitorUrl} alt="Profile Views" />
+            <img src={visitorUrl} alt="Profile Views" style={{ height: 'auto' }} />
           </div>
         );
+      }
 
-      case 'quote':
+      case 'quote': {
         if (props.quote && props.author) {
           return (
             <blockquote className="border-l-4 border-primary pl-4 italic my-4">
-              <p>"{props.quote as string}"</p>
-              <cite className="text-muted-foreground">- {props.author as string}</cite>
+              <p>&ldquo;{props.quote as string}&rdquo;</p>
+              <cite className="text-muted-foreground">— {props.author as string}</cite>
             </blockquote>
           );
         }
@@ -630,17 +595,25 @@ function PreviewBlock({
         });
         return (
           <div className="text-center">
-            <img src={`/api/quotes?${quoteParams.toString()}`} alt="Quote" />
+            <img
+              src={`/api/quotes?${quoteParams.toString()}`}
+              alt="Quote"
+              style={{ maxWidth: '100%', height: 'auto' }}
+            />
           </div>
         );
+      }
 
-      case 'footer-banner':
+      case 'footer-banner': {
         const footerUrl = `https://capsule-render.vercel.app/api?type=waving&color=${encodeURIComponent(String(props.waveColor))}&height=${props.height}&section=footer&text=${encodeURIComponent(String(props.text))}&fontSize=24&fontColor=${props.fontColor}`;
         return (
-          <div className="text-center">
-            <img src={footerUrl} alt="Footer" className="w-full" />
-          </div>
+          <img
+            src={footerUrl}
+            alt="Footer"
+            style={{ width: '100%', height: 'auto', display: 'block' }}
+          />
         );
+      }
 
       default:
         return null;
