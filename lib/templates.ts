@@ -1181,6 +1181,8 @@ print(f"Trainable params: {model.num_parameters(only_trainable=True):,}")`,
         id: 'ds-19',
         type: 'quote',
         props: {
+          quote: 'In God we trust, all others must bring data.',
+          author: 'W. Edwards Deming',
           theme: 'merko',
           type: 'horizontal',
         },
@@ -1664,6 +1666,9 @@ kubectl apply -f https://raw.githubusercontent.com/yourusername/platform/main/bo
         id: 'stu-19',
         type: 'quote',
         props: {
+          quote:
+            'Education is the passport to the future, for tomorrow belongs to those who prepare for it today.',
+          author: 'Malcolm X',
           theme: 'tokyonight',
           type: 'horizontal',
         },
@@ -2194,6 +2199,9 @@ $ cat /etc/skills
         id: 'gd-21',
         type: 'quote',
         props: {
+          quote:
+            "Every design is a solution to a problem. If you don't understand the problem, you can't design a solution.",
+          author: 'Unknown',
           theme: 'dracula',
           type: 'horizontal',
         },
