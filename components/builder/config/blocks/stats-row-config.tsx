@@ -22,46 +22,55 @@ interface StatsRowCardSettingsProps {
       }
     | undefined;
   onCardPropsChange: (updates: Record<string, unknown>) => void;
+  hideSharedSettings?: boolean;
 }
 
-function StatsRowCardSettings({ card, onCardPropsChange }: StatsRowCardSettingsProps) {
+function StatsRowCardSettings({
+  card,
+  onCardPropsChange,
+  hideSharedSettings,
+}: StatsRowCardSettingsProps) {
   if (!card) {
     return <p className="text-xs text-muted-foreground">Select a card to configure it.</p>;
   }
 
   return (
     <div className="space-y-3 rounded-md border border-border/60 p-3">
-      <FieldGroup>
-        <Label>Theme</Label>
-        <Select
-          value={(card.props.theme as string) || 'default'}
-          onValueChange={(value) => onCardPropsChange({ theme: value })}
-        >
-          <SelectTrigger>
-            <SelectValue />
-          </SelectTrigger>
-          <SelectContent className="max-h-60">
-            {STATS_THEMES.map((theme) => (
-              <SelectItem key={theme} value={theme}>
-                {theme}
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </FieldGroup>
+      {!hideSharedSettings && (
+        <>
+          <FieldGroup>
+            <Label>Theme</Label>
+            <Select
+              value={(card.props.theme as string) || 'default'}
+              onValueChange={(value) => onCardPropsChange({ theme: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="max-h-60">
+                {STATS_THEMES.map((theme) => (
+                  <SelectItem key={theme} value={theme}>
+                    {theme}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </FieldGroup>
 
-      {(card.type === 'stats-card' ||
-        card.type === 'top-languages' ||
-        card.type === 'streak-stats') && (
-        <FieldGroup>
-          <div className="flex items-center justify-between">
-            <Label>Hide Border</Label>
-            <Switch
-              checked={Boolean(card.props.hideBorder)}
-              onCheckedChange={(checked) => onCardPropsChange({ hideBorder: checked })}
-            />
-          </div>
-        </FieldGroup>
+          {(card.type === 'stats-card' ||
+            card.type === 'top-languages' ||
+            card.type === 'streak-stats') && (
+            <FieldGroup>
+              <div className="flex items-center justify-between">
+                <Label>Hide Border</Label>
+                <Switch
+                  checked={Boolean(card.props.hideBorder)}
+                  onCheckedChange={(checked) => onCardPropsChange({ hideBorder: checked })}
+                />
+              </div>
+            </FieldGroup>
+          )}
+        </>
       )}
 
       {(card.type === 'stats-card' || card.type === 'streak-stats') && (
@@ -80,6 +89,52 @@ function StatsRowCardSettings({ card, onCardPropsChange }: StatsRowCardSettingsP
           />
         </FieldGroup>
       )}
+
+      {card.type === 'top-languages' && (
+        <>
+          <FieldGroup>
+            <Label>Layout</Label>
+            <Select
+              value={(card.props.layout as string) || 'compact'}
+              onValueChange={(value) => onCardPropsChange({ layout: value })}
+            >
+              <SelectTrigger>
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="compact">Compact</SelectItem>
+                <SelectItem value="normal">Normal</SelectItem>
+                <SelectItem value="donut">Donut</SelectItem>
+                <SelectItem value="donut-vertical">Donut Vertical</SelectItem>
+                <SelectItem value="pie">Pie</SelectItem>
+              </SelectContent>
+            </Select>
+          </FieldGroup>
+          <FieldGroup>
+            <Label>Languages Count ({String(card.props.langs_count ?? 8)})</Label>
+            <Input
+              type="number"
+              value={Number(card.props.langs_count) || 8}
+              onChange={(e) =>
+                onCardPropsChange({
+                  langs_count: Math.min(20, Math.max(1, parseInt(e.target.value, 10) || 8)),
+                })
+              }
+              min={1}
+              max={20}
+            />
+          </FieldGroup>
+          <FieldGroup>
+            <div className="flex items-center justify-between">
+              <Label>Hide Progress</Label>
+              <Switch
+                checked={Boolean(card.props.hideProgress)}
+                onCheckedChange={(checked) => onCardPropsChange({ hideProgress: checked })}
+              />
+            </div>
+          </FieldGroup>
+        </>
+      )}
     </div>
   );
 }
@@ -87,35 +142,35 @@ function StatsRowCardSettings({ card, onCardPropsChange }: StatsRowCardSettingsP
 interface StatsRowConfigProps {
   direction: string;
   gap: number;
-  cardWidth: string;
-  cardHeight: string | undefined;
   card1: { type: string; props: Record<string, unknown> } | undefined;
   card2: { type: string; props: Record<string, unknown> } | undefined;
+  theme: string;
+  hideBorder: boolean;
   onDirectionChange: (value: string) => void;
   onGapChange: (value: number) => void;
-  onCardWidthChange: (value: string) => void;
-  onCardHeightChange: (value: string | undefined) => void;
   onCard1Change: (value: { type: string; props: Record<string, unknown> } | undefined) => void;
   onCard2Change: (value: { type: string; props: Record<string, unknown> } | undefined) => void;
   onCard1PropsChange: (updates: Record<string, unknown>) => void;
   onCard2PropsChange: (updates: Record<string, unknown>) => void;
+  onThemeChange: (value: string) => void;
+  onHideBorderChange: (value: boolean) => void;
 }
 
 export function StatsRowConfig({
   direction,
   gap,
-  cardWidth,
-  cardHeight,
   card1,
   card2,
+  theme,
+  hideBorder,
   onDirectionChange,
   onGapChange,
-  onCardWidthChange,
-  onCardHeightChange,
   onCard1Change,
   onCard2Change,
   onCard1PropsChange,
   onCard2PropsChange,
+  onThemeChange,
+  onHideBorderChange,
 }: StatsRowConfigProps) {
   const cardTypes = [
     { value: 'none', label: 'None' },
@@ -191,22 +246,30 @@ export function StatsRowConfig({
           }}
         />
       </FieldGroup>
-      <FieldGroup>
-        <Label>Card Width</Label>
-        <Input
-          value={cardWidth}
-          onChange={(e) => onCardWidthChange(e.target.value)}
-          placeholder="49%"
-        />
-      </FieldGroup>
-      <FieldGroup>
-        <Label>Force Card Height (optional)</Label>
-        <Input
-          value={cardHeight ?? ''}
-          onChange={(e) => onCardHeightChange(e.target.value || undefined)}
-          placeholder="195"
-        />
-      </FieldGroup>
+      <div className="rounded-md border border-border/60 p-3 space-y-3">
+        <Label className="text-sm font-medium">Shared Settings (applies to both cards)</Label>
+        <FieldGroup>
+          <Label>Theme</Label>
+          <Select value={theme} onValueChange={onThemeChange}>
+            <SelectTrigger>
+              <SelectValue />
+            </SelectTrigger>
+            <SelectContent className="max-h-60">
+              {STATS_THEMES.map((t) => (
+                <SelectItem key={t} value={t}>
+                  {t}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </FieldGroup>
+        <FieldGroup>
+          <div className="flex items-center justify-between">
+            <Label>Hide Border</Label>
+            <Switch checked={hideBorder} onCheckedChange={onHideBorderChange} />
+          </div>
+        </FieldGroup>
+      </div>
       <FieldGroup>
         <Label>Card 1</Label>
         <Select
@@ -245,11 +308,19 @@ export function StatsRowConfig({
       </FieldGroup>
       <FieldGroup>
         <Label>Card 1 Settings</Label>
-        <StatsRowCardSettings card={card1} onCardPropsChange={onCard1PropsChange} />
+        <StatsRowCardSettings
+          card={card1}
+          onCardPropsChange={onCard1PropsChange}
+          hideSharedSettings
+        />
       </FieldGroup>
       <FieldGroup>
         <Label>Card 2 Settings</Label>
-        <StatsRowCardSettings card={card2} onCardPropsChange={onCard2PropsChange} />
+        <StatsRowCardSettings
+          card={card2}
+          onCardPropsChange={onCard2PropsChange}
+          hideSharedSettings
+        />
       </FieldGroup>
       <p className="text-xs text-muted-foreground">
         Configure up to two cards here, or select Stats Row and add cards from the sidebar.

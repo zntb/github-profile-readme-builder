@@ -95,14 +95,12 @@ export function BlockConfigFields({
         <StatsRowConfig
           direction={(props.direction as string) ?? 'row'}
           gap={(props.gap as number) ?? 12}
-          cardWidth={(props.cardWidth as string) ?? '49%'}
-          cardHeight={props.cardHeight as string | undefined}
           card1={statsChildren[0]}
           card2={statsChildren[1]}
+          theme={(props.theme as string) ?? 'tokyonight'}
+          hideBorder={(props.hideBorder as boolean) ?? false}
           onDirectionChange={(v) => update('direction', v)}
           onGapChange={(v) => update('gap', v)}
-          onCardWidthChange={(v) => update('cardWidth', v)}
-          onCardHeightChange={(v) => update('cardHeight', v || undefined)}
           onCard1Change={(card) => {
             if (!card) {
               updateBlockChildren(id, statsChildren[1] ? [statsChildren[1]] : []);
@@ -121,6 +119,26 @@ export function BlockConfigFields({
           }}
           onCard1PropsChange={(updates) => updateCardProps(0, updates)}
           onCard2PropsChange={(updates) => updateCardProps(1, updates)}
+          onThemeChange={(v) => {
+            update('theme', v);
+            // Apply theme to both cards using updateCardProps
+            if (statsChildren[0]) {
+              updateCardProps(0, { theme: v });
+            }
+            if (statsChildren[1]) {
+              updateCardProps(1, { theme: v });
+            }
+          }}
+          onHideBorderChange={(v) => {
+            update('hideBorder', v);
+            // Apply hideBorder to both cards using updateCardProps
+            if (statsChildren[0]) {
+              updateCardProps(0, { hideBorder: v });
+            }
+            if (statsChildren[1]) {
+              updateCardProps(1, { hideBorder: v });
+            }
+          }}
         />
       );
     }
