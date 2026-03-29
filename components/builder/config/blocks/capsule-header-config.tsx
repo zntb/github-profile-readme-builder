@@ -11,6 +11,7 @@ import {
 } from '@/components/ui/select';
 
 import { FieldGroup } from '../field-group';
+import { GradientColorPicker } from '../gradient-color-picker';
 
 interface CapsuleHeaderConfigProps {
   text: string;
@@ -72,14 +73,7 @@ export function CapsuleHeaderConfig({
           </SelectContent>
         </Select>
       </FieldGroup>
-      <FieldGroup>
-        <Label>Color (gradient)</Label>
-        <Input
-          value={color}
-          onChange={(e) => onColorChange(e.target.value)}
-          placeholder="0:EEFF00,100:a82DA"
-        />
-      </FieldGroup>
+      <GradientColorPicker label="Gradient Colors" value={color} onChange={onColorChange} />
       <FieldGroup>
         <Label>Height</Label>
         <div className="flex gap-2">

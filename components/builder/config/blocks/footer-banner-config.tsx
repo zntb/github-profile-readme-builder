@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 
 import { FieldGroup } from '../field-group';
+import { GradientColorPicker, SimpleColorPicker } from '../gradient-color-picker';
 
 interface FooterBannerConfigProps {
   text: string;
@@ -32,22 +33,17 @@ export function FooterBannerConfig({
         <Label>Text</Label>
         <Input value={text} onChange={(e) => onTextChange(e.target.value)} />
       </FieldGroup>
-      <FieldGroup>
-        <Label>Wave Color (gradient)</Label>
-        <Input
-          value={waveColor}
-          onChange={(e) => onWaveColorChange(e.target.value)}
-          placeholder="0:EEFF00,100:a82DA"
-        />
-      </FieldGroup>
-      <FieldGroup>
-        <Label>Font Color (hex without #)</Label>
-        <Input
-          value={fontColor}
-          onChange={(e) => onFontColorChange(e.target.value)}
-          placeholder="ffffff"
-        />
-      </FieldGroup>
+      <GradientColorPicker
+        label="Wave Color (gradient)"
+        value={waveColor}
+        onChange={onWaveColorChange}
+      />
+      <SimpleColorPicker
+        label="Font Color"
+        value={fontColor}
+        onChange={onFontColorChange}
+        placeholder="ffffff"
+      />
       <FieldGroup>
         <Label>Height (px)</Label>
         <Input
