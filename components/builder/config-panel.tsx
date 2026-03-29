@@ -1,6 +1,8 @@
 'use client';
 
 import { X } from 'lucide-react';
+import { useMemo } from 'react';
+import { useShallow } from 'zustand/shallow';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -19,11 +21,17 @@ import { BlockConfigFields } from './config/block-config-fields';
 import { FieldGroup } from './config/field-group';
 
 export function ConfigPanel() {
-  const blocks = useBuilderStore((s) => s.blocks);
-  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const { blocks, selectedBlockId } = useBuilderStore(
+    useShallow((s) => ({ blocks: s.blocks, selectedBlockId: s.selectedBlockId })),
+  );
   const selectBlock = useBuilderStore((s) => s.selectBlock);
   const updateBlock = useBuilderStore((s) => s.updateBlock);
   const updateBlockChildren = useBuilderStore((s) => s.updateBlockChildren);
+
+  const selectedBlock = useMemo(
+    () => (selectedBlockId ? findBlock(blocks, selectedBlockId) : null),
+    [blocks, selectedBlockId],
+  );
 
   if (!selectedBlockId) {
     return (
@@ -40,7 +48,6 @@ export function ConfigPanel() {
     );
   }
 
-  const selectedBlock = findBlock(blocks, selectedBlockId);
   if (!selectedBlock) return null;
   const blockWidth = selectedBlock.props.blockWidth as number | undefined;
   const blockHeight = selectedBlock.props.blockHeight as number | undefined;
@@ -50,7 +57,7 @@ export function ConfigPanel() {
     <div className="flex h-full w-full flex-col border-l border-border bg-sidebar">
       <div className="flex items-center justify-between border-b border-border p-4">
         <h2 className="text-sm font-semibold text-sidebar-foreground">
-          {selectedBlock.type.replace(/-/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
+          {selectedBlock.type.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
         </h2>
         <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => selectBlock(null)}>
           <X className="h-4 w-4" />
