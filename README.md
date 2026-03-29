@@ -59,15 +59,17 @@
 | Feature                   | Description                                                       |
 | ------------------------- | ----------------------------------------------------------------- |
 | 🧱 **Drag & Drop Canvas** | Reorder blocks effortlessly with smooth dnd-kit animations        |
+| 📐 **Stats Row Layout**   | Flexible row/column multi-card layouts for stats widgets          |
 | 👁️ **Live Preview**       | See exactly how your README renders in GitHub's style             |
 | 📝 **Markdown Export**    | Copy to clipboard or download a ready-to-use `README.md`          |
-| 🎨 **50+ Themes**         | Tokyo Night, Dracula, Radical, Catppuccin, and many more          |
-| 📦 **20+ Block Types**    | Headers, stats cards, badges, skill icons, graphs, and more       |
-| 🖼️ **Template Library**   | Start fast with 4 curated, fully customizable templates           |
+| 🎨 **65+ Themes**         | Tokyo Night, Dracula, Radical, Catppuccin, and many more          |
+| 📦 **25+ Block Types**    | Headers, stats cards, badges, skill icons, graphs, and more       |
+| 🖼️ **Template Library**   | 11 ready-to-use templates for different developer profiles        |
 | 📱 **Fully Responsive**   | Optimized three-layout system for desktop, tablet, and mobile     |
 | 🌙 **Dark / Light Mode**  | System-aware theming powered by `next-themes`                     |
 | ⚡ **Self-hosted Stats**  | Built-in Next.js API routes generate GitHub stat SVGs server-side |
 | 🔑 **GitHub GraphQL**     | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API  |
+| 💬 **Random Quotes**      | Built-in API for fetching random developer quotes                 |
 
 ---
 
@@ -133,9 +135,9 @@ Blocks are organized into eight categories:
 <details>
 <summary><strong>Tech Stack</strong> — Skills</summary>
 
-| Block           | Description                                                                           |
-| --------------- | ------------------------------------------------------------------------------------- |
-| **Skill Icons** | Grid of tech icons via [skillicons.dev](https://skillicons.dev) — 80+ icons available |
+| Block           | Description                                                                 |
+| --------------- | --------------------------------------------------------------------------- |
+| **Skill Icons** | Grid of tech icons via [skillicons.dev](https://skillicons.dev) — 80+ icons |
 
 </details>
 
@@ -144,6 +146,7 @@ Blocks are organized into eight categories:
 
 | Block              | Description                                             |
 | ------------------ | ------------------------------------------------------- |
+| **Stats Row**      | Flexible row/column layout for multiple stat cards      |
 | **Stats Card**     | Stars, commits, PRs, issues, and rank ring              |
 | **Top Languages**  | Compact, normal, donut, donut-vertical, or pie layout   |
 | **Streak Stats**   | Current streak, longest streak, and total contributions |
@@ -240,6 +243,7 @@ github-profile-readme-builder/
 ├── app/
 │   ├── api/
 │   │   ├── activity/route.ts      # Contribution activity graph SVG
+│   │   ├── quotes/route.ts        # Random dev quotes API
 │   │   ├── stats/route.ts         # GitHub stats card SVG
 │   │   ├── streak/route.ts        # Streak stats SVG
 │   │   ├── top-langs/route.ts     # Top languages SVG
@@ -259,6 +263,8 @@ github-profile-readme-builder/
 │   │   ├── config-panel.tsx       # Right-side property editor (per block type)
 │   │   ├── live-preview.tsx       # Full GitHub-style README render
 │   │   ├── output-panel.tsx       # Markdown output + copy/download actions
+│   │   ├── config/                  # Block configuration components
+│   │   │   └── blocks/             # Per-block config fields (25+ files)
 │   │   └── templates-dialog.tsx   # Template picker dialog
 │   ├── ui/                        # shadcn/ui components
 │   └── mode-toggle.tsx            # Light/Dark/System theme switcher
@@ -282,6 +288,7 @@ All stat widgets are generated server-side by built-in Next.js route handlers. T
 
 | Route                | Query Params                                                                                                                                        | Description           |
 | -------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------- | --------------------- |
+| `GET /api/quotes`    | (none)                                                                                                                                              | Random dev quote      |
 | `GET /api/stats`     | `username`, `theme`, `show_icons`, `hide_border`, `hide_title`, `hide_rank`, `border_radius`, `bg_color`, `text_color`, `title_color`, `icon_color` | GitHub stats card     |
 | `GET /api/streak`    | `username`, `theme`, `hide_border`, `border_radius`, `background`, `fire`, `ring`, `currStreakNum`, `sideNums`, `sideLabels`, `dates`               | Streak stats card     |
 | `GET /api/top-langs` | `username`, `theme`, `layout`, `hide_border`, `hide_progress`, `langs_count`, `border_radius`, `bg_color`, `text_color`, `title_color`              | Top languages card    |
@@ -290,7 +297,7 @@ All stat widgets are generated server-side by built-in Next.js route handlers. T
 
 ### Supported Themes
 
-Over **50 themes** are supported across all widgets, including:
+Over **65 themes** are supported across all widgets, including:
 
 `default` · `dark` · `radical` · `tokyonight` · `dracula` · `onedark` · `nord` · `github_dark` · `catppuccin_mocha` · `gruvbox` · `merko` · `react` · `midnight-purple` · `rose_pine` · and many more.
 
@@ -298,14 +305,21 @@ Over **50 themes** are supported across all widgets, including:
 
 ## 🎨 Templates
 
-Four built-in templates are included to help you start quickly:
+Eleven built-in templates are included to help you start quickly:
 
-| Template               | Description                                                     | Blocks |
-| ---------------------- | --------------------------------------------------------------- | ------ |
-| **Animated Developer** | Waving header, typing SVG, full stats suite, social badges      | 16     |
-| **Minimal Clean**      | Simple heading/paragraph layout with essential stats            | 8      |
-| **Stats Focused**      | Full stats dashboard — card, streak, languages, graph, trophies | 8      |
-| **Creative Profile**   | Avatar, custom animation, quote block, creative color palette   | 9      |
+| Template                   | Description                                                     | Blocks |
+| -------------------------- | --------------------------------------------------------------- | ------ |
+| **Animated Developer**     | Waving header, typing SVG, full stats suite, social badges      | 16     |
+| **Minimal Clean**          | Simple heading/paragraph layout with essential stats            | 8      |
+| **Stats Focused**          | Full stats dashboard — card, streak, languages, graph, trophies | 8      |
+| **Creative Profile**       | Avatar, custom animation, quote block, creative color palette   | 9      |
+| **Open Source Maintainer** | Container layout, collapsible sections, extensive stats         | 18     |
+| **Full Stack Engineer**    | Multiple skill icon sections, comprehensive stats               | 19     |
+| **Data Scientist / ML**    | Code blocks, ML frameworks, visualizations                      | 20     |
+| **DevOps / Cloud**         | Custom badges, code blocks, cloud platforms                     | 21     |
+| **Student / Beginner**     | Learning focus with beginner-friendly content                   | 21     |
+| **Cybersecurity**          | Code-focused, custom badges, security tools                     | 17     |
+| **Game Developer**         | Gaming-focused with custom badges and quote block               | 22     |
 
 Templates are defined in `lib/templates.ts` and can be extended freely.
 
