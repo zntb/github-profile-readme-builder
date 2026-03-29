@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, RotateCcw, GitBranch } from 'lucide-react';
+import { Download, GitBranch, RotateCcw } from 'lucide-react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,8 @@ import { ModeToggle } from '../mode-toggle';
 import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
-  const { blocks, clearBlocks } = useBuilderStore();
+  const blocks = useBuilderStore((s) => s.blocks);
+  const clearBlocks = useBuilderStore((s) => s.clearBlocks);
 
   const handleExport = () => {
     const markdown = renderMarkdown(blocks, window.location.origin);

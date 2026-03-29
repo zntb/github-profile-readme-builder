@@ -19,8 +19,11 @@ import { BlockConfigFields } from './config/block-config-fields';
 import { FieldGroup } from './config/field-group';
 
 export function ConfigPanel() {
-  const { blocks, selectedBlockId, selectBlock, updateBlock, updateBlockChildren } =
-    useBuilderStore();
+  const blocks = useBuilderStore((s) => s.blocks);
+  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const selectBlock = useBuilderStore((s) => s.selectBlock);
+  const updateBlock = useBuilderStore((s) => s.updateBlock);
+  const updateBlockChildren = useBuilderStore((s) => s.updateBlockChildren);
 
   if (!selectedBlockId) {
     return (

@@ -84,7 +84,11 @@ export function BlockSidebar() {
   const [expandedCategories, setExpandedCategories] = useState<string[]>(
     BLOCK_CATEGORIES.map((c) => c.name),
   );
-  const { addBlock, addChildBlock, blocks, selectedBlockId, username } = useBuilderStore();
+  const addBlock = useBuilderStore((s) => s.addBlock);
+  const addChildBlock = useBuilderStore((s) => s.addChildBlock);
+  const blocks = useBuilderStore((s) => s.blocks);
+  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const username = useBuilderStore((s) => s.username);
 
   const toggleCategory = (name: string) => {
     setExpandedCategories((prev) =>

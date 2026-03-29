@@ -20,7 +20,8 @@ import { cn } from '@/lib/utils';
 export function TemplatesDialog() {
   const [open, setOpen] = useState(false);
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
-  const { loadTemplate, blocks } = useBuilderStore();
+  const loadTemplate = useBuilderStore((s) => s.loadTemplate);
+  const blocks = useBuilderStore((s) => s.blocks);
 
   const handleLoadTemplate = () => {
     const template = templates.find((t) => t.id === selectedTemplate);

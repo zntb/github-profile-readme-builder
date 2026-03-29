@@ -41,7 +41,10 @@ function isHalfWidthBlock(block: { type: string; props: Record<string, unknown> 
 }
 
 export function Canvas() {
-  const { blocks, setBlocks, selectBlock, selectedBlockId } = useBuilderStore();
+  const blocks = useBuilderStore((s) => s.blocks);
+  const setBlocks = useBuilderStore((s) => s.setBlocks);
+  const selectBlock = useBuilderStore((s) => s.selectBlock);
+  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
 
   const sensors = useSensors(
     useSensor(PointerSensor, {

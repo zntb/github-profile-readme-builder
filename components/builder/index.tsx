@@ -1,6 +1,6 @@
 'use client';
 
-import { Eye, Code, PanelLeft, Settings2, Blocks, User } from 'lucide-react';
+import { Blocks, Code, Eye, PanelLeft, Settings2, User } from 'lucide-react';
 import { useState } from 'react';
 
 import { Button } from '@/components/ui/button';
@@ -17,7 +17,9 @@ import { BuilderHeader } from './header';
 import { OutputPanel } from './output-panel';
 
 export function Builder() {
-  const { selectedBlockId, username, setUsername } = useBuilderStore();
+  const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
+  const username = useBuilderStore((s) => s.username);
+  const setUsername = useBuilderStore((s) => s.setUsername);
   const [mobileTab, setMobileTab] = useState<'blocks' | 'canvas' | 'preview'>('canvas');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);

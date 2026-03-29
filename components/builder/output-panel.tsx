@@ -1,10 +1,10 @@
 'use client';
 
-import { Copy, Download, Check, FileCode } from 'lucide-react';
-import { useState, useMemo } from 'react';
+import { Check, Copy, Download, FileCode } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
-import { renderMarkdown, downloadMarkdown, copyToClipboard } from '@/lib/markdown';
+import { copyToClipboard, downloadMarkdown, renderMarkdown } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 
 import { LivePreview } from './live-preview';
@@ -15,7 +15,7 @@ interface OutputPanelProps {
 
 export function OutputPanel({ mode }: OutputPanelProps) {
   const [copied, setCopied] = useState(false);
-  const { blocks } = useBuilderStore();
+  const blocks = useBuilderStore((s) => s.blocks);
 
   const markdown = useMemo(() => {
     if (typeof window === 'undefined') return '';

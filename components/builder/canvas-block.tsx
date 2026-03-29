@@ -27,7 +27,9 @@ interface CanvasBlockProps {
 }
 
 export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
-  const { removeBlock, duplicateBlock, updateBlock } = useBuilderStore();
+  const removeBlock = useBuilderStore((s) => s.removeBlock);
+  const duplicateBlock = useBuilderStore((s) => s.duplicateBlock);
+  const updateBlock = useBuilderStore((s) => s.updateBlock);
   const blockRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
 
