@@ -27,6 +27,95 @@ function formatCompact(num: number): string {
 }
 
 // ---------------------------------------------------------------------------
+// Error State SVG Constants (Pre-generated for performance)
+// ---------------------------------------------------------------------------
+
+// Error SVG for standard layout (495x195)
+const ERROR_SVG_STANDARD_TEMPLATE = `<svg width="495" height="195" xmlns="http://www.w3.org/2000/svg">
+  <rect width="495" height="195" fill="#THEME_BG" rx="10"/>
+  <text x="247.5" y="89.5" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
+    Error fetching stats for @USERNAME
+  </text>
+  <text x="247.5" y="109.5" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
+    User may not exist or API rate limit exceeded
+  </text>
+</svg>`;
+
+// Error SVG for compact layout (350x80)
+const ERROR_SVG_COMPACT_TEMPLATE = `<svg width="350" height="80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="350" height="80" fill="#THEME_BG" rx="10"/>
+  <text x="175" y="35" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
+    Error fetching stats for @USERNAME
+  </text>
+  <text x="175" y="55" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
+    User may not exist or API rate limit exceeded
+  </text>
+</svg>`;
+
+// No token SVG for standard layout (495x195)
+const NO_TOKEN_SVG_STANDARD_TEMPLATE = `<svg width="495" height="195" xmlns="http://www.w3.org/2000/svg">
+  <rect width="495" height="195" fill="#THEME_BG" rx="10" stroke="#THEME_BORDER"/>
+  <text x="247.5" y="79.5" text-anchor="middle" fill="#THEME_TITLE" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" font-weight="600">
+    GitHub Token Required
+  </text>
+  <text x="247.5" y="99.5" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10">
+    Set GITHUB_TOKEN environment variable
+  </text>
+  <text x="247.5" y="115.5" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
+    to fetch real stats for @USERNAME
+  </text>
+</svg>`;
+
+// No token SVG for compact layout (330x80)
+const NO_TOKEN_SVG_COMPACT_TEMPLATE = `<svg width="330" height="80" xmlns="http://www.w3.org/2000/svg">
+  <rect width="330" height="80" fill="#THEME_BG" rx="10" stroke="#THEME_BORDER"/>
+  <text x="165" y="29" text-anchor="middle" fill="#THEME_TITLE" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" font-weight="600">
+    GitHub Token Required
+  </text>
+  <text x="165" y="49" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10">
+    Set GITHUB_TOKEN environment variable
+  </text>
+  <text x="165" y="65" text-anchor="middle" fill="#THEME_TEXT" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
+    to fetch real stats for @USERNAME
+  </text>
+</svg>`;
+
+/**
+ * Generate error SVG with pre-generated template and dynamic values.
+ * Uses efficient string replacement for minimal overhead.
+ */
+function generateErrorSvg(
+  username: string,
+  theme: { bg: string; text: string },
+  layout: 'standard' | 'compact',
+): string {
+  const template = layout === 'standard' ? ERROR_SVG_STANDARD_TEMPLATE : ERROR_SVG_COMPACT_TEMPLATE;
+  return template
+    .replace(/#THEME_BG/g, theme.bg)
+    .replace(/#THEME_TEXT/g, theme.text)
+    .replace(/@USERNAME/g, escapeSvg(username));
+}
+
+/**
+ * Generate no-token SVG with pre-generated template and dynamic values.
+ * Uses efficient string replacement for minimal overhead.
+ */
+function generateNoTokenSvg(
+  username: string,
+  theme: { bg: string; text: string; title: string; border: string },
+  layout: 'standard' | 'compact',
+): string {
+  const template =
+    layout === 'standard' ? NO_TOKEN_SVG_STANDARD_TEMPLATE : NO_TOKEN_SVG_COMPACT_TEMPLATE;
+  return template
+    .replace(/#THEME_BG/g, theme.bg)
+    .replace(/#THEME_TEXT/g, theme.text)
+    .replace(/#THEME_TITLE/g, theme.title)
+    .replace(/#THEME_BORDER/g, theme.border)
+    .replace(/@USERNAME/g, escapeSvg(username));
+}
+
+// ---------------------------------------------------------------------------
 // Icon helpers (16×16 GitHub Octicons) — used by the standard layout
 // ---------------------------------------------------------------------------
 type IconEntry = { d: string; fillRule?: 'nonzero' | 'evenodd' };
@@ -363,40 +452,14 @@ export async function GET(request: NextRequest) {
       stats = await fetchUserStats(username, token);
       rank = calculateRank(stats);
     } catch {
-      const errW = layout === 'standard' ? 495 : 350;
-      const errH = layout === 'standard' ? 195 : 80;
-      const escapedUsername = escapeSvg(username);
-      return new NextResponse(
-        `<svg width="${errW}" height="${errH}" xmlns="http://www.w3.org/2000/svg">
-          <rect width="${errW}" height="${errH}" fill="#${theme.bg}" rx="10"/>
-          <text x="${errW / 2}" y="${errH / 2 - 8}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12">
-            Error fetching stats for @${escapedUsername}
-          </text>
-          <text x="${errW / 2}" y="${errH / 2 + 12}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10" opacity="0.7">
-            User may not exist or API rate limit exceeded
-          </text>
-        </svg>`,
-        { headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=300' } },
-      );
+      return new NextResponse(generateErrorSvg(username, theme, layout), {
+        headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=300' },
+      });
     }
   } else {
-    const noTokW = layout === 'standard' ? 495 : 330;
-    const noTokH = layout === 'standard' ? 195 : 80;
-    return new NextResponse(
-      `<svg width="${noTokW}" height="${noTokH}" xmlns="http://www.w3.org/2000/svg">
-        <rect width="${noTokW}" height="${noTokH}" fill="#${theme.bg}" rx="10" stroke="#${theme.border}"/>
-        <text x="${noTokW / 2}" y="${noTokH / 2 - 18}" text-anchor="middle" fill="#${theme.title}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="12" font-weight="600">
-          GitHub Token Required
-        </text>
-        <text x="${noTokW / 2}" y="${noTokH / 2 + 2}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="10">
-          Set GITHUB_TOKEN environment variable
-        </text>
-        <text x="${noTokW / 2}" y="${noTokH / 2 + 18}" text-anchor="middle" fill="#${theme.text}" font-family="Segoe UI, Ubuntu, Sans-Serif" font-size="9" opacity="0.7">
-          to fetch real stats for @${escapeSvg(username)}
-        </text>
-      </svg>`,
-      { headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=60' } },
-    );
+    return new NextResponse(generateNoTokenSvg(username, theme, layout), {
+      headers: { 'Content-Type': 'image/svg+xml', 'Cache-Control': 'public, max-age=60' },
+    });
   }
 
   const svgOptions = { showIcons, hideBorder, hideTitle, hideRank, borderRadius };
