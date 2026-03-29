@@ -1,5 +1,44 @@
 // GitHub API utility functions
 
+// Simple in-memory cache with TTL for server-side caching
+interface CacheEntry<T> {
+  data: T;
+  timestamp: number;
+}
+
+class GitHubCache {
+  private cache = new Map<string, CacheEntry<unknown>>();
+  private readonly ttl: number;
+
+  constructor(ttlMs: number = 5 * 60 * 1000) {
+    // Default 5 minutes TTL
+    this.ttl = ttlMs;
+  }
+
+  get<T>(key: string): T | null {
+    const entry = this.cache.get(key);
+    if (!entry) return null;
+
+    if (Date.now() - entry.timestamp > this.ttl) {
+      this.cache.delete(key);
+      return null;
+    }
+
+    return entry.data as T;
+  }
+
+  set<T>(key: string, data: T): void {
+    this.cache.set(key, { data, timestamp: Date.now() });
+  }
+
+  clear(): void {
+    this.cache.clear();
+  }
+}
+
+// Singleton cache instance for GitHub API responses
+const githubCache = new GitHubCache(5 * 60 * 1000); // 5 minutes TTL
+
 export interface GitHubUser {
   login: string;
   name: string | null;
@@ -124,6 +163,13 @@ export async function fetchUserRepos(username: string, token?: string): Promise<
 }
 
 export async function fetchUserStats(username: string, token: string): Promise<GitHubStats> {
+  // Check cache first
+  const cacheKey = `stats:${username}`;
+  const cachedData = githubCache.get<GitHubStats>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
   const query = `
     query($username: String!) {
       user(login: $username) {
@@ -179,7 +225,7 @@ export async function fetchUserStats(username: string, token: string): Promise<G
   const totalStars = repos.reduce((sum, repo) => sum + repo.stargazerCount, 0);
   const totalForks = repos.reduce((sum, repo) => sum + repo.forkCount, 0);
 
-  return {
+  const stats: GitHubStats = {
     totalStars,
     totalForks,
     totalCommits:
@@ -192,6 +238,11 @@ export async function fetchUserStats(username: string, token: string): Promise<G
     followers: data.user.followers.totalCount,
     publicRepos: data.user.repositories.totalCount,
   };
+
+  // Cache the result
+  githubCache.set(cacheKey, stats);
+
+  return stats;
 }
 
 export async function fetchLanguageStats(username: string, token: string): Promise<LanguageStats> {
