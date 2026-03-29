@@ -537,7 +537,7 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         label: 'Image',
         icon: 'Image',
         defaultProps: {
-          url: 'https://via.placeholder.com/400x200',
+          url: 'https://img.icons8.com/?size=50&id=gBeVzjBbusWF&format=png&color=000000',
           alt: 'Image description',
           alignment: 'center',
           borderRadius: 8,
