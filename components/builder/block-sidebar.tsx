@@ -30,7 +30,7 @@ import {
   Type,
   User,
 } from 'lucide-react';
-import { useState } from 'react';
+import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -179,14 +179,18 @@ export function BlockSidebar() {
     });
   };
 
-  const filteredCategories = BLOCK_CATEGORIES.map((category) => ({
-    ...category,
-    blocks: category.blocks.filter(
-      (block) =>
-        block.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        block.type.toLowerCase().includes(searchQuery.toLowerCase()),
-    ),
-  })).filter((category) => category.blocks.length > 0);
+  const filteredCategories = useMemo(
+    () =>
+      BLOCK_CATEGORIES.map((category) => ({
+        ...category,
+        blocks: category.blocks.filter(
+          (block) =>
+            block.label.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            block.type.toLowerCase().includes(searchQuery.toLowerCase()),
+        ),
+      })).filter((category) => category.blocks.length > 0),
+    [searchQuery],
+  );
 
   return (
     <div className="flex h-full w-full lg:w-76 flex-col border-r border-border bg-sidebar/50 backdrop-blur-sm">
