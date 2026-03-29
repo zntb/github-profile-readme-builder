@@ -19,6 +19,87 @@ function isHalfWidthGithubCard(block: Block): boolean {
   return false;
 }
 
+// Inline SVG stats card component that fetches and renders SVG directly
+// Using key to force remount when params change - avoids setState in effect for resetting
+function StatsCardInline({ params, style }: { params: string; style?: CSSProperties }) {
+  // Force remount when params change to reset state naturally
+  return <StatsCardInlineCore key={params} params={params} style={style} />;
+}
+
+// Core component that actually renders the content
+function StatsCardInlineCore({ params, style }: { params: string; style?: CSSProperties }) {
+  const [svgContent, setSvgContent] = useState<string>('');
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+
+  const mountedRef = useRef(true);
+  const svgContainerRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const controller = new AbortController();
+
+    fetch(`/api/stats?${params}`, { signal: controller.signal })
+      .then((res) => res.text())
+      .then((svg) => {
+        if (mountedRef.current) {
+          setSvgContent(svg);
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        if (err.name === 'AbortError' || !mountedRef.current) return;
+        setError(true);
+        setLoading(false);
+      });
+
+    return () => {
+      mountedRef.current = false;
+      controller.abort();
+    };
+  }, [params]);
+
+  useEffect(() => {
+    const svg = svgContainerRef.current?.querySelector('svg');
+    if (!svg) return;
+
+    svg.setAttribute('width', '100%');
+    svg.removeAttribute('height');
+    svg.style.width = '100%';
+    svg.style.height = 'auto';
+    svg.style.display = 'block';
+    svg.style.maxWidth = '100%';
+  }, [svgContent]);
+
+  if (loading) {
+    return <div className="text-center p-4 text-muted-foreground">Loading...</div>;
+  }
+  if (error || !svgContent) {
+    return (
+      <div className="text-center p-4 border border-dashed border-muted-foreground/30 rounded-lg bg-muted/20">
+        <p className="text-muted-foreground text-sm">Failed to load stats</p>
+      </div>
+    );
+  }
+
+  const hasExplicitWidth = Boolean(style?.width || style?.maxWidth);
+  const containerStyle: CSSProperties = {
+    ...style,
+    display: 'inline-block',
+    width: hasExplicitWidth ? style?.width : undefined,
+    maxWidth: hasExplicitWidth ? style?.maxWidth : undefined,
+  };
+
+  return (
+    <div className="text-center" style={containerStyle}>
+      <div
+        ref={svgContainerRef}
+        dangerouslySetInnerHTML={{ __html: svgContent }}
+        style={{ width: hasExplicitWidth ? '100%' : undefined, height: 'auto' }}
+      />
+    </div>
+  );
+}
+
 export function LivePreview({ blocks }: LivePreviewProps) {
   if (blocks.length === 0) {
     return (
@@ -170,14 +251,17 @@ function PreviewBlock({
                 key={child.id}
                 style={{
                   width: direction === 'row' ? cardWidth : '100%',
-                  minWidth: 0,
-                  flex: direction === 'row' ? `0 0 ${cardWidth}` : undefined,
+                  maxWidth: '100%',
                 }}
               >
                 <PreviewBlock
                   block={child}
                   wrapperClassName="mb-0"
-                  imageStyleOverride={{ width: '100%', height: 'auto', display: 'block' }}
+                  imageStyleOverride={{
+                    width: '100%',
+                    maxWidth: '100%',
+                    height: cardHeight,
+                  }}
                 />
               </div>
             ))}
