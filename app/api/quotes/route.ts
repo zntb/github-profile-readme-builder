@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+import { escapeHtml } from '@/lib/utils';
+
 // Quote data with different types and themes
 const quotes = [
   // Programming/Dev quotes
@@ -261,6 +263,10 @@ function generateQuoteSvg(quote: { text: string; author: string }, themeName: st
   const theme = themes[themeName] || themes.default;
   const { bg, text, accent, border } = theme;
 
+  // Escape user-provided content to prevent XSS
+  const escapedText = escapeHtml(quote.text);
+  const escapedAuthor = escapeHtml(quote.author);
+
   return `
 <svg width="495" height="160" viewBox="0 0 495 160" xmlns="http://www.w3.org/2000/svg">
   <defs>
@@ -296,12 +302,12 @@ function generateQuoteSvg(quote: { text: string; author: string }, themeName: st
 
   <text x="20" y="45" class="quote-mark">"</text>
   <text x="25" y="85" class="quote-text" width="445">
-    <tspan x="25" dy="0">${quote.text}</tspan>
+    <tspan x="25" dy="0">${escapedText}</tspan>
   </text>
 
   <line x1="25" y1="110" x2="100" y2="110" class="divider"/>
 
-  <text x="25" y="135" class="author">— ${quote.author}</text>
+  <text x="25" y="135" class="author">— ${escapedAuthor}</text>
   <text x="380" y="145" font-family="Inter, sans-serif" font-size="10" fill="#${text}" opacity="0.5">github-profile-readme-builder</text>
 </svg>
   `.trim();
