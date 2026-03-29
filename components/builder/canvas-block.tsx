@@ -15,14 +15,18 @@ import { useCallback, useRef, useState } from 'react';
 
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
+import { extractUploadThingFileKey, isUploadThingUrl } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 
 import { BlockPreview } from './block-preview';
@@ -40,15 +44,6 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
   const blockRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  console.log(
-    'CanvasBlock render, type:',
-    block.type,
-    'url:',
-    block.props.url,
-    'showDeleteDialog:',
-    showDeleteDialog,
-  );
 
   // Get block style properties
   const blockWidth = block.props.blockWidth as number | undefined;
@@ -69,33 +64,22 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
   };
 
   const handleDeleteClick = () => {
-    console.log('handleDeleteClick called, type:', block.type, 'url:', block.props.url);
+    const url = block.props.url as string | undefined;
+
     // For image and gif blocks, show confirmation dialog
-    if (block.type === 'image' || block.type === 'gif') {
-      const url = block.props.url as string;
-      console.log(
-        'Checking url:',
-        url,
-        'includes uploadthing:',
-        url && url.includes('uploadthing'),
-      );
-      if (url && url.includes('uploadthing')) {
-        setShowDeleteDialog(true);
-        console.log('setShowDeleteDialog(true) called');
-        return;
-      }
+    if ((block.type === 'image' || block.type === 'gif') && isUploadThingUrl(url)) {
+      setShowDeleteDialog(true);
+      return;
     }
     removeBlock(block.id);
   };
 
   const handleDeleteConfirm = async () => {
-    console.log('handleDeleteConfirm called');
-    const url = block.props.url as string;
+    const url = block.props.url as string | undefined;
     // Extract file key from URL and delete from UploadThing
-    if (url && url.includes('uploadthing')) {
+    if (isUploadThingUrl(url)) {
       try {
-        const fileKey = url.split('/').pop();
-        console.log('Deleting fileKey:', fileKey);
+        const fileKey = extractUploadThingFileKey(url);
         if (fileKey) {
           await fetch('/api/uploadthing/delete', {
             method: 'POST',
@@ -112,7 +96,6 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
   };
 
   const handleDeleteCancel = () => {
-    console.log('handleDeleteCancel called');
     setShowDeleteDialog(false);
   };
 
@@ -308,25 +291,23 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
         </div>
       </div>
 
-      {showDeleteDialog && (
-        <AlertDialog>
-          <AlertDialogContent>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
             <AlertDialogTitle>Delete Image?</AlertDialogTitle>
             <AlertDialogDescription>
               Deleting this image block will permanently remove the uploaded image from UploadThing
               storage. This action cannot be undone.
             </AlertDialogDescription>
-            <AlertDialogFooter>
-              <Button variant="outline" onClick={handleDeleteCancel}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }

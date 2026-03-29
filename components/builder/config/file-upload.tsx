@@ -6,14 +6,18 @@ import { useRef, useState } from 'react';
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
 import {
   AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogFooter,
+  AlertDialogHeader,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { extractUploadThingFileKey, isUploadThingUrl } from '@/lib/uploadthing';
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -35,8 +39,6 @@ export function FileUpload({
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [isUploading, setIsUploading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
-
-  console.log('FileUpload render, value:', value, 'showDeleteDialog:', showDeleteDialog);
 
   const { startUpload, isUploading: isUtUploading } = useUploadThing('imageUploader', {
     onClientUploadComplete: (res) => {
@@ -88,8 +90,7 @@ export function FileUpload({
   };
 
   const handleClearClick = () => {
-    console.log('handleClearClick called, value:', value);
-    if (value && value.includes('uploadthing')) {
+    if (isUploadThingUrl(value)) {
       setShowDeleteDialog(true);
     } else {
       onChange('');
@@ -97,8 +98,7 @@ export function FileUpload({
   };
 
   const handleDeleteConfirm = async () => {
-    console.log('handleDeleteConfirm called');
-    const fileKey = value.split('/').pop();
+    const fileKey = extractUploadThingFileKey(value);
     if (fileKey) {
       try {
         await fetch('/api/uploadthing/delete', {
@@ -115,7 +115,6 @@ export function FileUpload({
   };
 
   const handleDeleteCancel = () => {
-    console.log('handleDeleteCancel called');
     setShowDeleteDialog(false);
   };
 
@@ -156,25 +155,23 @@ export function FileUpload({
         Supported: {accept.replace(/image\//g, '')} (max 8MB)
       </Label>
 
-      {showDeleteDialog && (
-        <AlertDialog>
-          <AlertDialogContent>
+      <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
             <AlertDialogTitle>Delete Image?</AlertDialogTitle>
             <AlertDialogDescription>
               Deleting this image will permanently remove it from the UploadThing storage. This
               action cannot be undone.
             </AlertDialogDescription>
-            <AlertDialogFooter>
-              <Button variant="outline" onClick={handleDeleteCancel}>
-                Cancel
-              </Button>
-              <Button variant="destructive" onClick={handleDeleteConfirm}>
-                Delete
-              </Button>
-            </AlertDialogFooter>
-          </AlertDialogContent>
-        </AlertDialog>
-      )}
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={handleDeleteCancel}>Cancel</AlertDialogCancel>
+            <AlertDialogAction variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
