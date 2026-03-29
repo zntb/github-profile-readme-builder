@@ -101,13 +101,19 @@ export function FileUpload({
     const fileKey = extractUploadThingFileKey(value);
     if (fileKey) {
       try {
-        await fetch('/api/uploadthing/delete', {
+        const response = await fetch('/api/uploadthing/delete', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ fileKey }),
         });
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('UploadThing delete failed:', errorText);
+          return;
+        }
       } catch (error) {
         console.error('Error deleting file:', error);
+        return;
       }
     }
     onChange('');

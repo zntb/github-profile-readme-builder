@@ -12,12 +12,19 @@ export async function POST(req: NextRequest) {
 
     console.log('Delete API received fileKey:', JSON.stringify(fileKey));
 
-    const utapi = new UTApi();
+    const utapi = new UTApi({ token: process.env.UPLOADTHING_TOKEN });
     console.log('Deleting file from UploadThing:', JSON.stringify(fileKey));
-    await utapi.deleteFiles(fileKey);
-    console.log('File deleted successfully');
+    const result = await utapi.deleteFiles(fileKey);
+    console.log('Delete API result:', result);
 
-    return NextResponse.json({ success: true });
+    if (!result.success || result.deletedCount < 1) {
+      return NextResponse.json(
+        { error: 'UploadThing did not delete the requested file', result },
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json({ success: true, deletedCount: result.deletedCount });
   } catch (error) {
     console.error('Error deleting file:', error);
     return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });

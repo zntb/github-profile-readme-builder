@@ -6,7 +6,7 @@ export function isUploadThingUrl(value: string | undefined | null): value is str
     if (protocol !== 'https:' && protocol !== 'http:') return false;
 
     const normalizedHost = hostname.toLowerCase().replace(/\.$/, '');
-    const allowedHosts = ['utfs.io', 'uploadthing.com'];
+    const allowedHosts = ['utfs.io', 'ufs.sh', 'uploadthing.com'];
 
     return (
       allowedHosts.includes(normalizedHost) ||
@@ -23,6 +23,10 @@ export function extractUploadThingFileKey(value: string | undefined | null): str
   try {
     const { pathname } = new URL(value);
     const parts = pathname.split('/').filter(Boolean);
+    const fileSegmentIndex = parts.lastIndexOf('f');
+    if (fileSegmentIndex !== -1 && fileSegmentIndex + 1 < parts.length) {
+      return parts[fileSegmentIndex + 1] ?? null;
+    }
     return parts.at(-1) ?? null;
   } catch {
     const [withoutQuery] = value.split('?');

@@ -81,14 +81,20 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       try {
         const fileKey = extractUploadThingFileKey(url);
         if (fileKey) {
-          await fetch('/api/uploadthing/delete', {
+          const response = await fetch('/api/uploadthing/delete', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fileKey }),
           });
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error('UploadThing delete failed:', errorText);
+            return;
+          }
         }
       } catch (error) {
         console.error('Error deleting file:', error);
+        return;
       }
     }
     removeBlock(block.id);
