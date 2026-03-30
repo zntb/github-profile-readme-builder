@@ -217,7 +217,45 @@ export function Builder() {
             <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,transparent_0%,var(--background)_70%)]" />
           </div>
           {mobileTab === 'blocks' && (
-            <div className="h-full">
+            <div className="h-full flex flex-col">
+              <div className="border-b border-border/50 bg-card/60 px-3 py-2">
+                <div className="grid grid-cols-3 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => setMobileTab('canvas')}
+                  >
+                    <PanelLeft className="h-3.5 w-3.5" />
+                    Canvas
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => setMobileTab('preview')}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    Preview
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    disabled={!selectedBlockId}
+                    className={cn(
+                      'h-8 gap-1.5 text-xs',
+                      !selectedBlockId && 'cursor-not-allowed opacity-50',
+                    )}
+                    onClick={() => setConfigOpen(true)}
+                  >
+                    <Settings2 className="h-3.5 w-3.5" />
+                    Config
+                  </Button>
+                </div>
+              </div>
               <BlockSidebar />
             </div>
           )}
