@@ -275,6 +275,7 @@ export function Builder() {
                   </Button>
                   <SheetContent
                     side="bottom"
+                    showCloseButton={false}
                     className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50"
                   >
                     <div className="h-[70vh] flex flex-col">
@@ -389,6 +390,7 @@ export function Builder() {
 
           <SheetContent
             side="bottom"
+            showCloseButton={false}
             className="h-[72vh] p-0 rounded-t-2xl border-t border-border/50"
           >
             <div className="h-[72vh] flex flex-col">
