@@ -24,6 +24,7 @@ import { SpacerConfig } from './blocks/spacer-config';
 import { StatsCardConfig } from './blocks/stats-card-config';
 import { StatsRowConfig } from './blocks/stats-row-config';
 import { StreakStatsConfig } from './blocks/streak-stats-config';
+import { SupportLinkConfig } from './blocks/support-link-config';
 import { TopLanguagesConfig } from './blocks/top-languages-config';
 import { TrophiesConfig } from './blocks/trophies-config';
 import { TypingAnimationConfig } from './blocks/typing-animation-config';
@@ -465,6 +466,16 @@ export function BlockConfigFields({
           onWaveColorChange={(v) => update('waveColor', v)}
           onFontColorChange={(v) => update('fontColor', v)}
           onHeightChange={(v) => update('height', v)}
+        />
+      );
+
+    case 'support-link':
+      return (
+        <SupportLinkConfig
+          type={(props.type as string) ?? 'coffee'}
+          url={(props.url as string) ?? ''}
+          onTypeChange={(v) => update('type', v)}
+          onUrlChange={(v) => update('url', v)}
         />
       );
 

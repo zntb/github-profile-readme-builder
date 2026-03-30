@@ -378,6 +378,19 @@ export function renderBlock(block: Block, origin: string = ''): string {
       return `<div align="center">\n  <img src="${url}" />\n</div>`;
     }
 
+    case 'support-link': {
+      const { type, url } = props as Record<string, string>;
+      const linkUrl =
+        url ||
+        (type === 'coffee'
+          ? 'https://buymeacoffee.com/zntbdev'
+          : 'https://github.com/mehdi-mirzaeizadeh/github-profile-maker/issues');
+      if (type === 'coffee') {
+        return `<div align="center">\n  <a href="${linkUrl}" target="_blank">\n    <img src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%23FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black" alt="Buy me a coffee" />\n  </a>\n</div>`;
+      }
+      return `<div align="center">\n  <a href="${linkUrl}" target="_blank">\n    <img src="https://img.shields.io/badge/Leave%20feedback-%23FF6B6B?style=for-the-badge&logo=github&logoColor=white" alt="Leave feedback" />\n  </a>\n</div>`;
+    }
+
     default:
       return '';
   }

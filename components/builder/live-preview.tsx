@@ -830,6 +830,37 @@ function PreviewBlock({
         );
       }
 
+      case 'support-link': {
+        const linkType = props.type as string;
+        const linkUrl =
+          (props.url as string) ||
+          (linkType === 'coffee'
+            ? 'https://buymeacoffee.com/zntbdev'
+            : 'https://github.com/mehdi-mirzaeizadeh/github-profile-maker/issues');
+        if (linkType === 'coffee') {
+          return (
+            <div className="text-center">
+              <a href={linkUrl} target="_blank">
+                <img
+                  src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%23FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black"
+                  alt="Buy me a coffee"
+                />
+              </a>
+            </div>
+          );
+        }
+        return (
+          <div className="text-center">
+            <a href={linkUrl} target="_blank">
+              <img
+                src="https://img.shields.io/badge/Leave%20feedback-%23FF6B6B?style=for-the-badge&logo=github&logoColor=white"
+                alt="Leave feedback"
+              />
+            </a>
+          </div>
+        );
+      }
+
       default:
         return null;
     }

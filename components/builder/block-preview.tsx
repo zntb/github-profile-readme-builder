@@ -351,6 +351,17 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
 
+      case 'support-link':
+        return (
+          <div className="flex items-center justify-center gap-2 py-2">
+            {(props.type as string) === 'coffee' ? (
+              <span className="text-sm text-muted-foreground">☕ Buy me a coffee</span>
+            ) : (
+              <span className="text-sm text-muted-foreground">💬 Leave feedback</span>
+            )}
+          </div>
+        );
+
       default:
         return (
           <div className="text-sm text-muted-foreground italic">Unknown block type: {type}</div>

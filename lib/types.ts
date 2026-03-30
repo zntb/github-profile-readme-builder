@@ -33,7 +33,8 @@ export type BlockType =
   // Advanced
   | 'visitor-counter'
   | 'quote'
-  | 'footer-banner';
+  | 'footer-banner'
+  | 'support-link';
 
 export interface Block {
   id: string;
@@ -717,6 +718,14 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
           waveColor: '0:EEFF00,100:a82DA',
           fontColor: 'ffffff',
           height: 120,
+        },
+      },
+      {
+        type: 'support-link',
+        label: 'Support Link',
+        icon: 'Heart',
+        defaultProps: {
+          type: 'coffee',
         },
       },
     ],

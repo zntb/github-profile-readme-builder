@@ -34,7 +34,7 @@ export function BuilderHeader() {
   };
 
   return (
-    <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between px-4 sm:px-6 sticky top-0 z-50">
+    <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between p-4 sm:px-6 sticky top-0 z-50">
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20 group">

@@ -384,7 +384,10 @@ This project is licensed under the **MIT License** — see the [LICENSE](LICENSE
 
 Made with ❤️ using Next.js & React
 
-⭐ **Star this repo** if you found it useful!
+⭐ **Star this repo** if you found it useful!\
+<br/>
+
+[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/zntb)
 
 </div>
 

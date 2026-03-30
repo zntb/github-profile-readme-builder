@@ -16,6 +16,7 @@ import {
   Flame,
   Hand,
   Heading,
+  Heart,
   Image,
   Layers,
   Layout,
@@ -66,6 +67,7 @@ const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   PanelBottom,
   Box,
   Columns2,
+  Heart,
 };
 
 function findBlockById(items: Block[], id: string): Block | null {

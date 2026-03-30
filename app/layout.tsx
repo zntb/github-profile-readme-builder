@@ -59,7 +59,7 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          {children}
+          <div className="flex-1 flex flex-col">{children}</div>
         </ThemeProvider>
       </body>
     </html>
