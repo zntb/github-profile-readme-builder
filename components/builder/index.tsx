@@ -390,7 +390,63 @@ export function Builder() {
             side="bottom"
             className="h-[72vh] p-0 rounded-t-2xl border-t border-border/50"
           >
-            <ConfigPanel />
+            <div className="flex h-full flex-col">
+              <div className="border-b border-border/50 bg-card/80 px-3 py-2">
+                <div className="grid grid-cols-4 gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => {
+                      setMobileTab('blocks');
+                      setConfigOpen(false);
+                    }}
+                  >
+                    <Blocks className="h-3.5 w-3.5" />
+                    Blocks
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => {
+                      setMobileTab('canvas');
+                      setConfigOpen(false);
+                    }}
+                  >
+                    <PanelLeft className="h-3.5 w-3.5" />
+                    Canvas
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    className="h-8 gap-1.5 text-xs"
+                    onClick={() => {
+                      setMobileTab('preview');
+                      setConfigOpen(false);
+                    }}
+                  >
+                    <Eye className="h-3.5 w-3.5" />
+                    Preview
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="default"
+                    size="sm"
+                    className="h-8 text-xs"
+                    onClick={() => setConfigOpen(false)}
+                  >
+                    Done
+                  </Button>
+                </div>
+              </div>
+              <div className="min-h-0 flex-1">
+                <ConfigPanel />
+              </div>
+            </div>
           </SheetContent>
         </Sheet>
       </div>
