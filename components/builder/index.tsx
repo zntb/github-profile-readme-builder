@@ -264,16 +264,15 @@ export function Builder() {
               <Canvas />
               {selectedBlockId && (
                 <Sheet open={configOpen} onOpenChange={setConfigOpen}>
-                  <SheetTrigger asChild>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      className="absolute bottom-24 right-4 z-10 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground border-0"
-                    >
-                      <Settings2 className="w-4 h-4 mr-2" />
-                      Configure
-                    </Button>
-                  </SheetTrigger>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    className="fixed bottom-24 right-4 z-50 shadow-lg hover:shadow-xl transition-shadow duration-200 bg-gradient-to-r from-primary to-primary/90 text-primary-foreground border-0"
+                    onClick={() => setConfigOpen(true)}
+                  >
+                    <Settings2 className="w-4 h-4 mr-2" />
+                    Configure
+                  </Button>
                   <SheetContent
                     side="bottom"
                     className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50"
