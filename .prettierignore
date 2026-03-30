@@ -23,3 +23,6 @@ pnpm-lock.yaml
 # Misc
 *.ico
 *.svg
+
+# Documentation
+README.md
