@@ -1,9 +1,18 @@
 'use client';
 
-import { Download, GitBranch, RotateCcw } from 'lucide-react';
+import { Download, GitBranch, Menu, RotateCcw } from 'lucide-react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
 import { renderMarkdown } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 
@@ -14,6 +23,7 @@ import { TemplatesDialog } from './templates-dialog';
 export function BuilderHeader() {
   const blocks = useBuilderStore((s) => s.blocks);
   const clearBlocks = useBuilderStore((s) => s.clearBlocks);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleExport = () => {
     const markdown = renderMarkdown(blocks, window.location.origin);
@@ -31,6 +41,12 @@ export function BuilderHeader() {
     if (blocks.length === 0) return;
     clearBlocks();
     toast.success('Canvas cleared');
+    setMobileMenuOpen(false);
+  };
+
+  const handleExportFromMenu = () => {
+    handleExport();
+    setMobileMenuOpen(false);
   };
 
   return (
@@ -50,7 +66,7 @@ export function BuilderHeader() {
         </div>
       </div>
 
-      <div className="flex items-center gap-2 sm:gap-3">
+      <div className="hidden sm:flex items-center gap-2 sm:gap-3">
         <ModeToggle />
         <TemplatesDialog />
         <Button
@@ -64,15 +80,6 @@ export function BuilderHeader() {
           Clear
         </Button>
         <Button
-          variant="ghost"
-          size="icon"
-          onClick={handleClear}
-          disabled={blocks.length === 0}
-          className="sm:hidden hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
-        >
-          <RotateCcw className="w-4 h-4" />
-        </Button>
-        <Button
           size="sm"
           onClick={handleExport}
           disabled={blocks.length === 0}
@@ -81,14 +88,53 @@ export function BuilderHeader() {
           <Download className="w-4 h-4" />
           Export
         </Button>
-        <Button
-          size="icon"
-          onClick={handleExport}
-          disabled={blocks.length === 0}
-          className="sm:hidden bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-        >
-          <Download className="w-4 h-4" />
-        </Button>
+      </div>
+
+      <div className="sm:hidden flex items-center gap-2">
+        <ModeToggle />
+        <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
+          <SheetTrigger asChild>
+            <Button variant="ghost" size="icon" aria-label="Open mobile navigation menu">
+              <Menu className="w-5 h-5" />
+            </Button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[85vw] max-w-sm">
+            <SheetHeader>
+              <SheetTitle>Quick actions</SheetTitle>
+              <SheetDescription>
+                Manage templates and export your README in one place.
+              </SheetDescription>
+            </SheetHeader>
+
+            <div className="mt-6 space-y-3">
+              <div className="rounded-xl border border-border/60 p-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                  Templates
+                </p>
+                <TemplatesDialog />
+              </div>
+
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 h-11"
+                onClick={handleClear}
+                disabled={blocks.length === 0}
+              >
+                <RotateCcw className="w-4 h-4" />
+                Clear canvas
+              </Button>
+
+              <Button
+                className="w-full justify-start gap-2 h-11 bg-gradient-to-r from-primary to-primary/90"
+                onClick={handleExportFromMenu}
+                disabled={blocks.length === 0}
+              >
+                <Download className="w-4 h-4" />
+                Export README.md
+              </Button>
+            </div>
+          </SheetContent>
+        </Sheet>
       </div>
     </header>
   );
