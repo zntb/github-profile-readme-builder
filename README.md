@@ -25,32 +25,32 @@
 > Built with **Next.js 16**, **React 19**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui**, **Zustand**, and **dnd-kit**.
 
 <div align="center">
-  <img src="https://via.placeholder.com/900x500/1a1b27/70a5fd?text=App+Screenshot" alt="App Screenshot" width="900" style="border-radius: 12px;" />
+  <img src="./public/screenshot.png" alt="App Screenshot" width="900" style="border-radius: 12px;" />
 </div>
 
 ---
 
 ## 🗂️ Table of Contents
 
-- [✨ Overview](#-overview)
-- [🗂️ Table of Contents](#️-table-of-contents)
-- [🎯 Features](#-features)
-- [🧱 Block Library](#-block-library)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Getting Started](#-getting-started)
+- [✨ Overview](#overview)
+- [🗂️ Table of Contents](#️table-of-contents)
+- [🎯 Features](#features)
+- [🧱 Block Library](#block-library)
+- [🛠️ Tech Stack](#️tech-stack)
+- [🚀 Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Development](#development)
   - [Production Build](#production-build)
-- [📁 Project Structure](#-project-structure)
-- [🔌 API Routes](#-api-routes)
+- [📁 Project Structure](#project-structure)
+- [🔌 API Routes](#api-routes)
   - [Supported Themes](#supported-themes)
-- [🎨 Templates](#-templates)
-- [🤝 Contributing](#-contributing)
+- [🎨 Templates](#templates)
+- [🤝 Contributing](#contributing)
   - [Adding a New Block](#adding-a-new-block)
   - [Code Style](#code-style)
-- [📄 License](#-license)
+- [📄 License](#license)
 
 ---
 
