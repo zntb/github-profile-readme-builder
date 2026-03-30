@@ -7,7 +7,6 @@ import { useShallow } from 'zustand/shallow';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import {
   Select,
   SelectContent,
@@ -59,12 +58,17 @@ export function ConfigPanel() {
         <h2 className="text-sm font-semibold text-sidebar-foreground">
           {selectedBlock.type.replace(/-/g, ' ').replace(/\b\w/g, (c: string) => c.toUpperCase())}
         </h2>
-        <Button variant="ghost" size="icon" className="h-6 w-6" onClick={() => selectBlock(null)}>
+        <Button
+          variant="ghost"
+          size="icon"
+          className="hidden lg:flex h-6 w-6"
+          onClick={() => selectBlock(null)}
+        >
           <X className="h-4 w-4" />
         </Button>
       </div>
 
-      <ScrollArea className="flex-1">
+      <div className="flex-1 overflow-y-auto">
         <div className="p-4 space-y-4">
           <FieldGroup>
             <Label>Alignment</Label>
@@ -118,7 +122,7 @@ export function ConfigPanel() {
             updateBlockChildren={updateBlockChildren}
           />
         </div>
-      </ScrollArea>
+      </div>
     </div>
   );
 }
