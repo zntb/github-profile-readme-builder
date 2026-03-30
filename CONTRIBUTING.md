@@ -1,4 +1,4 @@
-# Contributing to GitHub Profile README Builder
+# Contributing to GitHub Profile Maker
 
 Thank you for your interest in contributing! This guide will help you get started with development, understand our code standards, and effectively contribute to the project.
 
@@ -24,8 +24,8 @@ Thank you for your interest in contributing! This guide will help you get starte
 
 ```bash
 # Fork & clone the repository
-git clone https://github.com/<your-username>/github-profile-readme-builder.git
-cd github-profile-readme-builder
+git clone https://github.com/zntb/github-profile-maker.git
+cd github-profile-maker
 
 # Install dependencies
 npm install

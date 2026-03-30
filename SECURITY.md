@@ -19,7 +19,7 @@ We take security vulnerabilities seriously. If you discover a security issue, pl
 1. **Do NOT** create a public GitHub issue for security vulnerabilities
 2. Email the security team directly at: <codetibo@proton.me>
 3. Alternatively, use GitHub's private vulnerability reporting:
-   - Navigate to the [Security tab](https://github.com/zenetio/github-profile-readme-builder/security) of the repository
+   - Navigate to the [Security tab](https://github.com/zenetio/github-profile-maker/security) of the repository
    - Click "Report a vulnerability"
    - Provide detailed information about the vulnerability
 
@@ -46,7 +46,7 @@ When reporting, please include:
 
 ### Overview
 
-GitHub Profile README Builder is a client-side focused application that fetches public GitHub data and generates markdown for profile READMEs. The application does not store user credentials or sensitive data.
+GitHub Profile Maker is a client-side focused application that fetches public GitHub data and generates markdown for profile READMEs. The application does not store user credentials or sensitive data.
 
 ### Data Flow
 

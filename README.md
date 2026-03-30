@@ -12,7 +12,7 @@
 
 <br/>
 
-**[🚀 Live Demo](https://github-profile-readme-builder-lovat.vercel.app/) · [📖 Documentation](#documentation) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)**
+**[🚀 Live Demo](https://github-profile-maker.vercel.app/) · [📖 Documentation](#documentation) · [🐛 Report Bug](issues) · [✨ Request Feature](issues)**
 
 </div>
 
@@ -20,7 +20,7 @@
 
 ## ✨ Overview
 
-**GitHub Profile README Builder** is a fully visual, drag-and-drop editor for creating beautiful GitHub profile `README.md` files — zero code required. Pick from a rich library of blocks, configure them with an intuitive panel, preview the result in real time, and export production-ready Markdown in one click.
+**GitHub Profile Maker** is a fully visual, drag-and-drop editor for creating beautiful GitHub profile `README.md` files — zero code required. Pick from a rich library of blocks, configure them with an intuitive panel, preview the result in real time, and export production-ready Markdown in one click.
 
 > Built with **Next.js 16**, **React 19**, **TypeScript**, **Tailwind CSS v4**, **shadcn/ui**, **Zustand**, and **dnd-kit**.
 
@@ -196,8 +196,8 @@ Fonts             Outfit · JetBrains Mono
 
 ```bash
 # 1. Clone the repository
-git clone https://github.com/zntb/github-profile-readme-builder.git
-cd github-profile-readme-builder
+git clone https://github.com/zntb/github-profile-maker.git
+cd github-profile-maker
 
 # 2. Install dependencies
 npm install
@@ -239,7 +239,7 @@ npm start
 ## 📁 Project Structure
 
 ```
-github-profile-readme-builder/
+github-profile-maker/
 ├── app/
 │   ├── api/
 │   │   ├── activity/route.ts      # Contribution activity graph SVG
@@ -331,7 +331,7 @@ Contributions are welcome! Here's how to get involved:
 
 ```bash
 # Fork & clone
-git clone https://github.com/<your-username>/github-profile-readme-builder.git
+git clone https://github.com/zntb/github-profile-maker.git
 
 # Create a feature branch
 git checkout -b feat/my-new-block

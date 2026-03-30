@@ -308,7 +308,7 @@ function generateQuoteSvg(quote: { text: string; author: string }, themeName: st
   <line x1="25" y1="110" x2="100" y2="110" class="divider"/>
 
   <text x="25" y="135" class="author">— ${escapedAuthor}</text>
-  <text x="380" y="145" font-family="Inter, sans-serif" font-size="10" fill="#${text}" opacity="0.5">github-profile-readme-builder</text>
+  <text x="380" y="145" font-family="Inter, sans-serif" font-size="10" fill="#${text}" opacity="0.5">github-profile-maker</text>
 </svg>
   `.trim();
 }

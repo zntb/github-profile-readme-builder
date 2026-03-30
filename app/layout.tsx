@@ -19,7 +19,7 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'GitHub Profile README Builder',
+  title: 'GitHub Profile Maker',
   description: 'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder',
   generator: 'Next.js',
   icons: {

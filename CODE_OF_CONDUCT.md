@@ -111,7 +111,7 @@ Community Impact Guidelines were inspired by [Mozilla's code of conduct enforcem
 
 ## Additional Guidelines for This Project
 
-### GitHub Profile README Builder Specific Guidelines
+### GitHub Profile Maker Specific Guidelines
 
 When contributing to this project, please also adhere to the following:
 
