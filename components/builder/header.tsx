@@ -1,10 +1,12 @@
 'use client';
 
-import { Download, GitBranch, Menu, RotateCcw } from 'lucide-react';
+import { Download, GitBranch, Menu, RotateCcw, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Sheet,
   SheetContent,
@@ -23,6 +25,8 @@ import { TemplatesDialog } from './templates-dialog';
 export function BuilderHeader() {
   const blocks = useBuilderStore((s) => s.blocks);
   const clearBlocks = useBuilderStore((s) => s.clearBlocks);
+  const username = useBuilderStore((s) => s.username);
+  const setUsername = useBuilderStore((s) => s.setUsername);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const handleExport = () => {
@@ -102,11 +106,26 @@ export function BuilderHeader() {
             <SheetHeader>
               <SheetTitle>Quick actions</SheetTitle>
               <SheetDescription>
-                Manage templates and export your README in one place.
+                Set your GitHub username, manage templates, and export your README.
               </SheetDescription>
             </SheetHeader>
 
             <div className="mt-6 space-y-3">
+              <div className="rounded-xl border border-border/60 p-3">
+                <div className="flex flex-col gap-2">
+                  <Label className="text-xs font-medium uppercase tracking-wide text-muted-foreground flex items-center gap-1.5">
+                    <User className="w-3.5 h-3.5" />
+                    GitHub Username
+                  </Label>
+                  <Input
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    placeholder="Enter your GitHub username"
+                    className="h-9 text-sm"
+                  />
+                </div>
+              </div>
+
               <div className="rounded-xl border border-border/60 p-3">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Templates
