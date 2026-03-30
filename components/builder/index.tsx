@@ -51,7 +51,7 @@ export function Builder() {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-background gradient-bg pb-16">
+    <div className="h-screen flex flex-col bg-background gradient-bg md:pb-16">
       <BuilderHeader />
 
       {/* Desktop Layout */}
