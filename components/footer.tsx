@@ -19,7 +19,7 @@ export function Footer() {
           </Link>
           <span className="text-muted-foreground">•</span>
           <Link
-            href="https://buymeacoffee.com/zntbdev"
+            href="https://buymeacoffee.com/codetibo"
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"

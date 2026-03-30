@@ -474,8 +474,10 @@ export function BlockConfigFields({
         <SupportLinkConfig
           type={(props.type as string) ?? 'coffee'}
           url={(props.url as string) ?? ''}
+          alignment={(props.alignment as string) ?? 'center'}
           onTypeChange={(v) => update('type', v)}
           onUrlChange={(v) => update('url', v)}
+          onAlignmentChange={(v) => update('alignment', v)}
         />
       );
 

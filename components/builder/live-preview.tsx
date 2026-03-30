@@ -832,14 +832,21 @@ function PreviewBlock({
 
       case 'support-link': {
         const linkType = props.type as string;
+        const alignment = (props.alignment as string) || 'center';
         const linkUrl =
           (props.url as string) ||
           (linkType === 'coffee'
-            ? 'https://buymeacoffee.com/zntbdev'
-            : 'https://github.com/mehdi-mirzaeizadeh/github-profile-maker/issues');
+            ? 'https://buymeacoffee.com/codetibo'
+            : 'https://github.com/zntb/github-profile-maker/issues');
+        const containerStyle: CSSProperties = {
+          display: 'flex',
+          justifyContent:
+            alignment === 'left' ? 'flex-start' : alignment === 'right' ? 'flex-end' : 'center',
+          width: '100%',
+        };
         if (linkType === 'coffee') {
           return (
-            <div className="text-center">
+            <div style={containerStyle}>
               <a href={linkUrl} target="_blank">
                 <img
                   src="https://img.shields.io/badge/Buy%20me%20a%20coffee-%23FFDD00?style=for-the-badge&logo=buymeacoffee&logoColor=black"
@@ -850,7 +857,7 @@ function PreviewBlock({
           );
         }
         return (
-          <div className="text-center">
+          <div style={containerStyle}>
             <a href={linkUrl} target="_blank">
               <img
                 src="https://img.shields.io/badge/Leave%20feedback-%23FF6B6B?style=for-the-badge&logo=github&logoColor=white"

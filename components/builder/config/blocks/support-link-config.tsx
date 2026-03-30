@@ -15,15 +15,19 @@ import { FieldGroup } from '../field-group';
 interface SupportLinkConfigProps {
   type: string;
   url: string;
+  alignment: string;
   onTypeChange: (value: string) => void;
   onUrlChange: (value: string) => void;
+  onAlignmentChange: (value: string) => void;
 }
 
 export function SupportLinkConfig({
   type,
   url,
+  alignment,
   onTypeChange,
   onUrlChange,
+  onAlignmentChange,
 }: SupportLinkConfigProps) {
   return (
     <>
@@ -50,6 +54,19 @@ export function SupportLinkConfig({
               : 'https://github.com/yourname/issues'
           }
         />
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Alignment</Label>
+        <Select value={alignment} onValueChange={onAlignmentChange}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
+          </SelectContent>
+        </Select>
       </FieldGroup>
     </>
   );

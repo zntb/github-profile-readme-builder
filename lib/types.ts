@@ -726,6 +726,7 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         icon: 'Heart',
         defaultProps: {
           type: 'coffee',
+          alignment: 'center',
         },
       },
     ],

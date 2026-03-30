@@ -18,7 +18,7 @@
 
 ---
 
-## ✨ Overview
+## Overview
 
 **GitHub Profile Maker** is a fully visual, drag-and-drop editor for creating beautiful GitHub profile `README.md` files — zero code required. Pick from a rich library of blocks, configure them with an intuitive panel, preview the result in real time, and export production-ready Markdown in one click.
 
@@ -30,31 +30,31 @@
 
 ---
 
-## 🗂️ Table of Contents
+## Table of Contents
 
-- [✨ Overview](#overview)
-- [🗂️ Table of Contents](#️table-of-contents)
-- [🎯 Features](#features)
-- [🧱 Block Library](#block-library)
-- [🛠️ Tech Stack](#️tech-stack)
-- [🚀 Getting Started](#getting-started)
+- [Overview](#overview)
+- [Table of Contents](#table-of-contents)
+- [Features](#features)
+- [Block Library](#block-library)
+- [Tech Stack](#tech-stack)
+- [Getting Started](#getting-started)
   - [Prerequisites](#prerequisites)
   - [Installation](#installation)
   - [Environment Variables](#environment-variables)
   - [Development](#development)
   - [Production Build](#production-build)
-- [📁 Project Structure](#project-structure)
-- [🔌 API Routes](#api-routes)
+- [Project Structure](#project-structure)
+- [API Routes](#api-routes)
   - [Supported Themes](#supported-themes)
-- [🎨 Templates](#templates)
-- [🤝 Contributing](#contributing)
+- [Templates](#templates)
+- [Contributing](#contributing)
   - [Adding a New Block](#adding-a-new-block)
   - [Code Style](#code-style)
-- [📄 License](#license)
+- [License](#license)
 
 ---
 
-## 🎯 Features
+## Features
 
 | Feature                   | Description                                                       |
 | ------------------------- | ----------------------------------------------------------------- |
@@ -73,7 +73,7 @@
 
 ---
 
-## 🧱 Block Library
+## Block Library
 
 Blocks are organized into eight categories:
 
@@ -168,9 +168,9 @@ Blocks are organized into eight categories:
 
 ---
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-```
+```text
 Frontend          Next.js 16 (App Router) · React 19 · TypeScript 5
 Styling           Tailwind CSS v4 · tw-animate-css · shadcn/ui (radix-nova)
 State             Zustand 5
@@ -184,7 +184,7 @@ Fonts             Outfit · JetBrains Mono
 
 ---
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -236,9 +236,9 @@ npm start
 
 ---
 
-## 📁 Project Structure
+## Project Structure
 
-```
+```text
 github-profile-maker/
 ├── app/
 │   ├── api/
@@ -282,7 +282,7 @@ github-profile-maker/
 
 ---
 
-## 🔌 API Routes
+## API Routes
 
 All stat widgets are generated server-side by built-in Next.js route handlers. They proxy and render live GitHub data as SVG images, meaning the generated Markdown will work from any host that has `GITHUB_TOKEN` configured.
 
@@ -303,7 +303,7 @@ Over **65 themes** are supported across all widgets, including:
 
 ---
 
-## 🎨 Templates
+## Templates
 
 Eleven built-in templates are included to help you start quickly:
 
@@ -325,7 +325,7 @@ Templates are defined in `lib/templates.ts` and can be extended freely.
 
 ---
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Here's how to get involved:
 
@@ -372,7 +372,7 @@ npm run lint
 
 ---
 
-## 📄 License
+## License
 
 This project is licensed under the **MIT License** — see the [LICENSE](LICENSE) file for details.
 
@@ -387,7 +387,7 @@ Made with ❤️ using Next.js & React
 ⭐ **Star this repo** if you found it useful!\
 <br/>
 
-[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://www.buymeacoffee.com/zntb)
+[![Buy me a coffee](https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png)](https://buymeacoffee.com/codetibo)
 
 </div>
 
