@@ -72,6 +72,7 @@
 | 💬 **Random Quotes**          | Built-in API for fetching random developer quotes                    |
 | 💾 **Auto-Save with History** | Automatic progress saving with undo/redo (last 20 states)            |
 | 📊 **Profile Quality Score**  | Real-time profile completeness analysis with improvement suggestions |
+| 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery            |
 
 ---
 
