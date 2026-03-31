@@ -20,6 +20,8 @@ import { useBuilderStore } from '@/lib/store';
 
 import { ModeToggle } from '../mode-toggle';
 
+import { AutoSaveIndicator } from './auto-save-indicator';
+import { HistoryControls } from './history-controls';
 import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
@@ -71,6 +73,8 @@ export function BuilderHeader() {
       </div>
 
       <div className="hidden sm:flex items-center gap-2 sm:gap-3">
+        <AutoSaveIndicator />
+        <HistoryControls />
         <ModeToggle />
         <TemplatesDialog />
         <Button

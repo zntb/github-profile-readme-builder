@@ -3,12 +3,27 @@ import { persist } from 'zustand/middleware';
 
 import type { Block, BlockType, Template } from './types';
 
+export const MAX_HISTORY_STATES = 20;
+
+interface HistoryState {
+  past: Block[][];
+  future: Block[][];
+}
+
 interface BuilderState {
   blocks: Block[];
   selectedBlockId: string | null;
   isDragging: boolean;
   username: string;
   recentBlockTypes: BlockType[];
+
+  // History state
+  history: HistoryState;
+
+  // Auto-save state
+  lastSavedBlocks: Block[] | null;
+  isSaving: boolean;
+  lastSavedAt: Date | null;
 
   // Actions
   addBlock: (block: Block, index?: number) => void;
@@ -25,6 +40,18 @@ interface BuilderState {
   addChildBlock: (parentId: string, block: Block) => void;
   setUsername: (username: string) => void;
   addToRecentBlocks: (type: BlockType) => void;
+
+  // History actions
+  undo: () => void;
+  redo: () => void;
+  canUndo: () => boolean;
+  canRedo: () => boolean;
+
+  // Auto-save actions
+  saveToLocalStorage: () => void;
+  loadFromLocalStorage: () => boolean;
+  setIsSaving: (isSaving: boolean) => void;
+  updateLastSavedAt: () => void;
 }
 
 // Generate unique ID
@@ -41,7 +68,22 @@ export const useBuilderStore = create<BuilderState>()(
       username: '',
       recentBlockTypes: [],
 
+      // History state
+      history: {
+        past: [],
+        future: [],
+      },
+
+      // Auto-save state
+      lastSavedBlocks: null,
+      isSaving: false,
+      lastSavedAt: null,
+
       addBlock: (block, index) => {
+        const state = get();
+        // Push current state to history before making changes
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const newBlocks = [...state.blocks];
           if (index !== undefined) {
@@ -49,11 +91,21 @@ export const useBuilderStore = create<BuilderState>()(
           } else {
             newBlocks.push(block);
           }
-          return { blocks: newBlocks, selectedBlockId: block.id };
+          return {
+            blocks: newBlocks,
+            selectedBlockId: block.id,
+            history: {
+              past: newPast,
+              future: [],
+            },
+          };
         });
       },
 
       removeBlock: (id) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const removeFromArray = (blocks: Block[]): Block[] => {
             return blocks.filter((block) => {
@@ -67,11 +119,18 @@ export const useBuilderStore = create<BuilderState>()(
           return {
             blocks: removeFromArray(state.blocks),
             selectedBlockId: state.selectedBlockId === id ? null : state.selectedBlockId,
+            history: {
+              past: newPast,
+              future: [],
+            },
           };
         });
       },
 
       updateBlock: (id, props) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const updateInArray = (blocks: Block[]): Block[] => {
             return blocks.map((block) => {
@@ -84,11 +143,20 @@ export const useBuilderStore = create<BuilderState>()(
               return block;
             });
           };
-          return { blocks: updateInArray(state.blocks) };
+          return {
+            blocks: updateInArray(state.blocks),
+            history: {
+              past: newPast,
+              future: [],
+            },
+          };
         });
       },
 
       updateBlockChildren: (id, children) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const updateInArray = (blocks: Block[]): Block[] => {
             return blocks.map((block) => {
@@ -101,16 +169,31 @@ export const useBuilderStore = create<BuilderState>()(
               return block;
             });
           };
-          return { blocks: updateInArray(state.blocks) };
+          return {
+            blocks: updateInArray(state.blocks),
+            history: {
+              past: newPast,
+              future: [],
+            },
+          };
         });
       },
 
       moveBlock: (fromIndex, toIndex) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const newBlocks = [...state.blocks];
           const [removed] = newBlocks.splice(fromIndex, 1);
           newBlocks.splice(toIndex, 0, removed);
-          return { blocks: newBlocks };
+          return {
+            blocks: newBlocks,
+            history: {
+              past: newPast,
+              future: [],
+            },
+          };
         });
       },
 
@@ -119,7 +202,16 @@ export const useBuilderStore = create<BuilderState>()(
       },
 
       setBlocks: (blocks) => {
-        set({ blocks });
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
+        set({
+          blocks,
+          history: {
+            past: newPast,
+            future: [],
+          },
+        });
       },
 
       setIsDragging: (isDragging) => {
@@ -154,10 +246,24 @@ export const useBuilderStore = create<BuilderState>()(
       },
 
       clearBlocks: () => {
-        set({ blocks: [], selectedBlockId: null });
+        const state = get();
+        if (state.blocks.length === 0) return;
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
+        set({
+          blocks: [],
+          selectedBlockId: null,
+          history: {
+            past: newPast,
+            future: [],
+          },
+        });
       },
 
       loadTemplate: (template) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         const assignNewIds = (blocks: Block[]): Block[] => {
           return blocks.map((block) => ({
             ...block,
@@ -165,10 +271,20 @@ export const useBuilderStore = create<BuilderState>()(
             children: block.children ? assignNewIds(block.children) : undefined,
           }));
         };
-        set({ blocks: assignNewIds(template.blocks), selectedBlockId: null });
+        set({
+          blocks: assignNewIds(template.blocks),
+          selectedBlockId: null,
+          history: {
+            past: newPast,
+            future: [],
+          },
+        });
       },
 
       addChildBlock: (parentId, block) => {
+        const state = get();
+        const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
+
         set((state) => {
           const addToParent = (blocks: Block[]): Block[] => {
             return blocks.map((b) => {
@@ -181,7 +297,14 @@ export const useBuilderStore = create<BuilderState>()(
               return b;
             });
           };
-          return { blocks: addToParent(state.blocks), selectedBlockId: block.id };
+          return {
+            blocks: addToParent(state.blocks),
+            selectedBlockId: block.id,
+            history: {
+              past: newPast,
+              future: [],
+            },
+          };
         });
       },
 
@@ -195,6 +318,82 @@ export const useBuilderStore = create<BuilderState>()(
           const newRecent = [type, ...filtered].slice(0, 8);
           return { recentBlockTypes: newRecent };
         });
+      },
+
+      // History methods
+      undo: () => {
+        const state = get();
+        if (state.history.past.length === 0) return;
+
+        const previous = state.history.past[state.history.past.length - 1];
+        const newPast = state.history.past.slice(0, -1);
+
+        set({
+          blocks: previous,
+          history: {
+            past: newPast,
+            future: [state.blocks, ...state.history.future],
+          },
+        });
+      },
+
+      redo: () => {
+        const state = get();
+        if (state.history.future.length === 0) return;
+
+        const next = state.history.future[0];
+        const newFuture = state.history.future.slice(1);
+
+        set({
+          blocks: next,
+          history: {
+            past: [...state.history.past, state.blocks],
+            future: newFuture,
+          },
+        });
+      },
+
+      canUndo: () => get().history.past.length > 0,
+
+      canRedo: () => get().history.future.length > 0,
+
+      // Auto-save methods
+      saveToLocalStorage: () => {
+        const state = get();
+        // Deep clone blocks to avoid reference issues
+        const blocksJson = JSON.stringify(state.blocks);
+        localStorage.setItem('github-readme-builder-autosave', blocksJson);
+        set({
+          lastSavedBlocks: JSON.parse(blocksJson),
+          isSaving: false,
+          lastSavedAt: new Date(),
+        });
+      },
+
+      loadFromLocalStorage: () => {
+        const saved = localStorage.getItem('github-readme-builder-autosave');
+        if (saved) {
+          try {
+            const blocks = JSON.parse(saved) as Block[];
+            set({
+              blocks,
+              lastSavedBlocks: blocks,
+              history: { past: [], future: [] },
+            });
+            return true;
+          } catch {
+            return false;
+          }
+        }
+        return false;
+      },
+
+      setIsSaving: (isSaving) => {
+        set({ isSaving });
+      },
+
+      updateLastSavedAt: () => {
+        set({ lastSavedAt: new Date() });
       },
     }),
     {

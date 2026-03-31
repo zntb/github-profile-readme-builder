@@ -56,20 +56,21 @@
 
 ## Features
 
-| Feature                   | Description                                                       |
-| ------------------------- | ----------------------------------------------------------------- |
-| 🧱 **Drag & Drop Canvas** | Reorder blocks effortlessly with smooth dnd-kit animations        |
-| 📐 **Stats Row Layout**   | Flexible row/column multi-card layouts for stats widgets          |
-| 👁️ **Live Preview**       | See exactly how your README renders in GitHub's style             |
-| 📝 **Markdown Export**    | Copy to clipboard or download a ready-to-use `README.md`          |
-| 🎨 **65+ Themes**         | Tokyo Night, Dracula, Radical, Catppuccin, and many more          |
-| 📦 **25+ Block Types**    | Headers, stats cards, badges, skill icons, graphs, and more       |
-| 🖼️ **Template Library**   | 11 ready-to-use templates for different developer profiles        |
-| 📱 **Fully Responsive**   | Optimized three-layout system for desktop, tablet, and mobile     |
-| 🌙 **Dark / Light Mode**  | System-aware theming powered by `next-themes`                     |
-| ⚡ **Self-hosted Stats**  | Built-in Next.js API routes generate GitHub stat SVGs server-side |
-| 🔑 **GitHub GraphQL**     | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API  |
-| 💬 **Random Quotes**      | Built-in API for fetching random developer quotes                 |
+| Feature                       | Description                                                       |
+| ----------------------------- | ----------------------------------------------------------------- |
+| 🧱 **Drag & Drop Canvas**     | Reorder blocks effortlessly with smooth dnd-kit animations        |
+| 📐 **Stats Row Layout**       | Flexible row/column multi-card layouts for stats widgets          |
+| 👁️ **Live Preview**           | See exactly how your README renders in GitHub's style             |
+| 📝 **Markdown Export**        | Copy to clipboard or download a ready-to-use `README.md`          |
+| 🎨 **65+ Themes**             | Tokyo Night, Dracula, Radical, Catppuccin, and many more          |
+| 📦 **25+ Block Types**        | Headers, stats cards, badges, skill icons, graphs, and more       |
+| 🖼️ **Template Library**       | 11 ready-to-use templates for different developer profiles        |
+| 📱 **Fully Responsive**       | Optimized three-layout system for desktop, tablet, and mobile     |
+| 🌙 **Dark / Light Mode**      | System-aware theming powered by `next-themes`                     |
+| ⚡ **Self-hosted Stats**      | Built-in Next.js API routes generate GitHub stat SVGs server-side |
+| 🔑 **GitHub GraphQL**         | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API  |
+| 💬 **Random Quotes**          | Built-in API for fetching random developer quotes                 |
+| 💾 **Auto-Save with History** | Automatic progress saving with undo/redo (last 20 states)         |
 
 ---
 

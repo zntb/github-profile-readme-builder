@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { useAutoSave } from '@/lib/auto-save';
 import { useBuilderStore } from '@/lib/store';
 import { cn } from '@/lib/utils';
 
@@ -25,6 +26,9 @@ export function Builder() {
   const [mobileTab, setMobileTab] = useState<'blocks' | 'canvas' | 'preview'>('canvas');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [configOpen, setConfigOpen] = useState(false);
+
+  // Initialize auto-save
+  useAutoSave();
 
   const mobileNavigationItems: {
     id: 'blocks' | 'canvas' | 'preview';
