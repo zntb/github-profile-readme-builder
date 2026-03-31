@@ -38,9 +38,12 @@ import { useMemo, useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { generateId, useBuilderStore } from '@/lib/store';
 import { BLOCK_CATEGORIES, type Block, type BlockType } from '@/lib/types';
 import { cn } from '@/lib/utils';
+
+import { BlockTooltipPreview, getBlockDescription } from './block-tooltip-preview';
 
 const iconMap: Record<string, React.ComponentType<{ className?: string }>> = {
   Layout,
@@ -293,16 +296,32 @@ export function BlockSidebar() {
                 {recentBlocks.slice(0, 6).map((block) => {
                   const Icon = iconMap[block.icon] || Layout;
                   return (
-                    <Button
-                      key={block.type}
-                      variant="ghost"
-                      size="sm"
-                      className="justify-start gap-2 px-2 py-1.5 text-xs text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
-                      onClick={() => handleAddBlock(block.type, block.defaultProps)}
-                    >
-                      <Icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
-                      <span className="truncate">{block.label}</span>
-                    </Button>
+                    <TooltipProvider key={block.type} delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            className="justify-start gap-2 px-2 py-1.5 text-xs text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
+                            onClick={() => handleAddBlock(block.type, block.defaultProps)}
+                          >
+                            <Icon className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+                            <span className="truncate">{block.label}</span>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="w-64 p-3">
+                          <div className="flex flex-col gap-2">
+                            <BlockTooltipPreview type={block.type as BlockType} />
+                            <div>
+                              <p className="font-medium text-foreground">{block.label}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {getBlockDescription(block.type as BlockType)}
+                              </p>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   );
                 })}
               </div>
@@ -319,24 +338,42 @@ export function BlockSidebar() {
                 {searchResults.map((block, index) => {
                   const Icon = iconMap[block.icon] || Layout;
                   return (
-                    <Button
-                      key={block.type}
-                      variant="ghost"
-                      className="w-full justify-start gap-3 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
-                      onClick={() => {
-                        handleAddBlock(block.type, block.defaultProps);
-                        clearSearch();
-                      }}
-                      style={{ animationDelay: `${index * 20}ms` }}
-                    >
-                      <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0">
-                        <Icon className="h-3.5 w-3.5 text-primary" />
-                      </div>
-                      <div className="flex flex-col items-start">
-                        <span className="truncate">{block.label}</span>
-                        <span className="text-xs text-muted-foreground">{block.category}</span>
-                      </div>
-                    </Button>
+                    <TooltipProvider key={block.type} delayDuration={300}>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <Button
+                            variant="ghost"
+                            className="w-full justify-start gap-3 px-3 py-2 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200"
+                            onClick={() => {
+                              handleAddBlock(block.type, block.defaultProps);
+                              clearSearch();
+                            }}
+                            style={{ animationDelay: `${index * 20}ms` }}
+                          >
+                            <div className="flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 flex-shrink-0">
+                              <Icon className="h-3.5 w-3.5 text-primary" />
+                            </div>
+                            <div className="flex flex-col items-start">
+                              <span className="truncate">{block.label}</span>
+                              <span className="text-xs text-muted-foreground">
+                                {block.category}
+                              </span>
+                            </div>
+                          </Button>
+                        </TooltipTrigger>
+                        <TooltipContent side="right" className="w-64 p-3">
+                          <div className="flex flex-col gap-2">
+                            <BlockTooltipPreview type={block.type as BlockType} />
+                            <div>
+                              <p className="font-medium text-foreground">{block.label}</p>
+                              <p className="text-xs text-muted-foreground mt-1">
+                                {getBlockDescription(block.type as BlockType)}
+                              </p>
+                            </div>
+                          </div>
+                        </TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
                   );
                 })}
               </div>
@@ -386,19 +423,35 @@ export function BlockSidebar() {
                     {category.blocks.map((block, blockIndex) => {
                       const Icon = iconMap[block.icon] || Layout;
                       return (
-                        <Button
-                          key={block.type}
-                          variant="ghost"
-                          className="w-full justify-start gap-3 px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200 group relative overflow-hidden"
-                          onClick={() => handleAddBlock(block.type, block.defaultProps)}
-                          style={{ animationDelay: `${blockIndex * 30}ms` }}
-                        >
-                          <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                          <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-200 flex-shrink-0">
-                            <Icon className="h-3.5 w-3.5 text-primary group-hover:text-primary-foreground transition-colors duration-200" />
-                          </div>
-                          <span className="relative">{block.label}</span>
-                        </Button>
+                        <TooltipProvider key={block.type} delayDuration={300}>
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <Button
+                                variant="ghost"
+                                className="w-full justify-start gap-3 px-3 py-2.5 text-sm text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-foreground transition-all duration-200 group relative overflow-hidden"
+                                onClick={() => handleAddBlock(block.type, block.defaultProps)}
+                                style={{ animationDelay: `${blockIndex * 30}ms` }}
+                              >
+                                <div className="absolute inset-0 bg-gradient-to-r from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="relative flex items-center justify-center w-7 h-7 rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors duration-200 flex-shrink-0">
+                                  <Icon className="h-3.5 w-3.5 text-primary group-hover:text-primary-foreground transition-colors duration-200" />
+                                </div>
+                                <span className="relative">{block.label}</span>
+                              </Button>
+                            </TooltipTrigger>
+                            <TooltipContent side="right" className="w-64 p-3">
+                              <div className="flex flex-col gap-2">
+                                <BlockTooltipPreview type={block.type as BlockType} />
+                                <div>
+                                  <p className="font-medium text-foreground">{block.label}</p>
+                                  <p className="text-xs text-muted-foreground mt-1">
+                                    {getBlockDescription(block.type as BlockType)}
+                                  </p>
+                                </div>
+                              </div>
+                            </TooltipContent>
+                          </Tooltip>
+                        </TooltipProvider>
                       );
                     })}
                   </div>
