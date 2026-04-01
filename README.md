@@ -78,6 +78,7 @@
 | � **Profile Quality Score**   | Real-time profile completeness analysis with improvement suggestions |
 | 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery            |
 | ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse           |
+| 💡 **Smart Notifications**    | Context-aware hints that appear based on your actions                |
 
 ---
 

@@ -64,14 +64,8 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
   };
 
   const handleDeleteClick = () => {
-    const url = block.props.url as string | undefined;
-
-    // For image and gif blocks, show confirmation dialog
-    if ((block.type === 'image' || block.type === 'gif') && isUploadThingUrl(url)) {
-      setShowDeleteDialog(true);
-      return;
-    }
-    removeBlock(block.id);
+    // Show confirmation dialog before deleting any block
+    setShowDeleteDialog(true);
   };
 
   const handleDeleteConfirm = async () => {
@@ -300,10 +294,10 @@ export function CanvasBlock({ block, isSelected, onSelect }: CanvasBlockProps) {
       <AlertDialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
         <AlertDialogContent>
           <AlertDialogHeader>
-            <AlertDialogTitle>Delete Image?</AlertDialogTitle>
+            <AlertDialogTitle>Delete Block?</AlertDialogTitle>
             <AlertDialogDescription>
-              Deleting this image block will permanently remove the uploaded image from UploadThing
-              storage. This action cannot be undone.
+              Are you sure you want to delete this {block.type.replace(/-/g, ' ')} block? This
+              action cannot be undone.
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>

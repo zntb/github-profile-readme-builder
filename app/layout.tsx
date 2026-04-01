@@ -2,6 +2,8 @@ import type { Metadata } from 'next';
 import { JetBrains_Mono, Outfit } from 'next/font/google';
 
 import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
+import { NotificationProvider } from '@/lib/notifications';
 import './globals.css';
 
 const outfit = Outfit({
@@ -59,7 +61,10 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <div className="flex-1 flex flex-col">{children}</div>
+          <NotificationProvider>
+            <div className="flex-1 flex flex-col">{children}</div>
+            <Toaster position="bottom-right" richColors />
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html>
