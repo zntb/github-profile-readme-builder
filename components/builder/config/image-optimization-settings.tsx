@@ -30,7 +30,7 @@ export function ImageOptimizationSettings() {
   );
 
   return (
-    <div className="space-y-4">
+    <div className="space-y-4 overflow-hidden">
       {/* Enable/Disable Toggle */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">

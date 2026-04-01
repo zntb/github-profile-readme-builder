@@ -112,92 +112,106 @@ export function SaveToGist() {
   };
 
   return (
-    <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-      <DialogTrigger asChild>
-        <Button
-          size="sm"
-          disabled={blocks.length === 0}
-          className="gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-        >
-          <GitBranch className="w-4 h-4" />
-          Save to Gist
-        </Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-md">
-        <DialogHeader>
-          <DialogTitle className="flex items-center gap-2">
-            <GitBranch className="w-5 h-5" />
-            Save to GitHub Gist
-          </DialogTitle>
-          <DialogDescription>
-            Save your README directly to a GitHub Gist for backup and versioning. You'll need a
-            GitHub Personal Access Token with{' '}
-            <code className="text-xs bg-muted px-1 rounded">gist</code> scope.
-          </DialogDescription>
-        </DialogHeader>
+    <>
+      {/* Desktop button */}
+      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
+        <DialogTrigger asChild>
+          <Button
+            size="sm"
+            disabled={blocks.length === 0}
+            className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+          >
+            <GitBranch className="w-4 h-4" />
+            Save to Gist
+          </Button>
+        </DialogTrigger>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <GitBranch className="w-5 h-5" />
+              Save to GitHub Gist
+            </DialogTitle>
+            <DialogDescription>
+              Save your README directly to a GitHub Gist for backup and versioning. You'll need a
+              GitHub Personal Access Token with{' '}
+              <code className="text-xs bg-muted px-1 rounded">gist</code> scope.
+            </DialogDescription>
+          </DialogHeader>
 
-        <div className="space-y-4 py-4">
-          <div className="space-y-2">
-            <Label htmlFor="token">GitHub Personal Access Token</Label>
-            <Input
-              id="token"
-              type="password"
-              value={token}
-              onChange={(e) => setToken(e.target.value)}
-              placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
-              className="font-mono text-sm"
-            />
-            <p className="text-xs text-muted-foreground">
-              Create a token at{' '}
-              <a
-                href="https://github.com/settings/tokens"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="underline hover:text-foreground"
-              >
-                github.com/settings/tokens
-              </a>{' '}
-              with <code className="bg-muted px-1 rounded">gist</code> scope.
-            </p>
-          </div>
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-1">
-              <Label htmlFor="public-gist" className="flex items-center gap-2">
-                {isPublic ? (
-                  <ExternalLink className="w-4 h-4 text-muted-foreground" />
-                ) : (
-                  <Lock className="w-4 h-4 text-muted-foreground" />
-                )}
-                {isPublic ? 'Public Gist' : 'Private Gist'}
-              </Label>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <Label htmlFor="token">GitHub Personal Access Token</Label>
+              <Input
+                id="token"
+                type="password"
+                value={token}
+                onChange={(e) => setToken(e.target.value)}
+                placeholder="ghp_xxxxxxxxxxxxxxxxxxxx"
+                className="font-mono text-sm"
+              />
               <p className="text-xs text-muted-foreground">
-                {isPublic ? 'Anyone can view this Gist' : 'Only you can view this Gist'}
+                Create a token at{' '}
+                <a
+                  href="https://github.com/settings/tokens"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="underline hover:text-foreground"
+                >
+                  github.com/settings/tokens
+                </a>{' '}
+                with <code className="bg-muted px-1 rounded">gist</code> scope.
               </p>
             </div>
-            <Switch id="public-gist" checked={isPublic} onCheckedChange={setIsPublic} />
-          </div>
-        </div>
 
-        <DialogFooter>
-          <Button variant="outline" onClick={() => setIsOpen(false)}>
-            Cancel
-          </Button>
-          <Button onClick={handleSave} disabled={isLoading || !token.trim()}>
-            {isLoading ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save to Gist
-              </>
-            )}
-          </Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            <div className="flex items-center justify-between">
+              <div className="space-y-1">
+                <Label htmlFor="public-gist" className="flex items-center gap-2">
+                  {isPublic ? (
+                    <ExternalLink className="w-4 h-4 text-muted-foreground" />
+                  ) : (
+                    <Lock className="w-4 h-4 text-muted-foreground" />
+                  )}
+                  {isPublic ? 'Public Gist' : 'Private Gist'}
+                </Label>
+                <p className="text-xs text-muted-foreground">
+                  {isPublic ? 'Anyone can view this Gist' : 'Only you can view this Gist'}
+                </p>
+              </div>
+              <Switch id="public-gist" checked={isPublic} onCheckedChange={setIsPublic} />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setIsOpen(false)}>
+              Cancel
+            </Button>
+            <Button onClick={handleSave} disabled={isLoading || !token.trim()}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4" />
+                  Save to Gist
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Mobile button */}
+      <Button
+        size="sm"
+        disabled={blocks.length === 0}
+        onClick={() => setIsOpen(true)}
+        className="sm:hidden gap-2 w-full justify-start h-11 px-3 bg-gradient-to-r from-primary to-primary/90"
+      >
+        <GitBranch className="w-4 h-4" />
+        Save to Gist
+      </Button>
+    </>
   );
 }
