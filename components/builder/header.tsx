@@ -4,6 +4,17 @@ import { Download, GitBranch, Keyboard, Menu, RotateCcw, User } from 'lucide-rea
 import { useState } from 'react';
 import { toast } from 'sonner';
 
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -33,6 +44,7 @@ export function BuilderHeader() {
   const setUsername = useBuilderStore((s) => s.setUsername);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
 
   const handleExport = () => {
     const markdown = renderMarkdown(blocks, window.location.origin);
@@ -44,13 +56,6 @@ export function BuilderHeader() {
     a.click();
     URL.revokeObjectURL(url);
     toast.success('README.md downloaded!');
-  };
-
-  const handleClear = () => {
-    if (blocks.length === 0) return;
-    clearBlocks();
-    toast.success('Canvas cleared');
-    setMobileMenuOpen(false);
   };
 
   const handleExportFromMenu = () => {
@@ -89,16 +94,41 @@ export function BuilderHeader() {
         </button>
         <ModeToggle />
         <TemplatesDialog />
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={handleClear}
-          disabled={blocks.length === 0}
-          className="hidden sm:flex gap-2 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
-        >
-          <RotateCcw className="w-4 h-4" />
-          Clear
-        </Button>
+        <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="sm"
+              disabled={blocks.length === 0}
+              className="hidden sm:flex gap-2 hover:bg-destructive/10 hover:text-destructive transition-all duration-200"
+            >
+              <RotateCcw className="w-4 h-4" />
+              Clear
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear Canvas</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to clear all blocks from your canvas? This action cannot be
+                undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  clearBlocks();
+                  toast.success('Canvas cleared');
+                  setMobileMenuOpen(false);
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Clear All
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <Button
           size="sm"
           onClick={handleExport}
@@ -156,15 +186,40 @@ export function BuilderHeader() {
                 <ProfileSelector />
               </div>
 
-              <Button
-                variant="outline"
-                className="w-full justify-start gap-2 h-11"
-                onClick={handleClear}
-                disabled={blocks.length === 0}
-              >
-                <RotateCcw className="w-4 h-4" />
-                Clear canvas
-              </Button>
+              <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+                <AlertDialogTrigger asChild>
+                  <Button
+                    variant="outline"
+                    className="w-full justify-start gap-2 h-11"
+                    disabled={blocks.length === 0}
+                  >
+                    <RotateCcw className="w-4 h-4" />
+                    Clear canvas
+                  </Button>
+                </AlertDialogTrigger>
+                <AlertDialogContent>
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Clear Canvas</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Are you sure you want to clear all blocks from your canvas? This action cannot
+                      be undone.
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Cancel</AlertDialogCancel>
+                    <AlertDialogAction
+                      onClick={() => {
+                        clearBlocks();
+                        toast.success('Canvas cleared');
+                        setMobileMenuOpen(false);
+                      }}
+                      className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                    >
+                      Clear All
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
 
               <Button
                 className="w-full justify-start gap-2 h-11 bg-gradient-to-r from-primary to-primary/90"
