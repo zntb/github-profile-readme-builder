@@ -79,6 +79,7 @@
 | 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery            |
 | ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse           |
 | 💡 **Smart Notifications**    | Context-aware hints that appear based on your actions                |
+| ⚡ **Progressive Loading**    | Skeleton loaders show while data and blocks are loading              |
 
 ---
 

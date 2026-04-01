@@ -7,17 +7,30 @@ import { JSX, useEffect, useMemo, useState, type CSSProperties } from 'react';
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
 
+import { BlockTypeSkeleton } from './skeleton-loaders';
+
+/**
+ * Extended image state that includes loading information
+ */
+interface ImageState {
+  loading: boolean;
+  data: string | null;
+  error: Error | null;
+}
+
 /**
  * Hook to prefetch all API images in parallel for a list of blocks.
  * Returns a map of URL -> { loading, data, error } for each image URL.
+ * Also returns an isLoading state for overall loading progress.
  */
 function usePrefetchedImages(
   blocks: Block[],
   globalUsername: string,
-): Map<string, { loading: boolean; data: string | null; error: Error | null }> {
-  const [imageStates, setImageStates] = useState<
-    Map<string, { loading: boolean; data: string | null; error: Error | null }>
-  >(new Map());
+): {
+  imageStates: Map<string, ImageState>;
+  isLoading: boolean;
+} {
+  const [imageStates, setImageStates] = useState<Map<string, ImageState>>(new Map());
 
   // Collect all unique URLs that need fetching
   const urls = useMemo(() => {
@@ -170,7 +183,17 @@ function usePrefetchedImages(
     });
   }, [urls]);
 
-  return imageStates;
+  // Check if any images are still loading
+  const isLoading = useMemo(() => {
+    if (urls.length === 0) return false;
+    for (const url of urls) {
+      const state = imageStates.get(url);
+      if (state?.loading) return true;
+    }
+    return false;
+  }, [imageStates, urls]);
+
+  return { imageStates, isLoading };
 }
 
 /**
@@ -197,9 +220,121 @@ function isHalfWidthGithubCard(block: Block): boolean {
   return false;
 }
 
+/**
+ * Check if a block's images are still loading
+ */
+function isBlockLoading(
+  block: Block,
+  imageStates: Map<string, ImageState>,
+  globalUsername: string,
+): boolean {
+  // For non-API blocks, no loading needed
+  const apiBlockTypes = [
+    'stats-card',
+    'top-languages',
+    'streak-stats',
+    'activity-graph',
+    'trophies',
+    'quote',
+  ];
+  if (!apiBlockTypes.includes(block.type)) return false;
+
+  const getUsername = (blockUsername: string) => {
+    return (!blockUsername || blockUsername === 'github') && globalUsername
+      ? globalUsername
+      : blockUsername;
+  };
+
+  const username = getUsername(block.props.username as string);
+
+  // No username means no API call, so not loading
+  if (!username || username === 'github') return false;
+
+  // For quote blocks, only show loading if no custom quote/author provided
+  if (block.type === 'quote' && block.props.quote && block.props.author) return false;
+
+  const baseUrl = getApiUrlForBlock(block, username);
+  if (!baseUrl) return false;
+
+  const state = imageStates.get(baseUrl);
+  return state?.loading ?? false;
+}
+
+/**
+ * Generate the API URL for a block (same logic as usePrefetchedImages)
+ */
+function getApiUrlForBlock(block: Block, username: string): string | null {
+  switch (block.type) {
+    case 'stats-card': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        layout: (block.props.layoutStyle as string | undefined) ?? 'standard',
+        show_icons: block.props.showIcons ? 'true' : 'false',
+        hide_border: block.props.hideBorder ? 'true' : 'false',
+        hide_title: block.props.hideTitle ? 'true' : 'false',
+        hide_rank: block.props.hideRank ? 'true' : 'false',
+        border_radius: String(block.props.borderRadius ?? 4),
+      });
+      return `/api/stats?${params.toString()}`;
+    }
+    case 'top-languages': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        layout: (block.props.layout as string) || 'compact',
+        hide_border: block.props.hideBorder ? 'true' : 'false',
+        hide_progress: block.props.hideProgress ? 'true' : 'false',
+        langs_count: String(block.props.langs_count ?? 5),
+        border_radius: String(block.props.borderRadius ?? 4),
+      });
+      return `/api/top-langs?${params.toString()}`;
+    }
+    case 'streak-stats': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        hide_border: block.props.hideBorder ? 'true' : 'false',
+        border_radius: String(block.props.borderRadius ?? 4),
+      });
+      return `/api/streak?${params.toString()}`;
+    }
+    case 'activity-graph': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        hide_border: block.props.hideBorder ? 'true' : 'false',
+      });
+      return `/api/activity?${params.toString()}`;
+    }
+    case 'trophies': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        column: String(block.props.column ?? 4),
+        row: String(block.props.row ?? 1),
+        margin_w: String(block.props.margin_w ?? 2),
+        margin_h: String(block.props.margin_h ?? 2),
+        no_frame: block.props.noFrame ? 'true' : 'false',
+        no_bg: block.props.noBg ? 'true' : 'false',
+      });
+      return `/api/trophies?${params.toString()}`;
+    }
+    case 'quote': {
+      const params = new URLSearchParams({
+        type: (block.props.type as string) || 'default',
+        theme: (block.props.theme as string) || 'tokyonight',
+      });
+      return `/api/quotes?${params.toString()}`;
+    }
+    default:
+      return null;
+  }
+}
+
 export function LivePreview({ blocks }: LivePreviewProps) {
   const globalUsername = useBuilderStore((state) => state.username);
-  const prefetchedImages = usePrefetchedImages(blocks, globalUsername);
+  const { imageStates: prefetchedImages } = usePrefetchedImages(blocks, globalUsername);
 
   if (blocks.length === 0) {
     return (
@@ -229,6 +364,14 @@ export function LivePreview({ blocks }: LivePreviewProps) {
 
               // Render two adjacent half-width cards side by side, matching GitHub layout
               if (isHalfWidthGithubCard(block) && nextBlock && isHalfWidthGithubCard(nextBlock)) {
+                // Check if either block's images are loading
+                const firstBlockLoading = isBlockLoading(block, prefetchedImages, globalUsername);
+                const secondBlockLoading = isBlockLoading(
+                  nextBlock,
+                  prefetchedImages,
+                  globalUsername,
+                );
+
                 items.push(
                   <div
                     key={`${block.id}-${nextBlock.id}`}
@@ -236,18 +379,26 @@ export function LivePreview({ blocks }: LivePreviewProps) {
                     style={{ display: 'flex', gap: '8px', animationDelay: `${i * 30}ms` }}
                   >
                     <div style={{ flex: '1 1 0', minWidth: 0 }}>
-                      <PreviewBlock
-                        block={block}
-                        wrapperClassName="mb-0"
-                        prefetchedImages={prefetchedImages}
-                      />
+                      {firstBlockLoading ? (
+                        <BlockTypeSkeleton type={block.type} />
+                      ) : (
+                        <PreviewBlock
+                          block={block}
+                          wrapperClassName="mb-0"
+                          prefetchedImages={prefetchedImages}
+                        />
+                      )}
                     </div>
                     <div style={{ flex: '1 1 0', minWidth: 0 }}>
-                      <PreviewBlock
-                        block={nextBlock}
-                        wrapperClassName="mb-0"
-                        prefetchedImages={prefetchedImages}
-                      />
+                      {secondBlockLoading ? (
+                        <BlockTypeSkeleton type={nextBlock.type} />
+                      ) : (
+                        <PreviewBlock
+                          block={nextBlock}
+                          wrapperClassName="mb-0"
+                          prefetchedImages={prefetchedImages}
+                        />
+                      )}
                     </div>
                   </div>,
                 );
@@ -255,13 +406,20 @@ export function LivePreview({ blocks }: LivePreviewProps) {
                 continue;
               }
 
+              // Check if this block needs to show a loading skeleton
+              const blockLoading = isBlockLoading(block, prefetchedImages, globalUsername);
+
               items.push(
                 <div
                   key={block.id}
                   className="animate-in"
                   style={{ animationDelay: `${i * 30}ms` }}
                 >
-                  <PreviewBlock block={block} />
+                  {blockLoading ? (
+                    <BlockTypeSkeleton type={block.type} />
+                  ) : (
+                    <PreviewBlock block={block} prefetchedImages={prefetchedImages} />
+                  )}
                 </div>,
               );
             }
