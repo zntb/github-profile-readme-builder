@@ -42,6 +42,9 @@
   - [Environment Variables](#environment-variables)
   - [Run the App](#run-the-app)
 - [Templates](#templates)
+- [Community Gallery](#community-gallery)
+  - [Features](#features-1)
+  - [API Endpoints](#api-endpoints)
 - [Documentation](#documentation)
 - [License](#license)
 
@@ -49,35 +52,36 @@
 
 ## Features
 
-| Feature                       | Description                                                           |
-| ----------------------------- | --------------------------------------------------------------------- |
-| 🧱 **Drag & Drop Canvas**     | Reorder blocks effortlessly with smooth dnd-kit animations            |
-| 🔒 **Block Locking**          | Lock blocks to prevent accidental modifications and reordering        |
-| 📐 **Stats Row Layout**       | Flexible row/column multi-card layouts for stats widgets              |
-| 👁️ **Live Preview**           | See exactly how your README renders in GitHub's style                 |
-| 📝 **Markdown Export**        | Copy to clipboard or download a ready-to-use `README.md`              |
-| 🎨 **65+ Themes**             | Tokyo Night, Dracula, Radical, Catppuccin, and many more              |
-| 🎨 **Custom Theme Builder**   | Create fully custom themes with visual color picker for stats cards   |
-| 💾 **Save Custom Themes**     | Save custom themes to local storage or export to file for backup      |
-| 🎨 **Live Theme Preview**     | Real-time theme colors shown in canvas when selecting themes          |
-| 📦 **25+ Block Types**        | Headers, stats cards, badges, skill icons, graphs, and more           |
-| 🖼️ **Template Library**       | 11 ready-to-use templates for different developer profiles            |
-| 📱 **Fully Responsive**       | Optimized three-layout system for desktop, tablet, and mobile         |
-| 🌙 **Dark / Light Mode**      | System-aware theming powered by `next-themes`                         |
-| ⚡ **Self-hosted Stats**      | Built-in Next.js API routes generate GitHub stat SVGs server-side     |
-| 🔑 **GitHub GraphQL**         | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API      |
-| 💬 **Random Quotes**          | Built-in API for fetching random developer quotes                     |
-| 💾 **Auto-Save with History** | Automatic progress saving with undo/redo (last 20 states)             |
-| 💼 **Save & Load Profiles**   | Save multiple profiles locally, switch between configurations         |
-| 🔍 **Profile Quality Score**  | Real-time profile completeness analysis with improvement suggestions  |
-| 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery             |
-| ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse            |
-| ⌘ **Command Palette**         | Ctrl+K / Cmd+K for quick access to all actions, blocks, and templates |
-| 💡 **Smart Notifications**    | Context-aware hints that appear based on your actions                 |
-| ⚡ **Progressive Loading**    | Skeleton loaders show while data and blocks are loading               |
-| 🚀 **Lazy Block Rendering**   | Virtualized canvas for smooth performance with 20+ blocks             |
-| ☁️ **Save to GitHub Gist**    | One-click backup to public or private GitHub Gists                    |
-| 📤 **Share to Social Media**  | One-click sharing to Twitter/X, LinkedIn, and Facebook                |
+| Feature                       | Description                                                             |
+| ----------------------------- | ----------------------------------------------------------------------- |
+| 🧱 **Drag & Drop Canvas**     | Reorder blocks effortlessly with smooth dnd-kit animations              |
+| 🔒 **Block Locking**          | Lock blocks to prevent accidental modifications and reordering          |
+| 📐 **Stats Row Layout**       | Flexible row/column multi-card layouts for stats widgets                |
+| 👁️ **Live Preview**           | See exactly how your README renders in GitHub's style                   |
+| 📝 **Markdown Export**        | Copy to clipboard or download a ready-to-use `README.md`                |
+| 🎨 **65+ Themes**             | Tokyo Night, Dracula, Radical, Catppuccin, and many more                |
+| 🎨 **Custom Theme Builder**   | Create fully custom themes with visual color picker for stats cards     |
+| 💾 **Save Custom Themes**     | Save custom themes to local storage or export to file for backup        |
+| 🎨 **Live Theme Preview**     | Real-time theme colors shown in canvas when selecting themes            |
+| 📦 **25+ Block Types**        | Headers, stats cards, badges, skill icons, graphs, and more             |
+| 🖼️ **Template Library**       | 11 ready-to-use templates for different developer profiles              |
+| 📱 **Fully Responsive**       | Optimized three-layout system for desktop, tablet, and mobile           |
+| 🌙 **Dark / Light Mode**      | System-aware theming powered by `next-themes`                           |
+| ⚡ **Self-hosted Stats**      | Built-in Next.js API routes generate GitHub stat SVGs server-side       |
+| 🔑 **GitHub GraphQL**         | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API        |
+| 💬 **Random Quotes**          | Built-in API for fetching random developer quotes                       |
+| 💾 **Auto-Save with History** | Automatic progress saving with undo/redo (last 20 states)               |
+| 💼 **Save & Load Profiles**   | Save multiple profiles locally, switch between configurations           |
+| 🔍 **Profile Quality Score**  | Real-time profile completeness analysis with improvement suggestions    |
+| 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery               |
+| ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse              |
+| ⌘ **Command Palette**         | Ctrl+K / Cmd+K for quick access to all actions, blocks, and templates   |
+| 💡 **Smart Notifications**    | Context-aware hints that appear based on your actions                   |
+| ⚡ **Progressive Loading**    | Skeleton loaders show while data and blocks are loading                 |
+| 🚀 **Lazy Block Rendering**   | Virtualized canvas for smooth performance with 20+ blocks               |
+| ☁️ **Save to GitHub Gist**    | One-click backup to public or private GitHub Gists                      |
+| 📤 **Share to Social Media**  | One-click sharing to Twitter/X, LinkedIn, and Facebook                  |
+| 🌐 **Community Gallery**      | Browse, like, and favorite community-submitted profiles for inspiration |
 
 ---
 
@@ -162,6 +166,31 @@ Eleven built-in templates are included to help you start quickly:
 | **Game Developer**         | Gaming-focused with custom badges and quote block               | 22     |
 
 Templates are defined in `lib/templates.ts` and can be extended freely.
+
+---
+
+## Community Gallery
+
+The **Community Gallery** at `/gallery` lets you browse, like, and favorite GitHub profile READMEs submitted by other users.
+
+### Features
+
+- 🌐 **Browse Profiles** — Discover inspiring profiles from the community
+- ❤️ **Like Profiles** — Show appreciation for profiles you love
+- ⭐ **Favorite Profiles** — Save profiles you want to revisit
+- 🔍 **Search & Filter** — Find profiles by username or name
+- 📊 **Sort Options** — Sort by most recent, most viewed, most liked, or most favorited
+- 🏆 **Featured Profiles** — Highlighted community favorites
+- 📱 **Responsive Grid/List** — Switch between grid and list view on any device
+
+### API Endpoints
+
+| Endpoint                      | Method | Description                                          |
+| ----------------------------- | ------ | ---------------------------------------------------- |
+| `GET /api/gallery`            | GET    | Fetch community profiles with sorting and pagination |
+| `POST /api/gallery`           | POST   | Submit a new profile to the gallery                  |
+| `GET /api/gallery/[id]/like`  | GET    | Get user's like/favorite status for a profile        |
+| `POST /api/gallery/[id]/like` | POST   | Toggle like or favorite on a profile                 |
 
 ---
 

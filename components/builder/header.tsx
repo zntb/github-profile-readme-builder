@@ -1,6 +1,7 @@
 'use client';
 
-import { Download, GitBranch, Keyboard, Menu, RotateCcw, User } from 'lucide-react';
+import { Download, GitBranch, Keyboard, Menu, RotateCcw, User, Users } from 'lucide-react';
+import Link from 'next/link';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -85,6 +86,14 @@ export function BuilderHeader() {
 
       <div className="hidden sm:flex items-center gap-2 sm:gap-3">
         <AutoSaveIndicator />
+        <Link
+          href="/gallery"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-muted-foreground hover:text-foreground hover:bg-muted/50 rounded-lg transition-all duration-200"
+          title="Community Gallery"
+        >
+          <Users className="w-4 h-4" />
+          <span className="hidden lg:inline">Gallery</span>
+        </Link>
         <ProfileSelector />
         <HistoryControls />
         <button
@@ -235,6 +244,15 @@ export function BuilderHeader() {
               </Button>
 
               <SaveToGist />
+
+              <Link
+                href="/gallery"
+                className="flex items-center gap-2 w-full h-11 px-4 rounded-md border border-border text-sm font-medium hover:bg-muted/50 transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                <Users className="w-4 h-4" />
+                Community Gallery
+              </Link>
             </div>
           </SheetContent>
         </Sheet>

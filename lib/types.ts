@@ -751,3 +751,26 @@ export interface Template {
   thumbnail: string;
   blocks: Block[];
 }
+
+// Community Gallery Types
+export interface CommunityProfile {
+  id: string;
+  name: string;
+  username: string;
+  avatarUrl?: string;
+  blocks: Block[];
+  likes: number;
+  favorites: number;
+  views: number;
+  createdAt: string;
+  updatedAt: string;
+  submittedBy?: string;
+  isFeatured?: boolean;
+}
+
+export interface CommunityProfileLike {
+  profileId: string;
+  userId: string;
+  type: 'like' | 'favorite';
+  createdAt: string;
+}
