@@ -57,6 +57,7 @@
 | 👁️ **Live Preview**           | See exactly how your README renders in GitHub's style                 |
 | 📝 **Markdown Export**        | Copy to clipboard or download a ready-to-use `README.md`              |
 | 🎨 **65+ Themes**             | Tokyo Night, Dracula, Radical, Catppuccin, and many more              |
+| 🎨 **Custom Theme Builder**   | Create fully custom themes with visual color picker for stats cards   |
 | 🎨 **Live Theme Preview**     | Real-time theme colors shown in canvas when selecting themes          |
 | 📦 **25+ Block Types**        | Headers, stats cards, badges, skill icons, graphs, and more           |
 | 🖼️ **Template Library**       | 11 ready-to-use templates for different developer profiles            |
