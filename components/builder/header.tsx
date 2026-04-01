@@ -36,6 +36,7 @@ import { HistoryControls } from './history-controls';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts';
 import { ProfileSelector } from './profile-manager';
 import { SaveToGist } from './save-to-gist';
+import { ShareButton } from './share-button';
 import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
@@ -140,6 +141,7 @@ export function BuilderHeader() {
           Export
         </Button>
         <SaveToGist />
+        <ShareButton />
       </div>
 
       <div className="sm:hidden flex items-center gap-2">
