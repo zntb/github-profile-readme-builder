@@ -1,6 +1,6 @@
 'use client';
 
-import { Download, GitBranch, Keyboard, Menu, RotateCcw, User } from 'lucide-react';
+import { Download, GitBranch, Keyboard, Menu, RotateCcw, Settings, User } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -32,6 +32,7 @@ import { useBuilderStore } from '@/lib/store';
 import { ModeToggle } from '../mode-toggle';
 
 import { AutoSaveIndicator } from './auto-save-indicator';
+import { ImageOptimizationSettings } from './config/image-optimization-settings';
 import { HistoryControls } from './history-controls';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts';
 import { ProfileSelector } from './profile-manager';
@@ -47,6 +48,7 @@ export function BuilderHeader() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
 
   const handleExport = () => {
     const markdown = renderMarkdown(blocks, window.location.origin);
@@ -95,6 +97,28 @@ export function BuilderHeader() {
           <Keyboard className="w-4 h-4" />
         </button>
         <ModeToggle />
+        <Sheet open={showSettings} onOpenChange={setShowSettings}>
+          <SheetTrigger asChild>
+            <button
+              className="p-2 rounded-lg hover:bg-muted/50 transition-all duration-200"
+              title="Image Optimization Settings"
+            >
+              <Settings className="w-4 h-4" />
+            </button>
+          </SheetTrigger>
+          <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto">
+            <SheetHeader>
+              <SheetTitle>Image Optimization</SheetTitle>
+              <SheetDescription>
+                Configure automatic image compression and format conversion before uploading to your
+                profile.
+              </SheetDescription>
+            </SheetHeader>
+            <div className="mt-6">
+              <ImageOptimizationSettings />
+            </div>
+          </SheetContent>
+        </Sheet>
         <TemplatesDialog />
         <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
           <AlertDialogTrigger asChild>
