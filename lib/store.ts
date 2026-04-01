@@ -17,6 +17,9 @@ interface BuilderState {
   username: string;
   recentBlockTypes: BlockType[];
 
+  // Hydration state for progressive loading
+  isHydrated: boolean;
+
   // History state
   history: HistoryState;
 
@@ -52,6 +55,7 @@ interface BuilderState {
   loadFromLocalStorage: () => boolean;
   setIsSaving: (isSaving: boolean) => void;
   updateLastSavedAt: () => void;
+  setIsHydrated: (isHydrated: boolean) => void;
 }
 
 // Generate unique ID
@@ -78,6 +82,9 @@ export const useBuilderStore = create<BuilderState>()(
       lastSavedBlocks: null,
       isSaving: false,
       lastSavedAt: null,
+
+      // Hydration state - do not persist this, always start as false on both server and client
+      isHydrated: false,
 
       addBlock: (block, index) => {
         const state = get();
@@ -395,12 +402,18 @@ export const useBuilderStore = create<BuilderState>()(
       updateLastSavedAt: () => {
         set({ lastSavedAt: new Date() });
       },
+
+      setIsHydrated: (isHydrated) => {
+        set({ isHydrated });
+      },
     }),
     {
       name: 'github-readme-builder-storage',
       partialize: (state) => ({
         username: state.username,
         recentBlockTypes: state.recentBlockTypes,
+        // Note: blocks are persisted via the persist middleware in the first store
+        // This second storage is just for username and recent blocks
       }),
     },
   ),

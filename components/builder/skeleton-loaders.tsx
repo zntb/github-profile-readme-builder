@@ -1,5 +1,6 @@
 'use client';
 
+import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
 
 /**
@@ -12,8 +13,6 @@ function BlockSkeleton({
   className?: string;
   variant?: 'default' | 'stats-card' | 'avatar' | 'heading' | 'text' | 'image' | 'badges';
 }) {
-  const baseClasses = 'animate-pulse bg-muted rounded-md';
-
   const variantClasses = {
     default: 'h-20 w-full',
     'stats-card': 'h-[195px] w-full',
@@ -24,7 +23,7 @@ function BlockSkeleton({
     badges: 'h-8 w-full',
   };
 
-  return <div className={cn(baseClasses, variantClasses[variant], className)} />;
+  return <Skeleton className={cn(variantClasses[variant], className)} />;
 }
 
 /**
@@ -416,6 +415,36 @@ export function CanvasLoadingSkeleton() {
           <div className="w-6 h-6 rounded bg-muted animate-pulse" />
         </div>
       ))}
+    </div>
+  );
+}
+
+/**
+ * Skeleton for block sidebar when loading
+ */
+export function BlockSidebarSkeleton() {
+  return (
+    <div className="w-64 border-r border-border/50 bg-card/30 p-4 space-y-6">
+      <div className="space-y-2">
+        <div className="h-4 w-20 bg-muted rounded animate-pulse" />
+        <div className="h-3 w-16 bg-muted/70 rounded animate-pulse" />
+      </div>
+      <div className="space-y-2">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <div key={i} className="flex items-center gap-3 p-2 rounded">
+            <div className="w-8 h-8 rounded bg-muted animate-pulse" />
+            <div className="flex-1">
+              <div className="h-3 w-20 bg-muted rounded animate-pulse" />
+            </div>
+          </div>
+        ))}
+      </div>
+      <div className="space-y-2">
+        <div className="h-4 w-24 bg-muted rounded animate-pulse" />
+        {Array.from({ length: 3 }).map((_, i) => (
+          <div key={i} className="h-8 w-full bg-muted/50 rounded animate-pulse" />
+        ))}
+      </div>
     </div>
   );
 }
