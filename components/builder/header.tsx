@@ -1,6 +1,15 @@
 'use client';
 
-import { Download, GitBranch, Keyboard, Menu, RotateCcw, Settings, User } from 'lucide-react';
+import {
+  Download,
+  GitBranch,
+  Keyboard,
+  Menu,
+  RotateCcw,
+  Settings,
+  Trash2,
+  User,
+} from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 
@@ -106,7 +115,10 @@ export function BuilderHeader() {
               <Settings className="w-4 h-4" />
             </button>
           </SheetTrigger>
-          <SheetContent side="right" className="w-[85vw] max-w-sm overflow-y-auto">
+          <SheetContent
+            side="right"
+            className="w-[85vw] max-w-sm overflow-y-auto overflow-x-hidden px-3 box-border"
+          >
             <SheetHeader>
               <SheetTitle>Image Optimization</SheetTitle>
               <SheetDescription>
@@ -168,7 +180,42 @@ export function BuilderHeader() {
         <ShareButton />
       </div>
 
-      <div className="sm:hidden flex items-center gap-2">
+      <div className="sm:hidden flex items-center gap-1">
+        <HistoryControls />
+        <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
+          <AlertDialogTrigger asChild>
+            <Button
+              variant="ghost"
+              size="icon"
+              disabled={blocks.length === 0}
+              className="hover:bg-destructive/10 hover:text-destructive"
+              aria-label="Clear canvas"
+            >
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </AlertDialogTrigger>
+          <AlertDialogContent>
+            <AlertDialogHeader>
+              <AlertDialogTitle>Clear Canvas</AlertDialogTitle>
+              <AlertDialogDescription>
+                Are you sure you want to clear all blocks from your canvas? This action cannot be
+                undone.
+              </AlertDialogDescription>
+            </AlertDialogHeader>
+            <AlertDialogFooter>
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={() => {
+                  clearBlocks();
+                  toast.success('Canvas cleared');
+                }}
+                className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              >
+                Clear All
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </AlertDialogContent>
+        </AlertDialog>
         <ModeToggle />
         <Sheet open={mobileMenuOpen} onOpenChange={setMobileMenuOpen}>
           <SheetTrigger asChild>
@@ -207,6 +254,17 @@ export function BuilderHeader() {
                 <TemplatesDialog />
               </div>
 
+              <Button
+                variant="outline"
+                className="w-full justify-start gap-2 h-11 px-3"
+                onClick={() => setShowSettings(true)}
+              >
+                <Settings className="w-4 h-4" />
+                Image Optimization
+              </Button>
+
+              <ShareButton />
+
               <div className="rounded-xl border border-border/60 p-3">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Profiles
@@ -218,10 +276,10 @@ export function BuilderHeader() {
                 <AlertDialogTrigger asChild>
                   <Button
                     variant="outline"
-                    className="w-full justify-start gap-2 h-11"
+                    className="w-full justify-start gap-2 h-11 px-3"
                     disabled={blocks.length === 0}
                   >
-                    <RotateCcw className="w-4 h-4" />
+                    <Trash2 className="w-4 h-4" />
                     Clear canvas
                   </Button>
                 </AlertDialogTrigger>
@@ -250,7 +308,7 @@ export function BuilderHeader() {
               </AlertDialog>
 
               <Button
-                className="w-full justify-start gap-2 h-11 bg-gradient-to-r from-primary to-primary/90"
+                className="w-full justify-start gap-2 h-11 px-3 bg-gradient-to-r from-primary to-primary/90"
                 onClick={handleExportFromMenu}
                 disabled={blocks.length === 0}
               >

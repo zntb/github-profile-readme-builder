@@ -299,7 +299,7 @@ export function ShareButton() {
       {/* Mobile: Dialog */}
       <Button
         size="sm"
-        className="sm:hidden gap-2 w-full justify-start bg-gradient-to-r from-primary to-primary/90"
+        className="sm:hidden gap-2 w-full justify-start h-11 bg-gradient-to-r from-primary to-primary/90 px-3"
         onClick={() => setShareDialogOpen(true)}
       >
         <LinkIcon className="w-4 h-4" />
