@@ -35,6 +35,7 @@ import { AutoSaveIndicator } from './auto-save-indicator';
 import { HistoryControls } from './history-controls';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts';
 import { ProfileSelector } from './profile-manager';
+import { SaveToGist } from './save-to-gist';
 import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
@@ -138,6 +139,7 @@ export function BuilderHeader() {
           <Download className="w-4 h-4" />
           Export
         </Button>
+        <SaveToGist />
       </div>
 
       <div className="sm:hidden flex items-center gap-2">
@@ -229,6 +231,8 @@ export function BuilderHeader() {
                 <Download className="w-4 h-4" />
                 Export README.md
               </Button>
+
+              <SaveToGist />
             </div>
           </SheetContent>
         </Sheet>
