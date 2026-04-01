@@ -2,6 +2,7 @@
 
 import { ArrowDown, ArrowUp, Keyboard, MoveDown, Trash2 } from 'lucide-react';
 import { useCallback, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 
 import {
   Dialog,
@@ -11,6 +12,7 @@ import {
   DialogTitle,
 } from '@/components/ui/dialog';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { useProfileStore } from '@/lib/profiles';
 import { useBuilderStore } from '@/lib/store';
 
 interface KeyboardShortcut {
@@ -98,6 +100,67 @@ const shortcuts: KeyboardShortcut[] = [
     description: 'Show keyboard shortcuts',
     category: 'Help',
   },
+  // Profiles
+  {
+    key: '1',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 1',
+    category: 'Profiles',
+  },
+  {
+    key: '2',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 2',
+    category: 'Profiles',
+  },
+  {
+    key: '3',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 3',
+    category: 'Profiles',
+  },
+  {
+    key: '4',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 4',
+    category: 'Profiles',
+  },
+  {
+    key: '5',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 5',
+    category: 'Profiles',
+  },
+  {
+    key: '6',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 6',
+    category: 'Profiles',
+  },
+  {
+    key: '7',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 7',
+    category: 'Profiles',
+  },
+  {
+    key: '8',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 8',
+    category: 'Profiles',
+  },
+  {
+    key: '9',
+    modifiers: ['Ctrl'],
+    description: 'Switch to profile 9',
+    category: 'Profiles',
+  },
+  {
+    key: 'S',
+    modifiers: ['Ctrl', 'Shift'],
+    description: 'Save current state as new profile',
+    category: 'Profiles',
+  },
 ];
 
 const categoryIcons: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -106,6 +169,7 @@ const categoryIcons: Record<string, React.ComponentType<{ className?: string }>>
   Reordering: MoveDown,
   History: ArrowUp,
   Help: Keyboard,
+  Profiles: ArrowDown,
 };
 
 function formatKey(key: string, modifiers: string[]): string {
@@ -151,6 +215,17 @@ export function useKeyboardShortcuts() {
   const redo = useBuilderStore((s) => s.redo);
   const canUndo = useBuilderStore((s) => s.canUndo());
   const canRedo = useBuilderStore((s) => s.canRedo());
+  const setBlocks = useBuilderStore((s) => s.setBlocks);
+  const setUsername = useBuilderStore((s) => s.setUsername);
+  const username = useBuilderStore((s) => s.username);
+
+  // Profile store actions
+  const profiles = useProfileStore((s) => s.profiles);
+  const createProfile = useProfileStore((s) => s.createProfile);
+  const loadProfile = useProfileStore((s) => s.loadProfile);
+
+  // Note: showSaveProfile and getActiveProfile are intentionally unused
+  // showSaveProfile would be used to show a save dialog (future enhancement)
 
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
@@ -256,6 +331,31 @@ export function useKeyboardShortcuts() {
           return;
         }
       }
+
+      // Profile switching (Ctrl+1-9)
+      if (isCtrl && !isShift) {
+        const num = parseInt(e.key);
+        if (num >= 1 && num <= 9) {
+          const profileIndex = num - 1;
+          if (profiles[profileIndex]) {
+            e.preventDefault();
+            const profile = profiles[profileIndex];
+            loadProfile(profile.id);
+            setBlocks(profile.blocks);
+            setUsername(profile.username);
+            toast.success(`Switched to "${profile.name}"`);
+            return;
+          }
+        }
+      }
+
+      // Save as new profile (Ctrl+Shift+S)
+      if (isCtrl && isShift && e.key === 's') {
+        e.preventDefault();
+        const defaultName = `Profile ${profiles.length + 1}`;
+        createProfile(defaultName, blocks, username);
+        return;
+      }
     },
     [
       showHelp,
@@ -269,6 +369,12 @@ export function useKeyboardShortcuts() {
       moveBlock,
       undo,
       redo,
+      profiles,
+      loadProfile,
+      setBlocks,
+      setUsername,
+      username,
+      createProfile,
     ],
   );
 

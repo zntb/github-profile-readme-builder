@@ -23,6 +23,7 @@ import { ModeToggle } from '../mode-toggle';
 import { AutoSaveIndicator } from './auto-save-indicator';
 import { HistoryControls } from './history-controls';
 import { KeyboardShortcutsDialog } from './keyboard-shortcuts';
+import { ProfileSelector } from './profile-manager';
 import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
@@ -77,6 +78,7 @@ export function BuilderHeader() {
 
       <div className="hidden sm:flex items-center gap-2 sm:gap-3">
         <AutoSaveIndicator />
+        <ProfileSelector />
         <HistoryControls />
         <button
           onClick={() => setShowShortcuts(true)}
@@ -145,6 +147,13 @@ export function BuilderHeader() {
                   Templates
                 </p>
                 <TemplatesDialog />
+              </div>
+
+              <div className="rounded-xl border border-border/60 p-3">
+                <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
+                  Profiles
+                </p>
+                <ProfileSelector />
               </div>
 
               <Button

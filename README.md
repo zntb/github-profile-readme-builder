@@ -36,6 +36,7 @@
 - [Table of Contents](#table-of-contents)
 - [Features](#features)
 - [Keyboard Shortcuts](#keyboard-shortcuts)
+  - [Profile Shortcuts](#profile-shortcuts)
 - [Block Library](#block-library)
 - [Tech Stack](#tech-stack)
 - [Getting Started](#getting-started)
@@ -73,7 +74,8 @@
 | 🔑 **GitHub GraphQL**         | Optional `GITHUB_TOKEN` for real, live stats from the GitHub API     |
 | 💬 **Random Quotes**          | Built-in API for fetching random developer quotes                    |
 | 💾 **Auto-Save with History** | Automatic progress saving with undo/redo (last 20 states)            |
-| 📊 **Profile Quality Score**  | Real-time profile completeness analysis with improvement suggestions |
+| 💼 **Save & Load Profiles**   | Save multiple profiles locally, switch between configurations        |
+| � **Profile Quality Score**   | Real-time profile completeness analysis with improvement suggestions |
 | 🔍 **Block Tooltips**         | Hover previews with descriptions for easy block discovery            |
 | ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse           |
 
@@ -93,6 +95,15 @@ Power users can navigate, add, reorder, and configure blocks without using the m
 | `Ctrl + Z`                       | Undo last change              |
 | `Ctrl + Y`                       | Redo last change              |
 | `Shift + /` (or keyboard button) | Show keyboard shortcuts help  |
+
+### Profile Shortcuts
+
+Quickly switch between saved profiles or create new ones.
+
+| Shortcut           | Action                            |
+| ------------------ | --------------------------------- |
+| `Ctrl + 1-9`       | Switch to profile 1-9             |
+| `Ctrl + Shift + S` | Save current state as new profile |
 
 ---
 

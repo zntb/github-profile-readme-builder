@@ -734,6 +734,16 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
   },
 ];
 
+// Profile (saved configuration) definitions
+export interface Profile {
+  id: string;
+  name: string;
+  blocks: Block[];
+  username: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Template definitions
 export interface Template {
   id: string;
