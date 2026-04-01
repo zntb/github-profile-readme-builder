@@ -8,6 +8,7 @@ This document provides detailed information about all themes available in the Gi
 - [Available Themes](#available-themes)
 - [Theme Categories](#theme-categories)
 - [Using Themes](#using-themes)
+- [Custom Theme Builder](#custom-theme-builder)
 - [Customizing Colors](#customizing-colors)
 - [Theme Preview](#theme-preview)
 
@@ -16,6 +17,8 @@ This document provides detailed information about all themes available in the Gi
 ## Overview
 
 The GitHub Profile Maker supports **65+ themes** for stats cards, including popular color schemes like Tokyo Night, Dracula, Nord, Catppuccin, and many more.
+
+Additionally, you can create **fully custom themes** with your own color palette to match your personal or professional branding.
 
 Themes are defined in [`lib/themes.ts`](../../lib/themes.ts) and can be used with the following blocks:
 
@@ -104,6 +107,19 @@ Themes are defined in [`lib/themes.ts`](../../lib/themes.ts) and can be used wit
 3. Choose your preferred theme
 4. The preview updates in real-time
 
+### Via Custom Theme Builder
+
+1. Select a stats block
+2. In the **Theme** dropdown, select **Custom Theme...**
+3. Click **Create Custom** to open the Custom Theme Builder
+4. Use the color pickers to set your desired colors:
+   - **Background** - Card background color
+   - **Border** - Card border color
+   - **Title** - Section titles and headers
+   - **Text** - Body text color
+   - **Icon** - Icon color
+5. Click **Apply Theme** to save your custom theme
+
 ### Via API/URL
 
 Add the `theme` parameter to the API URL:
@@ -139,6 +155,64 @@ Add the `theme` parameter to the API URL:
 
 ![Trophies](https://github-profile-maker.vercel.app/api/trophies?username=yourname&theme=dracula&column=3)
 ```
+
+---
+
+## Custom Theme Builder
+
+The Custom Theme Builder allows you to create personalized themes that match your branding. This feature is accessible from the theme dropdown in any stats block configuration.
+
+### Features
+
+- **Visual Color Picker**: Click to select colors with live preview
+- **Real-time Preview**: See your theme applied instantly in the preview card
+- **Reset to Default**: Easily start over with the reset button
+- **Applies to All Stats**: Custom themes work across Stats Card, Top Languages, Streak Stats, Activity Graph, and Trophies
+
+### Creating a Custom Theme
+
+1. Navigate to any stats block (Stats Card, Top Languages, etc.)
+2. Open the Configuration Panel
+3. Find the **Theme** dropdown
+4. Select **Custom Theme...** from the list
+5. Click the **Create Custom** button
+6. Customize each color:
+   - Background color
+   - Border color
+   - Title color
+   - Text color
+   - Icon color
+7. Click **Apply Theme** to save
+
+### Using Custom Themes via URL
+
+Custom themes can also be applied via URL by encoding your color choices:
+
+```markdown
+![Custom Stats](https://github-profile-maker.vercel.app/api/stats?username=yourname&theme=custom:1a1b27_70a5fd_c9d1d9_bf91f3_30363d)
+```
+
+The custom theme format is: `custom:BG_TITLE_TEXT_ICON_BORDER`
+
+| Parameter | Position | Description      |
+| --------- | -------- | ---------------- |
+| BG        | 1st      | Background color |
+| TITLE     | 2nd      | Title color      |
+| TEXT      | 3rd      | Text color       |
+| ICON      | 4th      | Icon color       |
+| BORDER    | 5th      | Border color     |
+
+All colors should be 6-character hex codes without the `#` prefix.
+
+### Example: Brand-Aligned Custom Theme
+
+For a professional blue-themed profile:
+
+```markdown
+![Brand Theme](https://github-profile-maker.vercel.app/api/stats?username=yourname&theme=custom:0d1117_58a6ff_c9d1d9_1f6feb_30363d)
+```
+
+This creates a GitHub Dark-inspired theme that can be customized further.
 
 ---
 
@@ -280,6 +354,15 @@ Use subtle themes:
 - `merko`
 - `rose_pine`
 
+### For Brand-Consistent Profiles
+
+Use the **Custom Theme Builder** to create themes that match your personal or company branding:
+
+1. Open any stats block configuration
+2. Select **Custom Theme...** from the theme dropdown
+3. Use the color picker to match your brand colors
+4. Apply and preview instantly
+
 ---
 
 ## All Available Themes
@@ -300,6 +383,8 @@ react-dark, discord_old_blurple, aura_dark, panda, noctis_minimus,
 cobalt2, swift, aura, apprentice, moltack, codeSTACKr,
 rose_pine, catppuccin_latte, catppuccin_mocha
 ```
+
+Plus **custom themes** created via the Custom Theme Builder!
 
 ---
 

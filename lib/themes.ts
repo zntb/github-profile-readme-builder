@@ -1140,17 +1140,73 @@ function deriveActivityTheme(theme: StatsTheme): ActivityTheme {
 }
 
 // Helper functions
+
+// Parse custom theme string format: "custom:bg_title_text_icon_border"
+function parseCustomTheme(themeName: string): StatsTheme | null {
+  if (!themeName.startsWith('custom:')) {
+    return null;
+  }
+
+  const colors = themeName.replace('custom:', '');
+  const parts = colors.split('_');
+
+  if (parts.length >= 5) {
+    return {
+      bg: parts[0] || 'fffefe',
+      title: parts[1] || '2f80ed',
+      text: parts[2] || '434d58',
+      icon: parts[3] || '4c71f2',
+      border: parts[4] || 'e4e2e2',
+    };
+  }
+
+  return null;
+}
+
 export function getStatsTheme(themeName: string): StatsTheme {
+  // Check for custom theme first
+  const customTheme = parseCustomTheme(themeName);
+  if (customTheme) {
+    return customTheme;
+  }
+
   const key = resolveThemeKey(themeName, statsThemes);
   return key ? statsThemes[key] : statsThemes.default;
 }
 
 export function getLangTheme(themeName: string): LangTheme {
+  // Check for custom theme - for lang themes we use bg, title, text, border
+  const customStats = parseCustomTheme(themeName);
+  if (customStats) {
+    return {
+      bg: customStats.bg,
+      title: customStats.title,
+      text: customStats.text,
+      border: customStats.border,
+    };
+  }
+
   const key = resolveThemeKey(themeName, langThemes);
   return key ? langThemes[key] : langThemes.default;
 }
 
 export function getStreakTheme(themeName: string): StreakTheme {
+  // Check for custom theme
+  const customStats = parseCustomTheme(themeName);
+  if (customStats) {
+    return {
+      bg: customStats.bg,
+      text: customStats.text,
+      fire: customStats.icon,
+      ring: customStats.title,
+      currStreak: customStats.title,
+      sideNums: customStats.icon,
+      sideLabels: customStats.text,
+      dates: customStats.text,
+      border: customStats.border,
+    };
+  }
+
   const key = resolveThemeKey(themeName, streakThemes);
   if (key) return streakThemes[key];
 
@@ -1158,6 +1214,21 @@ export function getStreakTheme(themeName: string): StreakTheme {
 }
 
 export function getActivityTheme(themeName: string): ActivityTheme {
+  // Check for custom theme
+  const customStats = parseCustomTheme(themeName);
+  if (customStats) {
+    return {
+      bg: customStats.bg,
+      text: customStats.text,
+      border: customStats.border,
+      color0: customStats.bg,
+      color1: customStats.border,
+      color2: customStats.text,
+      color3: customStats.icon,
+      color4: customStats.title,
+    };
+  }
+
   const key = resolveThemeKey(themeName, activityThemes);
   if (key) return activityThemes[key];
 
