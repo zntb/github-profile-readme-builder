@@ -4,10 +4,9 @@ import { Check, Copy, Download, FileCode } from 'lucide-react';
 import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
+import { LazyLivePreview } from '@/lib/lazy-components';
 import { copyToClipboard, downloadMarkdown, renderMarkdown } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
-
-import { LivePreview } from './live-preview';
 
 interface OutputPanelProps {
   mode: 'preview' | 'markdown';
@@ -43,7 +42,7 @@ export function OutputPanel({ mode }: OutputPanelProps) {
             <span>Live Preview</span>
           </div>
         </div>
-        <LivePreview blocks={blocks} />
+        <LazyLivePreview blocks={blocks} />
       </div>
     );
   }

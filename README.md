@@ -74,6 +74,7 @@
 | ⌨️ **Keyboard Shortcuts**     | Navigate, add, reorder, and configure blocks without mouse            |
 | ⌘ **Command Palette**         | Ctrl+K / Cmd+K for quick access to all actions, blocks, and templates |
 | 💡 **Smart Notifications**    | Context-aware hints that appear based on your actions                 |
+| ⚡ **Bundle Optimization**    | Code splitting & lazy loading for faster initial load time            |
 | ⚡ **Progressive Loading**    | Skeleton loaders show while data and blocks are loading               |
 | 📋 **Actions Dropdown**       | Consolidated menu for secondary actions on desktop                    |
 | � **Lazy Block Rendering**    | Virtualized canvas for smooth performance with 20+ blocks             |

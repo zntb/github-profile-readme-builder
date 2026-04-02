@@ -12,6 +12,11 @@ This guide provides comprehensive information for developers who want to contrib
 - [Testing](#testing)
 - [Code Style](#code-style)
 - [Building for Production](#building-for-production)
+  - [Bundle Optimization](#bundle-optimization)
+  - [Lazy-Loaded Components](#lazy-loaded-components)
+  - [Configuration](#configuration)
+  - [Adding New Lazy Components](#adding-new-lazy-components)
+  - [Viewing Bundle Analysis](#viewing-bundle-analysis)
 
 ---
 
@@ -437,6 +442,83 @@ import { Button } from '@/components/ui/button';
 
 ```bash
 npm run build
+```
+
+### Bundle Optimization
+
+The application uses Next.js dynamic imports to achieve code splitting and reduce the initial bundle size. This improves Time-to-Interactive (TTI) by deferring the loading of non-critical components.
+
+#### Lazy-Loaded Components
+
+The following components are lazy-loaded to reduce initial bundle size:
+
+| Component                   | Chunk Name                  | Purpose                                             |
+| --------------------------- | --------------------------- | --------------------------------------------------- |
+| `Builder`                   | main                        | Main builder interface (loaded after initial paint) |
+| `CommandPalette`            | command-palette             | Ctrl+K command palette                              |
+| `KeyboardShortcutsProvider` | keyboard-shortcuts          | Keyboard shortcuts handler & dialog                 |
+| `TemplatesDialog`           | templates-dialog            | Template browser dialog                             |
+| `ShareButton`               | share-button                | Social sharing dialog                               |
+| `SaveToGist`                | save-to-gist                | GitHub Gist save dialog                             |
+| `ProfileSelector`           | profile-manager             | Profile management dropdown                         |
+| `LivePreview`               | live-preview                | Rendered markdown preview                           |
+| `ConfigPanel`               | config-panel                | Block configuration panel                           |
+| `ProfileQuality`            | profile-quality             | Profile completeness score                          |
+| `ImageOptimizationSettings` | image-optimization-settings | Image optimization settings                         |
+
+#### Configuration
+
+Bundle optimization settings are in `next.config.ts`:
+
+```typescript
+// Enable package optimization for tree-shaking
+experimental: {
+  optimizePackageImports: [
+    'lucide-react',
+    '@radix-ui/react-dialog',
+    // ... other packages
+  ],
+},
+
+// Remove console.log in production
+compiler: {
+  removeConsole: process.env.NODE_ENV === 'production' ? { exclude: ['error', 'warn'] } : false,
+},
+```
+
+#### Adding New Lazy Components
+
+To add a new lazy-loaded component:
+
+1. Add the dynamic import to `lib/lazy-components.tsx`:
+
+```typescript
+export const LazyNewComponent = dynamic(
+  () => import('@/components/path/to/component').then((m) => ({ default: m.NewComponent })),
+  {
+    ssr: false,
+    loading: () => <Skeleton />, // Optional loading fallback
+  },
+);
+```
+
+2. Replace the static import in the parent component with the lazy version:
+
+```typescript
+// Before
+import { NewComponent } from '@/components/path/to/component';
+
+// After
+import { LazyNewComponent } from '@/lib/lazy-components';
+```
+
+#### Viewing Bundle Analysis
+
+To analyze bundle sizes, use `@next/bundle-analyzer`:
+
+```bash
+npm install @next/bundle-analyzer
+npx next build --analyze
 ```
 
 ### Start Production Server

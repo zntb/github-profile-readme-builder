@@ -47,6 +47,14 @@ import {
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet';
+import {
+  LazyImageOptimizationSettings,
+  LazyKeyboardShortcutsDialog,
+  LazyProfileSelector,
+  LazySaveToGist,
+  LazyShareButton,
+  LazyTemplatesDialog,
+} from '@/lib/lazy-components';
 import { renderMarkdown } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 import { generateShareUrl } from '@/lib/url-state';
@@ -54,13 +62,7 @@ import { generateShareUrl } from '@/lib/url-state';
 import { ModeToggle } from '../mode-toggle';
 
 import { AutoSaveIndicator } from './auto-save-indicator';
-import { ImageOptimizationSettings } from './config/image-optimization-settings';
 import { HistoryControls } from './history-controls';
-import { KeyboardShortcutsDialog } from './keyboard-shortcuts';
-import { ProfileSelector } from './profile-manager';
-import { SaveToGist } from './save-to-gist';
-import { ShareButton } from './share-button';
-import { TemplatesDialog } from './templates-dialog';
 
 export function BuilderHeader() {
   const blocks = useBuilderStore((s) => s.blocks);
@@ -150,7 +152,7 @@ export function BuilderHeader() {
 
   return (
     <header className="h-16 border-b border-border bg-card/80 backdrop-blur-md flex items-center justify-between p-4 sm:px-6 sticky top-0 z-50">
-      <KeyboardShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
+      <LazyKeyboardShortcutsDialog open={showShortcuts} onOpenChange={setShowShortcuts} />
       <div className="flex items-center gap-3 sm:gap-4">
         <div className="flex items-center gap-2.5">
           <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-primary to-primary/70 flex items-center justify-center shadow-lg shadow-primary/20 group">
@@ -218,7 +220,7 @@ export function BuilderHeader() {
               </SheetDescription>
             </SheetHeader>
             <div className="mt-6">
-              <ImageOptimizationSettings />
+              <LazyImageOptimizationSettings />
             </div>
           </SheetContent>
         </Sheet>
@@ -310,11 +312,11 @@ export function BuilderHeader() {
             </DropdownMenuSub>
           </DropdownMenuContent>
         </DropdownMenu>
-        <ProfileSelector />
-        <TemplatesDialog />
+        <LazyProfileSelector />
+        <LazyTemplatesDialog />
         <ModeToggle />
         {/* SaveToGist component renders the dialog and desktop button */}
-        <SaveToGist />
+        <LazySaveToGist />
       </div>
 
       <div className="sm:hidden flex items-center gap-1">
@@ -388,7 +390,7 @@ export function BuilderHeader() {
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Templates
                 </p>
-                <TemplatesDialog />
+                <LazyTemplatesDialog />
               </div>
 
               <Button
@@ -400,13 +402,13 @@ export function BuilderHeader() {
                 Image Optimization
               </Button>
 
-              <ShareButton />
+              <LazyShareButton />
 
               <div className="rounded-xl border border-border/60 p-3">
                 <p className="text-xs font-medium uppercase tracking-wide text-muted-foreground mb-2">
                   Profiles
                 </p>
-                <ProfileSelector />
+                <LazyProfileSelector />
               </div>
 
               <AlertDialog open={showClearConfirm} onOpenChange={setShowClearConfirm}>
@@ -453,7 +455,7 @@ export function BuilderHeader() {
                 Export README.md
               </Button>
 
-              <SaveToGist />
+              <LazySaveToGist />
             </div>
           </SheetContent>
         </Sheet>
