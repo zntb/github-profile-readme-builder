@@ -49,6 +49,7 @@ import {
 } from '@/components/ui/sheet';
 import { renderMarkdown } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
+import { generateShareUrl } from '@/lib/url-state';
 
 import { ModeToggle } from '../mode-toggle';
 
@@ -66,6 +67,16 @@ export function BuilderHeader() {
   const clearBlocks = useBuilderStore((s) => s.clearBlocks);
   const username = useBuilderStore((s) => s.username);
   const setUsername = useBuilderStore((s) => s.setUsername);
+  const setGistDialogOpen = useBuilderStore((s) => s.setGistDialogOpen);
+
+  // Handle opening the Gist dialog from the dropdown menu
+  // Direct call without setTimeout to avoid race conditions
+  const handleGistClick = () => {
+    console.log('[Header] handleGistClick called, calling setGistDialogOpen(true)');
+    setGistDialogOpen(true);
+    console.log('[Header] setGistDialogOpen called');
+  };
+
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [showShortcuts, setShowShortcuts] = useState(false);
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -86,6 +97,55 @@ export function BuilderHeader() {
   const handleExportFromMenu = () => {
     handleExport();
     setMobileMenuOpen(false);
+  };
+
+  // Generate share URL
+  const getShareUrl = (): string => {
+    if (blocks.length > 0) {
+      return generateShareUrl(blocks, username);
+    }
+    if (typeof window !== 'undefined') {
+      return window.location.origin;
+    }
+    return 'https://github-profile-maker.vercel.app';
+  };
+
+  const getShareText = (): string => {
+    if (username) {
+      return `Check out my GitHub profile README I made with GitHub Profile Maker!`;
+    }
+    return `Create an amazing GitHub profile README with GitHub Profile Maker!`;
+  };
+
+  const handleShareToTwitter = () => {
+    const url = new URL('https://twitter.com/intent/tweet');
+    url.searchParams.set('text', getShareText());
+    url.searchParams.set('url', getShareUrl());
+    window.open(url.toString(), '_blank');
+    toast.success('Opening Twitter...');
+  };
+
+  const handleShareToLinkedIn = () => {
+    const url = new URL('https://www.linkedin.com/sharing/share-offsite/');
+    url.searchParams.set('url', getShareUrl());
+    window.open(url.toString(), '_blank');
+    toast.success('Opening LinkedIn...');
+  };
+
+  const handleShareToFacebook = () => {
+    const url = new URL('https://www.facebook.com/sharer/sharer.php');
+    url.searchParams.set('u', getShareUrl());
+    window.open(url.toString(), '_blank');
+    toast.success('Opening Facebook...');
+  };
+
+  const handleCopyLink = async () => {
+    try {
+      await navigator.clipboard.writeText(getShareUrl());
+      toast.success('Link copied to clipboard!');
+    } catch {
+      toast.error('Failed to copy link');
+    }
   };
 
   return (
@@ -175,7 +235,7 @@ export function BuilderHeader() {
               Actions
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-56 z-[100]">
             <DropdownMenuItem onClick={() => setShowSettings(true)}>
               <Settings className="w-4 h-4 mr-2" />
               Image Optimization Settings
@@ -190,15 +250,7 @@ export function BuilderHeader() {
               Export
             </DropdownMenuItem>
             {/* Share to Gist - render trigger directly to avoid nested dropdown issues */}
-            <DropdownMenuItem
-              disabled={blocks.length === 0}
-              className="cursor-pointer"
-              onClick={() => {
-                // Programmatically trigger the SaveToGist dialog by dispatching a custom event
-                const event = new CustomEvent('open-save-to-gist');
-                window.dispatchEvent(event);
-              }}
-            >
+            <DropdownMenuItem className="cursor-pointer" onClick={handleGistClick}>
               <GitBranch className="w-4 h-4 mr-2" />
               Share to Gist
             </DropdownMenuItem>
@@ -208,12 +260,13 @@ export function BuilderHeader() {
                 <Link className="w-4 h-4 mr-2" />
                 <span>Share</span>
               </DropdownMenuSubTrigger>
-              <DropdownMenuSubContent className="w-48">
+              <DropdownMenuSubContent className="w-48 z-[100]">
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => {
-                    const event = new CustomEvent('open-share-dialog');
-                    window.dispatchEvent(event);
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShareToTwitter();
                   }}
                 >
                   <span className="text-[#1DA1F2]">🐦</span>
@@ -221,9 +274,10 @@ export function BuilderHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => {
-                    const event = new CustomEvent('open-share-dialog');
-                    window.dispatchEvent(event);
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShareToLinkedIn();
                   }}
                 >
                   <span className="text-[#0A66C2]">💼</span>
@@ -231,9 +285,10 @@ export function BuilderHeader() {
                 </DropdownMenuItem>
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => {
-                    const event = new CustomEvent('open-share-dialog');
-                    window.dispatchEvent(event);
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleShareToFacebook();
                   }}
                 >
                   <span className="text-[#1877F2]">📘</span>
@@ -242,9 +297,10 @@ export function BuilderHeader() {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem
                   className="cursor-pointer"
-                  onClick={() => {
-                    const event = new CustomEvent('open-share-dialog');
-                    window.dispatchEvent(event);
+                  onSelect={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    handleCopyLink();
                   }}
                 >
                   <span>🔗</span>
@@ -257,6 +313,8 @@ export function BuilderHeader() {
         <ProfileSelector />
         <TemplatesDialog />
         <ModeToggle />
+        {/* SaveToGist component renders the dialog and desktop button */}
+        <SaveToGist />
       </div>
 
       <div className="sm:hidden flex items-center gap-1">

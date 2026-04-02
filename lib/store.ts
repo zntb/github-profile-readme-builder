@@ -28,6 +28,9 @@ interface BuilderState {
   isSaving: boolean;
   lastSavedAt: Date | null;
 
+  // Gist dialog state
+  gistDialogOpen: boolean;
+
   // Actions
   addBlock: (block: Block, index?: number) => void;
   removeBlock: (id: string) => void;
@@ -40,10 +43,12 @@ interface BuilderState {
   duplicateBlock: (id: string) => void;
   clearBlocks: () => void;
   loadTemplate: (template: Template) => void;
+  loadFromUrl: (blocks: Block[], username: string) => void;
   addChildBlock: (parentId: string, block: Block) => void;
   setUsername: (username: string) => void;
   addToRecentBlocks: (type: BlockType) => void;
   toggleBlockLock: (id: string) => void;
+  setGistDialogOpen: (open: boolean) => void;
 
   // History actions
   undo: () => void;
@@ -83,6 +88,9 @@ export const useBuilderStore = create<BuilderState>()(
       lastSavedBlocks: null,
       isSaving: false,
       lastSavedAt: null,
+
+      // Gist dialog state - do not persist
+      gistDialogOpen: false,
 
       // Hydration state - do not persist this, always start as false on both server and client
       isHydrated: false,
@@ -289,6 +297,28 @@ export const useBuilderStore = create<BuilderState>()(
         });
       },
 
+      loadFromUrl: (blocks, username) => {
+        // Assign new IDs to avoid conflicts with existing blocks
+        const assignNewIds = (blocks: Block[]): Block[] => {
+          return blocks.map((block) => ({
+            ...block,
+            id: generateId(),
+            children: block.children ? assignNewIds(block.children) : undefined,
+          }));
+        };
+        const newBlocks = assignNewIds(blocks);
+
+        set({
+          blocks: newBlocks,
+          username,
+          selectedBlockId: null,
+          history: {
+            past: [],
+            future: [],
+          },
+        });
+      },
+
       addChildBlock: (parentId, block) => {
         const state = get();
         const newPast = [...state.history.past, state.blocks].slice(-MAX_HISTORY_STATES);
@@ -432,6 +462,10 @@ export const useBuilderStore = create<BuilderState>()(
 
       setIsHydrated: (isHydrated) => {
         set({ isHydrated });
+      },
+
+      setGistDialogOpen: (open) => {
+        set({ gistDialogOpen: open });
       },
     }),
     {

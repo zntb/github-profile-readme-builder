@@ -10,6 +10,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAutoSave } from '@/lib/auto-save';
 import { useBuilderStore } from '@/lib/store';
+import { useUrlStateLoader } from '@/lib/use-url-state';
 import { cn } from '@/lib/utils';
 
 import { BlockSidebar } from './block-sidebar';
@@ -32,6 +33,9 @@ export function Builder() {
 
   // Initialize auto-save
   useAutoSave();
+
+  // Initialize URL state loader (for shared URLs)
+  useUrlStateLoader();
 
   // Initialize keyboard shortcuts
   const { showHelp, setShowHelp } = useKeyboardShortcuts();

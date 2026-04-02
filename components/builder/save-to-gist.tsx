@@ -12,7 +12,6 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
 } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -30,35 +29,35 @@ interface GistResponse {
 export function SaveToGist() {
   const blocks = useBuilderStore((s) => s.blocks);
   const username = useBuilderStore((s) => s.username);
-  const [isOpen, setIsOpen] = useState(false);
+  const gistDialogOpen = useBuilderStore((s) => s.gistDialogOpen);
+  const setGistDialogOpen = useBuilderStore((s) => s.setGistDialogOpen);
   const [isLoading, setIsLoading] = useState(false);
   const [token, setToken] = useState('');
   const [isPublic, setIsPublic] = useState(false);
 
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log('[SaveToGist] gistDialogOpen changed to:', gistDialogOpen);
+  }, [gistDialogOpen]);
+
   // Load token from localStorage on mount
-  useState(() => {
+  useEffect(() => {
     const savedToken = localStorage.getItem('github_gist_token');
     if (savedToken) {
       setToken(savedToken);
     }
-  });
+  }, []);
 
-  // Listen for custom event to open SaveToGist dialog from header dropdown
-  useEffect(() => {
-    const handleOpenGist = () => {
-      if (blocks.length > 0) {
-        // Load saved token when opening
-        const savedToken = localStorage.getItem('github_gist_token');
-        if (savedToken) {
-          setToken(savedToken);
-        }
-        setIsOpen(true);
+  const handleOpenChange = (open: boolean) => {
+    setGistDialogOpen(open);
+    if (open) {
+      // Load saved token when opening
+      const savedToken = localStorage.getItem('github_gist_token');
+      if (savedToken) {
+        setToken(savedToken);
       }
-    };
-
-    window.addEventListener('open-save-to-gist', handleOpenGist);
-    return () => window.removeEventListener('open-save-to-gist', handleOpenGist);
-  }, [blocks]);
+    }
+  };
 
   const handleSave = async () => {
     if (!token.trim()) {
@@ -103,7 +102,7 @@ export function SaveToGist() {
           },
         });
 
-        setIsOpen(false);
+        setGistDialogOpen(false);
       } else {
         toast.error(data.error || 'Failed to save to Gist');
       }
@@ -114,35 +113,22 @@ export function SaveToGist() {
     }
   };
 
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      // Don't clear token when closing
-      setIsOpen(open);
-    } else {
-      // Load saved token when opening
-      const savedToken = localStorage.getItem('github_gist_token');
-      if (savedToken) {
-        setToken(savedToken);
-      }
-      setIsOpen(open);
-    }
-  };
-
   return (
     <>
-      {/* Desktop button */}
-      <Dialog open={isOpen} onOpenChange={handleOpenChange}>
-        <DialogTrigger asChild>
-          <Button
-            size="sm"
-            disabled={blocks.length === 0}
-            className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-          >
-            <GitBranch className="w-4 h-4" />
-            Save to Gist
-          </Button>
-        </DialogTrigger>
-        <DialogContent className="sm:max-w-md">
+      {/* Desktop button - manually controlled, not using DialogTrigger */}
+      <Button
+        size="sm"
+        disabled={blocks.length === 0}
+        className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+        onClick={() => setGistDialogOpen(true)}
+      >
+        <GitBranch className="w-4 h-4" />
+        Save to Gist
+      </Button>
+
+      {/* Dialog is now controlled separately - render when open */}
+      <Dialog open={gistDialogOpen} onOpenChange={handleOpenChange}>
+        <DialogContent className="sm:max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <GitBranch className="w-5 h-5" />
@@ -199,7 +185,7 @@ export function SaveToGist() {
           </div>
 
           <DialogFooter>
-            <Button variant="outline" onClick={() => setIsOpen(false)}>
+            <Button variant="outline" onClick={() => setGistDialogOpen(false)}>
               Cancel
             </Button>
             <Button onClick={handleSave} disabled={isLoading || !token.trim()}>
@@ -219,12 +205,12 @@ export function SaveToGist() {
         </DialogContent>
       </Dialog>
 
-      {/* Mobile button */}
+      {/* Mobile: Render as part of mobile menu */}
       <Button
         size="sm"
+        className="sm:hidden w-full justify-start gap-2 h-11 bg-gradient-to-r from-primary to-primary/90 px-3"
         disabled={blocks.length === 0}
-        onClick={() => setIsOpen(true)}
-        className="sm:hidden gap-2 w-full justify-start h-11 px-3 bg-gradient-to-r from-primary to-primary/90"
+        onClick={() => setGistDialogOpen(true)}
       >
         <GitBranch className="w-4 h-4" />
         Save to Gist

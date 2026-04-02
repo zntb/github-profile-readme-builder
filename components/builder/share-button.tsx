@@ -11,18 +11,10 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 import { useBuilderStore } from '@/lib/store';
+import { generateShareUrl } from '@/lib/url-state';
 
-type SocialPlatform = 'twitter' | 'linkedin' | 'facebook' | 'copy';
-
+// Keep ShareData interface for type clarity in the component
 interface ShareData {
   title: string;
   text: string;
@@ -137,17 +129,21 @@ export function ShareButton() {
   // Listen for custom event to open share dialog from header dropdown
   useEffect(() => {
     const handleOpenShare = () => {
-      if (blocks.length > 0) {
-        setShareDialogOpen(true);
-      }
+      // Always allow opening the share dialog (even without blocks, to allow sharing the app)
+      setShareDialogOpen(true);
     };
 
     window.addEventListener('open-share-dialog', handleOpenShare);
     return () => window.removeEventListener('open-share-dialog', handleOpenShare);
-  }, [blocks]);
+  }, []);
 
-  // Generate share URL - in production this would be the deployed URL
+  // Generate share URL with embedded state
   const getShareUrl = (): string => {
+    // If there are blocks, include them in the URL
+    if (blocks.length > 0) {
+      return generateShareUrl(blocks, username);
+    }
+    // Otherwise, return the base URL
     if (typeof window !== 'undefined') {
       return window.location.origin;
     }
@@ -168,56 +164,33 @@ export function ShareButton() {
     return 'GitHub Profile Maker';
   };
 
-  const handleShare = async (platform: SocialPlatform) => {
-    const shareData: ShareData = {
-      title: getShareTitle(),
-      text: getShareText(),
-      url: getShareUrl(),
-    };
-
-    switch (platform) {
-      case 'twitter':
-        await shareToTwitter(shareData);
-        break;
-      case 'linkedin':
-        await shareToLinkedIn(shareData);
-        break;
-      case 'facebook':
-        await shareToFacebook(shareData);
-        break;
-      case 'copy':
-        await copyToClipboard(shareData.url);
-        break;
-    }
-  };
-
-  const shareToTwitter = async (data: ShareData) => {
+  // Remove unused share functions that are now handled inline in the onClick handlers
+  // These functions are kept for potential future use or reference
+  /* eslint-disable @typescript-eslint/no-unused-vars */
+  const _shareToTwitter = async (data: ShareData) => {
     const twitterUrl = new URL('https://twitter.com/intent/tweet');
     twitterUrl.searchParams.set('text', data.text);
     twitterUrl.searchParams.set('url', data.url);
-
     window.open(twitterUrl.toString(), '_blank', 'width=550,height=420');
     toast.success('Opening Twitter...');
   };
 
-  const shareToLinkedIn = async (data: ShareData) => {
+  const _shareToLinkedIn = async (data: ShareData) => {
     const linkedInUrl = new URL('https://www.linkedin.com/sharing/share-offsite/');
     linkedInUrl.searchParams.set('url', data.url);
-
     window.open(linkedInUrl.toString(), '_blank', 'width=550,height=420');
     toast.success('Opening LinkedIn...');
   };
 
-  const shareToFacebook = async (data: ShareData) => {
+  const _shareToFacebook = async (data: ShareData) => {
     const facebookUrl = new URL('https://www.facebook.com/sharer/sharer.php');
     facebookUrl.searchParams.set('u', data.url);
     facebookUrl.searchParams.set('quote', data.text);
-
     window.open(facebookUrl.toString(), '_blank', 'width=550,height=420');
     toast.success('Opening Facebook...');
   };
 
-  const copyToClipboard = async (url: string) => {
+  const _copyToClipboard = async (url: string) => {
     try {
       await navigator.clipboard.writeText(url);
       setCopied(true);
@@ -227,32 +200,10 @@ export function ShareButton() {
       toast.error('Failed to copy link');
     }
   };
+  /* eslint-enable @typescript-eslint/no-unused-vars */
 
-  // Handle mobile share action
-  const handleMobileShare = async (platform: SocialPlatform) => {
-    const shareData: ShareData = {
-      title: getShareTitle(),
-      text: getShareText(),
-      url: getShareUrl(),
-    };
-
-    // Check if Web Share API is available (mobile)
-    if (navigator.share && platform === 'copy') {
-      try {
-        await navigator.share(shareData);
-        toast.success('Shared successfully!');
-        return;
-      } catch {
-        // User cancelled or error, fall back to copy
-      }
-    }
-
-    await handleShare(platform);
-    setShareDialogOpen(false);
-  };
-
-  // Don't show share button if no content - but always show mobile button
-  const showShareButton = blocks.length > 0;
+  // Show share button always (even without blocks, to allow sharing the app)
+  const showShareButton = true;
 
   const shareData: ShareData = {
     title: getShareTitle(),
@@ -262,54 +213,24 @@ export function ShareButton() {
 
   return (
     <>
-      {/* Desktop: Dropdown Menu - only show when there are blocks */}
-      {showShareButton && (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button
-              size="sm"
-              className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-            >
-              <LinkIcon className="w-4 h-4" />
-              Share
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <DropdownMenuLabel>Share your profile</DropdownMenuLabel>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem
-              onClick={() => handleShare('twitter')}
-              className="cursor-pointer gap-3"
-            >
-              <TwitterIcon className="w-4 h-4" style={{ color: '#1DA1F2' }} />
-              <span>Twitter / X</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleShare('linkedin')}
-              className="cursor-pointer gap-3"
-            >
-              <LinkedInIcon className="w-4 h-4" style={{ color: '#0A66C2' }} />
-              <span>LinkedIn</span>
-            </DropdownMenuItem>
-            <DropdownMenuItem
-              onClick={() => handleShare('facebook')}
-              className="cursor-pointer gap-3"
-            >
-              <FacebookIcon className="w-4 h-4" style={{ color: '#1877F2' }} />
-              <span>Facebook</span>
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem onClick={() => handleShare('copy')} className="cursor-pointer gap-3">
-              {copied ? (
-                <CheckIcon className="w-4 h-4 text-green-500" />
-              ) : (
-                <CopyIcon className="w-4 h-4" />
-              )}
-              <span>{copied ? 'Copied!' : 'Copy link'}</span>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )}
+      {/* Desktop: Share Button - directly copy URL */}
+      <Button
+        size="sm"
+        className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5 z-50"
+        onClick={async () => {
+          try {
+            await navigator.clipboard.writeText(getShareUrl());
+            setCopied(true);
+            toast.success('Link copied to clipboard!');
+            setTimeout(() => setCopied(false), 2000);
+          } catch {
+            toast.error('Failed to copy - click may have been blocked');
+          }
+        }}
+      >
+        {copied ? <CheckIcon className="w-4 h-4" /> : <LinkIcon className="w-4 h-4" />}
+        {copied ? 'Copied!' : 'Share'}
+      </Button>
 
       {/* Mobile: Dialog - always show but disabled when no content */}
       <Button
@@ -323,7 +244,7 @@ export function ShareButton() {
       </Button>
 
       <Dialog open={shareDialogOpen} onOpenChange={setShareDialogOpen}>
-        <DialogContent className="sm:max-w-md">
+        <DialogContent className="sm:max-w-md z-[100]">
           <DialogHeader>
             <DialogTitle>Share your profile</DialogTitle>
             <DialogDescription>Share your GitHub profile README with the world</DialogDescription>
@@ -349,32 +270,71 @@ export function ShareButton() {
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="outline"
-                className="h-12 flex-col gap-1.5 hover:bg-[#1DA1F2]/10 hover:border-[#1DA1F2]/30"
-                onClick={() => handleMobileShare('twitter')}
+                className="h-12 flex-col gap-1.5 hover:bg-[#1DA1F2]/10 hover:border-[#1DA1F2]/30 cursor-pointer"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const url = new URL('https://twitter.com/intent/tweet');
+                  url.searchParams.set('text', shareData.text);
+                  url.searchParams.set('url', shareData.url);
+                  window.open(url.toString(), '_blank');
+                  toast.success('Opening Twitter...');
+                }}
               >
                 <TwitterIcon className="w-5 h-5" style={{ color: '#1DA1F2' }} />
                 <span className="text-xs">Twitter</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-12 flex-col gap-1.5 hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/30"
-                onClick={() => handleMobileShare('linkedin')}
+                className="h-12 flex-col gap-1.5 hover:bg-[#0A66C2]/10 hover:border-[#0A66C2]/30 cursor-pointer"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const url = new URL('https://www.linkedin.com/sharing/share-offsite/');
+                  url.searchParams.set('url', shareData.url);
+                  window.open(url.toString(), '_blank');
+                  toast.success('Opening LinkedIn...');
+                }}
               >
                 <LinkedInIcon className="w-5 h-5" style={{ color: '#0A66C2' }} />
                 <span className="text-xs">LinkedIn</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-12 flex-col gap-1.5 hover:bg-[#1877F2]/10 hover:border-[#1877F2]/30"
-                onClick={() => handleMobileShare('facebook')}
+                className="h-12 flex-col gap-1.5 hover:bg-[#1877F2]/10 hover:border-[#1877F2]/30 cursor-pointer"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  const url = new URL('https://www.facebook.com/sharer/sharer.php');
+                  url.searchParams.set('u', shareData.url);
+                  window.open(url.toString(), '_blank');
+                  toast.success('Opening Facebook...');
+                }}
               >
                 <FacebookIcon className="w-5 h-5" style={{ color: '#1877F2' }} />
                 <span className="text-xs">Facebook</span>
               </Button>
               <Button
                 variant="outline"
-                className="h-12 flex-col gap-1.5"
-                onClick={() => handleMobileShare('copy')}
+                className="h-12 flex-col gap-1.5 cursor-pointer"
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  navigator.clipboard
+                    .writeText(shareData.url)
+                    .then(() => {
+                      setCopied(true);
+                      toast.success('Link copied to clipboard!');
+                      setTimeout(() => setCopied(false), 2000);
+                    })
+                    .catch(() => {
+                      toast.error('Failed to copy link');
+                    });
+                }}
               >
                 {copied ? (
                   <CheckIcon className="w-5 h-5 text-green-500" />
