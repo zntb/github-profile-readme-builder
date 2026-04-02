@@ -9,18 +9,20 @@ import { Label } from '@/components/ui/label';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAutoSave } from '@/lib/auto-save';
+import {
+  LazyCommandPalette,
+  LazyConfigPanel,
+  LazyKeyboardShortcutsProvider,
+  LazyProfileQuality,
+} from '@/lib/lazy-components';
 import { useBuilderStore } from '@/lib/store';
 import { useUrlStateLoader } from '@/lib/use-url-state';
 import { cn } from '@/lib/utils';
 
 import { BlockSidebar } from './block-sidebar';
 import { Canvas } from './canvas';
-import { CommandPalette } from './command-palette';
-import { ConfigPanel } from './config-panel';
 import { BuilderHeader } from './header';
-import { KeyboardShortcutsDialog, useKeyboardShortcuts } from './keyboard-shortcuts';
 import { OutputPanel } from './output-panel';
-import { ProfileQuality } from './profile-quality';
 
 export function Builder() {
   const selectedBlockId = useBuilderStore((s) => s.selectedBlockId);
@@ -36,9 +38,6 @@ export function Builder() {
 
   // Initialize URL state loader (for shared URLs)
   useUrlStateLoader();
-
-  // Initialize keyboard shortcuts
-  const { showHelp, setShowHelp } = useKeyboardShortcuts();
 
   const mobileNavigationItems: {
     id: 'blocks' | 'canvas' | 'preview';
@@ -66,11 +65,11 @@ export function Builder() {
 
   return (
     <div className="h-screen flex flex-col bg-background gradient-bg md:pb-16">
-      {/* Keyboard shortcuts dialog */}
-      <KeyboardShortcutsDialog open={showHelp} onOpenChange={setShowHelp} />
+      {/* Keyboard shortcuts provider — lazy-loaded, registers shortcuts + renders dialog */}
+      <LazyKeyboardShortcutsProvider />
 
-      {/* Command Palette */}
-      <CommandPalette />
+      {/* Command Palette — lazy-loaded, triggered by Ctrl+K */}
+      <LazyCommandPalette />
 
       <BuilderHeader />
 
@@ -91,7 +90,7 @@ export function Builder() {
         {/* Right Panel - Config or Preview */}
         <div className="w-80 xl:w-96 border-l border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full">
           {selectedBlockId ? (
-            <ConfigPanel />
+            <LazyConfigPanel />
           ) : (
             <div className="flex flex-col h-full">
               {/* Username Input */}
@@ -109,7 +108,7 @@ export function Builder() {
                   />
                 </div>
               </div>
-              <ProfileQuality />
+              <LazyProfileQuality />
               <Tabs defaultValue="preview" className="flex-1 flex flex-col">
                 <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                   <TabsList className="w-full bg-muted/50">
@@ -180,7 +179,7 @@ export function Builder() {
           </SheetTrigger>
           <SheetContent side="right" className="w-80 p-0 border-l border-border/50 overflow-y-auto">
             {selectedBlockId ? (
-              <ConfigPanel />
+              <LazyConfigPanel />
             ) : (
               <div className="flex flex-col h-full">
                 {/* Username Input */}
@@ -198,7 +197,7 @@ export function Builder() {
                     />
                   </div>
                 </div>
-                <ProfileQuality />
+                <LazyProfileQuality />
                 <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
                   <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                     <TabsList className="w-full bg-muted/50">
@@ -301,7 +300,7 @@ export function Builder() {
                     className="h-[70vh] p-0 rounded-t-2xl border-t border-border/50"
                   >
                     <div className="h-[70vh] flex flex-col">
-                      <ConfigPanel />
+                      <LazyConfigPanel />
                     </div>
                   </SheetContent>
                 </Sheet>
@@ -325,7 +324,7 @@ export function Builder() {
                   />
                 </div>
               </div>
-              <ProfileQuality />
+              <LazyProfileQuality />
               <Tabs defaultValue="preview" className="flex-1 flex flex-col h-full">
                 <div className="border-b border-border/50 p-2 bg-gradient-to-b from-card/50 to-transparent">
                   <TabsList className="w-full bg-muted/50">
@@ -470,7 +469,7 @@ export function Builder() {
                 </div>
               </div>
               <div className="flex-1 overflow-y-auto">
-                <ConfigPanel />
+                <LazyConfigPanel />
               </div>
             </div>
           </SheetContent>

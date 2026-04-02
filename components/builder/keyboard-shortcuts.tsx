@@ -386,6 +386,15 @@ export function useKeyboardShortcuts() {
   return { showHelp, setShowHelp };
 }
 
+/**
+ * Provider component that registers keyboard shortcuts and renders the dialog.
+ * This allows the entire keyboard shortcuts feature to be lazy-loaded as a unit.
+ */
+export function KeyboardShortcutsProvider() {
+  const { showHelp, setShowHelp } = useKeyboardShortcuts();
+  return <KeyboardShortcutsDialog open={showHelp} onOpenChange={setShowHelp} />;
+}
+
 export function KeyboardShortcutsDialog({
   open,
   onOpenChange,
