@@ -26,7 +26,11 @@ interface GistResponse {
   error?: string;
 }
 
-export function SaveToGist() {
+interface SaveToGistProps {
+  showDesktopButton?: boolean;
+}
+
+export function SaveToGist({ showDesktopButton = true }: SaveToGistProps) {
   const blocks = useBuilderStore((s) => s.blocks);
   const username = useBuilderStore((s) => s.username);
   const gistDialogOpen = useBuilderStore((s) => s.gistDialogOpen);
@@ -116,15 +120,17 @@ export function SaveToGist() {
   return (
     <>
       {/* Desktop button - manually controlled, not using DialogTrigger */}
-      <Button
-        size="sm"
-        disabled={blocks.length === 0}
-        className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
-        onClick={() => setGistDialogOpen(true)}
-      >
-        <GitBranch className="w-4 h-4" />
-        Save to Gist
-      </Button>
+      {showDesktopButton && (
+        <Button
+          size="sm"
+          disabled={blocks.length === 0}
+          className="hidden sm:flex gap-2 bg-gradient-to-r from-primary to-primary/90 hover:from-primary/90 hover:to-primary shadow-lg shadow-primary/20 hover:shadow-primary/30 transition-all duration-200 hover:-translate-y-0.5"
+          onClick={() => setGistDialogOpen(true)}
+        >
+          <GitBranch className="w-4 h-4" />
+          Save to Gist
+        </Button>
+      )}
 
       {/* Dialog is now controlled separately - render when open */}
       <Dialog open={gistDialogOpen} onOpenChange={handleOpenChange}>

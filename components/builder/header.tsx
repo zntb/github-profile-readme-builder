@@ -315,8 +315,8 @@ export function BuilderHeader() {
         <LazyProfileSelector />
         <LazyTemplatesDialog />
         <ModeToggle />
-        {/* SaveToGist component renders the dialog and desktop button */}
-        <LazySaveToGist />
+        {/* SaveToGist component - no desktop button, only dialog triggered from dropdown */}
+        <LazySaveToGist showDesktopButton={false} />
       </div>
 
       <div className="sm:hidden flex items-center gap-1">
