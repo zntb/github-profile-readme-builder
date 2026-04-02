@@ -141,7 +141,7 @@ jobs:
               anon: "true",
             });
             const totalContributors = parseInt(
-              contributorsCount.headers["link"]?.match(/page=(\d+)>; rel="last")?.[1] ||
+              contributorsCount.headers["link"]?.match(/page=(\d+)>; rel="last"/)?.[1] ||
                 "1"
             );
 
