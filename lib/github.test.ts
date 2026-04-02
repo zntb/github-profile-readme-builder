@@ -3,6 +3,8 @@ import { beforeEach, describe, expect, it, jest } from '@jest/globals';
 import {
   calculateRank,
   calculateStreakStats,
+  fetchAllTimeCommitCount,
+  fetchAllTimeContributionCalendar,
   fetchContributionCalendar,
   fetchLanguageStats,
   fetchUserProfile,
@@ -479,5 +481,232 @@ describe('fetchContributionCalendar', () => {
 
     expect(result).toEqual(mockCalendar);
     expect(result.totalContributions).toBe(365);
+  });
+
+  // TE-ITEM-2.20: fetchContributionCalendar - With Date Range
+  it('should pass from/to variables when date range is provided', async () => {
+    const mockCalendar: ContributionCalendar = {
+      totalContributions: 100,
+      weeks: [
+        {
+          contributionDays: [{ date: '2022-06-01', contributionCount: 2 }],
+        },
+      ],
+    };
+
+    const mockGraphQLResponse = {
+      user: {
+        contributionsCollection: {
+          contributionCalendar: mockCalendar,
+        },
+      },
+    };
+
+    jest.mocked(global.fetch).mockResolvedValueOnce({
+      ok: true,
+      json: async () => ({ data: mockGraphQLResponse }),
+    } as unknown as Response);
+
+    const result = await fetchContributionCalendar(
+      'testuser',
+      'fake-token',
+      '2022-01-01T00:00:00Z',
+      '2022-12-31T23:59:59Z',
+    );
+
+    expect(result).toEqual(mockCalendar);
+    // Verify the request body included the from/to variables
+    const callArgs = (global.fetch as jest.Mock).mock.calls[0] as [string, { body: string }];
+    const callBody = JSON.parse(callArgs[1].body) as {
+      variables: { from?: string; to?: string };
+    };
+    expect(callBody.variables.from).toBe('2022-01-01T00:00:00Z');
+    expect(callBody.variables.to).toBe('2022-12-31T23:59:59Z');
+  });
+});
+
+describe('fetchAllTimeContributionCalendar', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // TE-ITEM-2.21: fetchAllTimeContributionCalendar - Merges Multiple Years
+  it('should merge contribution calendars from account creation year to present', async () => {
+    // Mock: user created in 2022, current year is 2023 (2 years)
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2023-06-15'));
+
+    const userCreatedResponse = {
+      user: { createdAt: '2022-03-10T00:00:00Z' },
+    };
+
+    const calendar2022: ContributionCalendar = {
+      totalContributions: 200,
+      weeks: [{ contributionDays: [{ date: '2022-06-01', contributionCount: 3 }] }],
+    };
+
+    const calendar2023: ContributionCalendar = {
+      totalContributions: 150,
+      weeks: [{ contributionDays: [{ date: '2023-01-15', contributionCount: 5 }] }],
+    };
+
+    // First call: user createdAt query
+    jest
+      .mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: userCreatedResponse }),
+      } as unknown as Response)
+      // Second call: 2022 calendar
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { user: { contributionsCollection: { contributionCalendar: calendar2022 } } },
+        }),
+      } as unknown as Response)
+      // Third call: 2023 calendar
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { user: { contributionsCollection: { contributionCalendar: calendar2023 } } },
+        }),
+      } as unknown as Response);
+
+    const result = await fetchAllTimeContributionCalendar('testuser', 'fake-token');
+
+    expect(result.totalContributions).toBe(350); // 200 + 150
+    expect(result.weeks).toHaveLength(2); // one week from each year
+    // Weeks should be sorted chronologically
+    expect(result.weeks[0].contributionDays[0].date).toBe('2022-06-01');
+    expect(result.weeks[1].contributionDays[0].date).toBe('2023-01-15');
+
+    jest.useRealTimers();
+  });
+
+  // TE-ITEM-2.22: fetchAllTimeContributionCalendar - Single Year Account
+  it('should return a single year calendar for a newly created account', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-04-01'));
+
+    const userCreatedResponse = {
+      user: { createdAt: '2024-01-01T00:00:00Z' },
+    };
+
+    const calendar2024: ContributionCalendar = {
+      totalContributions: 50,
+      weeks: [{ contributionDays: [{ date: '2024-02-01', contributionCount: 1 }] }],
+    };
+
+    jest
+      .mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: userCreatedResponse }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({
+          data: { user: { contributionsCollection: { contributionCalendar: calendar2024 } } },
+        }),
+      } as unknown as Response);
+
+    const result = await fetchAllTimeContributionCalendar('testuser', 'fake-token');
+
+    expect(result.totalContributions).toBe(50);
+    expect(result.weeks).toHaveLength(1);
+
+    jest.useRealTimers();
+  });
+});
+
+describe('fetchAllTimeCommitCount', () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+  });
+
+  // TE-ITEM-2.23: fetchAllTimeCommitCount - Sums Across Years
+  it('should sum commit contributions across all years since account creation', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2023-06-15'));
+
+    const userCreatedResponse = {
+      user: { createdAt: '2022-01-01T00:00:00Z' },
+    };
+
+    const commits2022 = {
+      user: {
+        contributionsCollection: {
+          totalCommitContributions: 300,
+          restrictedContributionsCount: 50,
+        },
+      },
+    };
+
+    const commits2023 = {
+      user: {
+        contributionsCollection: {
+          totalCommitContributions: 200,
+          restrictedContributionsCount: 25,
+        },
+      },
+    };
+
+    jest
+      .mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: userCreatedResponse }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: commits2022 }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: commits2023 }),
+      } as unknown as Response);
+
+    const result = await fetchAllTimeCommitCount('testuser', 'fake-token');
+
+    // (300 + 50) + (200 + 25) = 575
+    expect(result).toBe(575);
+
+    jest.useRealTimers();
+  });
+
+  // TE-ITEM-2.24: fetchAllTimeCommitCount - Zero Commits
+  it('should return 0 when user has no commits in any year', async () => {
+    jest.useFakeTimers();
+    jest.setSystemTime(new Date('2024-01-15'));
+
+    const userCreatedResponse = {
+      user: { createdAt: '2024-01-01T00:00:00Z' },
+    };
+
+    const commits2024 = {
+      user: {
+        contributionsCollection: {
+          totalCommitContributions: 0,
+          restrictedContributionsCount: 0,
+        },
+      },
+    };
+
+    jest
+      .mocked(global.fetch)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: userCreatedResponse }),
+      } as unknown as Response)
+      .mockResolvedValueOnce({
+        ok: true,
+        json: async () => ({ data: commits2024 }),
+      } as unknown as Response);
+
+    const result = await fetchAllTimeCommitCount('testuser', 'fake-token');
+
+    expect(result).toBe(0);
+
+    jest.useRealTimers();
   });
 });

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 
-import { calculateStreakStats, fetchContributionCalendar } from '@/lib/github';
+import { calculateStreakStats, fetchAllTimeContributionCalendar } from '@/lib/github';
 import { getStreakTheme, type StreakTheme } from '@/lib/themes';
 
 function escapeXml(str: string): string {
@@ -34,6 +34,7 @@ function generateStreakSvg(
     currentStreakEnd: Date | null;
     longestStreakStart: Date | null;
     longestStreakEnd: Date | null;
+    firstContributionDate: Date | null;
   },
   theme: StreakTheme,
   options: { hideBorder: boolean; borderRadius: number },
@@ -83,8 +84,6 @@ function generateStreakSvg(
   const divTop = Math.max(14, contentTop - 4);
   const divBottom = Math.min(height - 14, contentBottom + 4);
 
-  const currentYear = new Date().getFullYear();
-
   return `<svg width="${width}" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">
   <style>
     .side-num   { font: 800 28px 'Segoe UI', Ubuntu, Sans-Serif; }
@@ -113,7 +112,7 @@ function generateStreakSvg(
   <text x="${leftCX}" y="${sideLabelY}"
     text-anchor="middle" class="stat-label">Total Contributions</text>
   <text x="${leftCX}" y="${sideDateY}"
-    text-anchor="middle" class="date-label">Jan 1, ${currentYear} &#8211; Present</text>
+    text-anchor="middle" class="date-label">${formatDate(streakStats.firstContributionDate)} &#8211; Present</text>
 
   <!-- ── Centre column ─────────────────────────────────────────────────── -->
 
@@ -188,9 +187,26 @@ export async function GET(request: NextRequest) {
 
   if (token) {
     try {
-      const calendar = await fetchContributionCalendar(username, token);
+      const calendar = await fetchAllTimeContributionCalendar(username, token);
       const streakStats = calculateStreakStats(calendar);
-      const svg = generateStreakSvg(streakStats, theme, { hideBorder, borderRadius });
+
+      // Determine the first ever contribution date from the all-time calendar
+      let firstContributionDate: Date | null = null;
+      for (const week of calendar.weeks) {
+        for (const day of week.contributionDays) {
+          if (day.contributionCount > 0) {
+            const d = new Date(day.date);
+            if (!firstContributionDate || d < firstContributionDate) {
+              firstContributionDate = d;
+            }
+          }
+        }
+      }
+
+      const svg = generateStreakSvg({ ...streakStats, firstContributionDate }, theme, {
+        hideBorder,
+        borderRadius,
+      });
 
       return new NextResponse(svg, {
         headers: {

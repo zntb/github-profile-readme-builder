@@ -298,11 +298,13 @@ export async function fetchLanguageStats(username: string, token: string): Promi
 export async function fetchContributionCalendar(
   username: string,
   token: string,
+  from?: string,
+  to?: string,
 ): Promise<ContributionCalendar> {
   const query = `
-    query($username: String!) {
+    query($username: String!, $from: DateTime, $to: DateTime) {
       user(login: $username) {
-        contributionsCollection {
+        contributionsCollection(from: $from, to: $to) {
           contributionCalendar {
             totalContributions
             weeks {
@@ -325,8 +327,171 @@ export async function fetchContributionCalendar(
     };
   }
 
-  const data = (await fetchGitHubGraphQL(query, { username }, token)) as GraphQLResponse;
+  const variables: Record<string, unknown> = { username };
+  if (from) variables.from = from;
+  if (to) variables.to = to;
+
+  const data = (await fetchGitHubGraphQL(query, variables, token)) as GraphQLResponse;
   return data.user.contributionsCollection.contributionCalendar;
+}
+
+/**
+ * Fetches the complete contribution calendar for a user across their entire
+ * GitHub account lifetime, bypassing the default one-year limitation of the
+ * GitHub GraphQL API's `contributionsCollection`.
+ *
+ * Strategy: query each calendar year from the user's account creation year
+ * to the current year, then merge all weeks and sum total contributions.
+ */
+export async function fetchAllTimeContributionCalendar(
+  username: string,
+  token: string,
+): Promise<ContributionCalendar> {
+  // Check cache first (longer TTL for all-time data since it changes less)
+  const cacheKey = `alltime-calendar:${username}`;
+  const cachedData = githubCache.get<ContributionCalendar>(cacheKey);
+  if (cachedData) {
+    return cachedData;
+  }
+
+  // Fetch the user's account creation year
+  const userQuery = `
+    query($username: String!) {
+      user(login: $username) {
+        createdAt
+      }
+    }
+  `;
+
+  interface UserCreatedResponse {
+    user: { createdAt: string };
+  }
+
+  const userData = (await fetchGitHubGraphQL(
+    userQuery,
+    { username },
+    token,
+  )) as UserCreatedResponse;
+
+  const createdAt = new Date(userData.user.createdAt);
+  const startYear = createdAt.getFullYear();
+  const currentYear = new Date().getFullYear();
+
+  // Fetch each year's contributions in parallel
+  const yearPromises: Promise<ContributionCalendar>[] = [];
+  for (let year = startYear; year <= currentYear; year++) {
+    const from = `${year}-01-01T00:00:00Z`;
+    const to = `${year}-12-31T23:59:59Z`;
+    yearPromises.push(fetchContributionCalendar(username, token, from, to));
+  }
+
+  const yearCalendars = await Promise.all(yearPromises);
+
+  // Merge all calendars into one
+  const merged: ContributionCalendar = {
+    totalContributions: 0,
+    weeks: [],
+  };
+
+  for (const calendar of yearCalendars) {
+    merged.totalContributions += calendar.totalContributions;
+    merged.weeks.push(...calendar.weeks);
+  }
+
+  // Sort weeks chronologically
+  merged.weeks.sort((a, b) => {
+    const aDate = a.contributionDays[0]?.date ?? '';
+    const bDate = b.contributionDays[0]?.date ?? '';
+    return aDate.localeCompare(bDate);
+  });
+
+  // Cache the result (30 minute TTL for all-time data)
+  githubCache.set(cacheKey, merged);
+
+  return merged;
+}
+
+/**
+ * Fetches the total commit count across the user's entire GitHub account
+ * lifetime, bypassing the default one-year limitation.
+ *
+ * Strategy: query each calendar year from account creation to present,
+ * summing `totalCommitContributions` and `restrictedContributionsCount`.
+ */
+export async function fetchAllTimeCommitCount(username: string, token: string): Promise<number> {
+  // Check cache first
+  const cacheKey = `alltime-commits:${username}`;
+  const cachedCount = githubCache.get<number>(cacheKey);
+  if (cachedCount !== null) {
+    return cachedCount;
+  }
+
+  // Fetch the user's account creation year
+  const userQuery = `
+    query($username: String!) {
+      user(login: $username) {
+        createdAt
+      }
+    }
+  `;
+
+  interface UserCreatedResponse {
+    user: { createdAt: string };
+  }
+
+  const userData = (await fetchGitHubGraphQL(
+    userQuery,
+    { username },
+    token,
+  )) as UserCreatedResponse;
+
+  const createdAt = new Date(userData.user.createdAt);
+  const startYear = createdAt.getFullYear();
+  const currentYear = new Date().getFullYear();
+
+  const commitQuery = `
+    query($username: String!, $from: DateTime!, $to: DateTime!) {
+      user(login: $username) {
+        contributionsCollection(from: $from, to: $to) {
+          totalCommitContributions
+          restrictedContributionsCount
+        }
+      }
+    }
+  `;
+
+  interface CommitYearResponse {
+    user: {
+      contributionsCollection: {
+        totalCommitContributions: number;
+        restrictedContributionsCount: number;
+      };
+    };
+  }
+
+  // Fetch each year in parallel
+  const yearPromises: Promise<CommitYearResponse>[] = [];
+  for (let year = startYear; year <= currentYear; year++) {
+    const from = `${year}-01-01T00:00:00Z`;
+    const to = `${year}-12-31T23:59:59Z`;
+    yearPromises.push(
+      fetchGitHubGraphQL(commitQuery, { username, from, to }, token) as Promise<CommitYearResponse>,
+    );
+  }
+
+  const yearResults = await Promise.all(yearPromises);
+
+  let totalCommits = 0;
+  for (const result of yearResults) {
+    totalCommits +=
+      result.user.contributionsCollection.totalCommitContributions +
+      result.user.contributionsCollection.restrictedContributionsCount;
+  }
+
+  // Cache the result (30 minute TTL)
+  githubCache.set(cacheKey, totalCommits);
+
+  return totalCommits;
 }
 
 export function calculateStreakStats(calendar: ContributionCalendar): {
