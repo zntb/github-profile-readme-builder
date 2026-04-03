@@ -57,7 +57,7 @@ export function CapsuleHeaderConfig({
   bgAnimation = 'none',
   bgStartColor = 'EEFF00',
   bgEndColor = 'a82DA',
-  // bgSolidColor = 'transparent',
+  bgSolidColor = 'EEFF00',
   onTextChange,
   onTypeChange,
   onSectionChange,
@@ -72,7 +72,8 @@ export function CapsuleHeaderConfig({
   onBgSolidColorChange,
 }: CapsuleHeaderConfigProps) {
   // Build gradient value for the color picker - always use full format for GradientColorPicker
-  const gradientValue = `${bgType}:${bgGradientDirection}:${bgAnimation}:${bgStartColor}:${bgEndColor}`;
+  const startColor = bgType === 'solid' ? bgSolidColor : bgStartColor;
+  const gradientValue = `${bgType}:${bgGradientDirection}:${bgAnimation}:${startColor}:${bgEndColor}`;
 
   const handleGradientChange = (value: string) => {
     if (

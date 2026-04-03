@@ -74,6 +74,8 @@ export interface CapsuleHeaderProps {
   color: string;
   height: number;
   section: string;
+  fontSize?: number;
+  fontColor?: string;
   // Background support
   bgType?: 'solid' | 'gradient' | 'animated';
   bgGradientDirection?: 'horizontal' | 'vertical' | 'diagonal' | 'radial' | 'conic';

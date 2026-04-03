@@ -225,7 +225,7 @@ export function BlockConfigFields({
           }
           bgStartColor={bgStartColor}
           bgEndColor={bgEndColor}
-          bgSolidColor={(props.bgSolidColor as string) ?? 'transparent'}
+          bgSolidColor={(props.bgSolidColor as string) ?? 'EEFF00'}
           fontColor={(props.fontColor as string) ?? 'ffffff'}
           onTextChange={(v) => update('text', v)}
           onTypeChange={(v) => update('type', v)}

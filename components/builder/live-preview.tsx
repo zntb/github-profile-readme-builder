@@ -592,11 +592,17 @@ function PreviewBlock({
         bgStartColor = bgStartColor ?? 'EEFF00';
         bgEndColor = bgEndColor ?? 'a82DA';
 
+        const normalizeHex = (value: string, fallback: string) => {
+          const sanitized = value?.replace('#', '').trim();
+          return sanitized || fallback;
+        };
+
         // For solid type, use the capsule-render API
         if (bgType === 'solid') {
           const fontSize = (props.fontSize as number) ?? 30;
-          const fontColor = (props.fontColor as string) ?? 'ffffff';
-          const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(bgSolidColor)}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=${fontSize}&animation=fadeIn&fontColor=${fontColor}`;
+          const fontColor = normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff');
+          const solidColor = normalizeHex(bgSolidColor, 'EEFF00');
+          const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(solidColor)}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=${fontSize}&animation=fadeIn&fontColor=${fontColor}`;
           return (
             <img
               src={capsuleUrl}
@@ -633,6 +639,7 @@ function PreviewBlock({
 
         // Apply animation for animated type
         const fontSize = (props.fontSize as number) ?? 30;
+        const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
         const animationClass =
           bgType === 'animated' && bgAnimation !== 'none'
             ? bgAnimation === 'gradient'
@@ -645,6 +652,20 @@ function PreviewBlock({
                     ? 'animate-shimmer'
                     : ''
             : '';
+        const section = (props.section as string) ?? 'header';
+        const type = (props.type as string) ?? 'waving';
+        const borderRadius =
+          type === 'rect'
+            ? '8px'
+            : type === 'cylinder'
+              ? '9999px'
+              : type === 'soft'
+                ? '36px'
+                : type === 'slice'
+                  ? '48px 10px 48px 10px'
+                  : section === 'footer'
+                    ? '24px 24px 0 0'
+                    : '0 0 24px 24px';
 
         return (
           <div
@@ -654,12 +675,11 @@ function PreviewBlock({
               maxWidth: '896px', // GitHub README max width
               height: `${props.height}px`,
               background: gradientStyle,
-              borderRadius:
-                props.type === 'rect' ? '8px' : props.type === 'cylinder' ? '50px' : '25px',
+              borderRadius,
             }}
           >
             <div className="absolute inset-0 flex items-center justify-center">
-              <span className="text-white font-bold" style={{ fontSize: `${fontSize}px` }}>
+              <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
                 {props.text as string}
               </span>
             </div>

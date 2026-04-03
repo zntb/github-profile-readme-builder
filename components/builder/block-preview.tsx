@@ -119,6 +119,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
       case 'capsule-header': {
         // Support both new format (bgStartColor/bgEndColor) and legacy format (color)
         const bgType = (props.bgType as string) ?? 'gradient';
+        const bgAnimation = (props.bgAnimation as string) ?? 'none';
         let bgStartColor = props.bgStartColor as string;
         let bgEndColor = props.bgEndColor as string;
         const bgSolidColor = (props.bgSolidColor as string) ?? 'transparent';
@@ -151,7 +152,12 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
 
         if (bgType === 'solid') {
           // Solid color background
-          const solidColor = bgSolidColor.startsWith('#') ? bgSolidColor : `#${bgSolidColor}`;
+          const solidColor =
+            bgSolidColor === 'transparent'
+              ? 'transparent'
+              : bgSolidColor.startsWith('#')
+                ? bgSolidColor
+                : `#${bgSolidColor}`;
           bgStyle = { background: solidColor };
         } else {
           // Gradient background
@@ -183,14 +189,43 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           fontSize = Math.max(12, Math.min(72, props.fontSize as number));
         }
 
-        const fontColor = props.fontColor ? `#${props.fontColor}` : '#ffffff';
+        const normalizedFontColor =
+          typeof props.fontColor === 'string' ? props.fontColor.replace('#', '').trim() : 'ffffff';
+        const fontColor = `#${normalizedFontColor || 'ffffff'}`;
+        const animationClass =
+          bgType === 'animated' && bgAnimation !== 'none'
+            ? bgAnimation === 'gradient'
+              ? 'animate-gradient-flow'
+              : bgAnimation === 'pulse'
+                ? 'animate-pulse'
+                : bgAnimation === 'wave'
+                  ? 'animate-wave'
+                  : bgAnimation === 'shimmer'
+                    ? 'animate-shimmer'
+                    : ''
+            : '';
+        const section = (props.section as string) ?? 'header';
+        const type = (props.type as string) ?? 'waving';
+        const borderRadius =
+          type === 'rect'
+            ? '8px'
+            : type === 'cylinder'
+              ? '9999px'
+              : type === 'soft'
+                ? '36px'
+                : type === 'slice'
+                  ? '48px 10px 48px 10px'
+                  : section === 'footer'
+                    ? '24px 24px 0 0'
+                    : '0 0 24px 24px';
 
         return (
           <div
-            className="relative rounded-lg flex items-center justify-center w-full overflow-hidden"
+            className={`relative rounded-lg flex items-center justify-center w-full overflow-hidden ${animationClass}`}
             style={{
               ...bgStyle,
               height: `${props.height ?? 200}px`,
+              borderRadius,
             }}
           >
             <span
