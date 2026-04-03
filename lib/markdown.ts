@@ -98,7 +98,8 @@ export function renderBlock(block: Block, origin: string = ''): string {
         section,
         color,
       } = props as Record<string, string | number>;
-      const capsuleUrl = `https://capsule-render.vercel.app/api?type=${headerType}&color=${encodeURIComponent(String(color))}&height=${height}&section=${section}&text=${encodeURIComponent(String(text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
+      // Use native capsule API instead of third-party API
+      const capsuleUrl = `/api/capsule?type=${headerType}&color=${encodeURIComponent(String(color))}&height=${height}&section=${section}&text=${encodeURIComponent(String(text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
       return `<div align="center">\n  <img src="${capsuleUrl}" />\n</div>`;
     }
 
@@ -374,7 +375,8 @@ export function renderBlock(block: Block, origin: string = ''): string {
 
     case 'footer-banner': {
       const { text, waveColor, fontColor, height } = props as Record<string, string | number>;
-      const url = `https://capsule-render.vercel.app/api?type=waving&color=${encodeURIComponent(String(waveColor))}&height=${height}&section=footer&text=${encodeURIComponent(String(text))}&fontSize=24&fontColor=${fontColor}`;
+      // Use native capsule API instead of third-party API
+      const url = `/api/capsule?type=waving&color=${encodeURIComponent(String(waveColor))}&height=${height}&section=footer&text=${encodeURIComponent(String(text))}&fontSize=24&fontColor=${fontColor}`;
       return `<div align="center">\n  <img src="${url}" />\n</div>`;
     }
 

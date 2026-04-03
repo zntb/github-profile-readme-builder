@@ -592,18 +592,45 @@ function PreviewBlock({
           return sanitized || fallback;
         };
 
-        // For solid type, use the capsule-render API
+        // For solid type, render natively (no external API needed)
         if (bgType === 'solid') {
           const fontSize = (props.fontSize as number) ?? 30;
-          const fontColor = normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff');
+          const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
           const solidColor = normalizeHex(bgSolidColor, 'EEFF00');
-          const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(solidColor)}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=${fontSize}&animation=fadeIn&fontColor=${fontColor}`;
+          const normalizedSolidColor = solidColor.startsWith('#') ? solidColor : `#${solidColor}`;
+
+          const section = (props.section as string) ?? 'header';
+          const type = (props.type as string) ?? 'waving';
+          const borderRadius =
+            type === 'rect'
+              ? '8px'
+              : type === 'cylinder'
+                ? '9999px'
+                : type === 'soft'
+                  ? '36px'
+                  : type === 'slice'
+                    ? '48px 10px 48px 10px'
+                    : section === 'footer'
+                      ? '24px 24px 0 0'
+                      : '0 0 24px 24px';
+
           return (
-            <img
-              src={capsuleUrl}
-              alt="Header"
-              style={{ width: '100%', height: 'auto', display: 'block' }}
-            />
+            <div
+              className="relative overflow-hidden"
+              style={{
+                width: '100%',
+                maxWidth: '896px',
+                height: `${props.height}px`,
+                backgroundColor: normalizedSolidColor,
+                borderRadius,
+              }}
+            >
+              <div className="absolute inset-0 flex items-center justify-center">
+                <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
+                  {props.text as string}
+                </span>
+              </div>
+            </div>
           );
         }
 
@@ -1098,13 +1125,29 @@ function PreviewBlock({
       }
 
       case 'footer-banner': {
-        const footerUrl = `https://capsule-render.vercel.app/api?type=waving&color=${encodeURIComponent(String(props.waveColor))}&height=${props.height}&section=footer&text=${encodeURIComponent(String(props.text))}&fontSize=24&fontColor=${props.fontColor}`;
+        // Use native rendering instead of external API
+        const waveColor = String(props.waveColor || 'EEFF00').replace('#', '');
+        const normalizedWaveColor = `#${waveColor}`;
+        const fontColor = `#${String(props.fontColor || 'ffffff').replace('#', '')}`;
+        const text = props.text as string;
+
         return (
-          <img
-            src={footerUrl}
-            alt="Footer"
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-          />
+          <div
+            style={{
+              width: '100%',
+              maxWidth: '896px',
+              height: `${props.height}px`,
+              backgroundColor: normalizedWaveColor,
+              borderRadius: '24px 24px 0 0',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <span className="font-bold" style={{ fontSize: '24px', color: fontColor }}>
+              {text}
+            </span>
+          </div>
         );
       }
 
