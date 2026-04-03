@@ -563,13 +563,107 @@ function PreviewBlock({
         return <div style={{ height: `${props.height}px` }} />;
 
       case 'capsule-header': {
-        const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(String(props.color))}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
+        // Determine the color to use based on bgType
+        const bgType = (props.bgType as string) ?? 'gradient';
+        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
+        const bgAnimation = (props.bgAnimation as string) ?? 'none';
+        let bgStartColor = props.bgStartColor as string;
+        let bgEndColor = props.bgEndColor as string;
+        const bgSolidColor = (props.bgSolidColor as string) ?? 'transparent';
+
+        // Parse legacy color format if new format is not present
+        if (!bgStartColor && !bgEndColor && props.color) {
+          const colorValue = props.color as string;
+          // Handle 'gradient' placeholder - use defaults
+          if (colorValue === 'gradient') {
+            // Use default colors
+          } else {
+            const colorParts = colorValue.split(',');
+            if (colorParts.length >= 2) {
+              const startMatch = colorParts[0].match(/\d+:([0-9a-fA-F]+)/);
+              const endMatch = colorParts[1].match(/\d+:([0-9a-fA-F]+)/);
+              if (startMatch) bgStartColor = startMatch[1].toUpperCase();
+              if (endMatch) bgEndColor = endMatch[1].toUpperCase();
+            }
+          }
+        }
+
+        // Apply defaults after legacy parsing
+        bgStartColor = bgStartColor ?? 'EEFF00';
+        bgEndColor = bgEndColor ?? 'a82DA';
+
+        // For solid type, use the capsule-render API
+        if (bgType === 'solid') {
+          const fontSize = (props.fontSize as number) ?? 30;
+          const fontColor = (props.fontColor as string) ?? 'ffffff';
+          const capsuleUrl = `https://capsule-render.vercel.app/api?type=${props.type}&color=${encodeURIComponent(bgSolidColor)}&height=${props.height}&section=${props.section}&text=${encodeURIComponent(String(props.text))}&fontSize=${fontSize}&animation=fadeIn&fontColor=${fontColor}`;
+          return (
+            <img
+              src={capsuleUrl}
+              alt="Header"
+              style={{ width: '100%', height: 'auto', display: 'block' }}
+            />
+          );
+        }
+
+        // For gradient/animated types, render custom capsule header
+        const startColor = `#${bgStartColor}`;
+        const endColor = `#${bgEndColor}`;
+
+        let gradientStyle: string;
+        switch (bgGradientDirection) {
+          case 'horizontal':
+            gradientStyle = `linear-gradient(to right, ${startColor}, ${endColor})`;
+            break;
+          case 'vertical':
+            gradientStyle = `linear-gradient(to bottom, ${startColor}, ${endColor})`;
+            break;
+          case 'diagonal':
+            gradientStyle = `linear-gradient(135deg, ${startColor}, ${endColor})`;
+            break;
+          case 'radial':
+            gradientStyle = `radial-gradient(circle, ${startColor}, ${endColor})`;
+            break;
+          case 'conic':
+            gradientStyle = `conic-gradient(from 0deg, ${startColor}, ${endColor})`;
+            break;
+          default:
+            gradientStyle = `linear-gradient(to right, ${startColor}, ${endColor})`;
+        }
+
+        // Apply animation for animated type
+        const fontSize = (props.fontSize as number) ?? 30;
+        const animationClass =
+          bgType === 'animated' && bgAnimation !== 'none'
+            ? bgAnimation === 'gradient'
+              ? 'animate-gradient-flow'
+              : bgAnimation === 'pulse'
+                ? 'animate-pulse'
+                : bgAnimation === 'wave'
+                  ? 'animate-wave'
+                  : bgAnimation === 'shimmer'
+                    ? 'animate-shimmer'
+                    : ''
+            : '';
+
         return (
-          <img
-            src={capsuleUrl}
-            alt="Header"
-            style={{ width: '100%', height: 'auto', display: 'block' }}
-          />
+          <div
+            className={`relative overflow-hidden ${animationClass}`}
+            style={{
+              width: '100%',
+              maxWidth: '896px', // GitHub README max width
+              height: `${props.height}px`,
+              background: gradientStyle,
+              borderRadius:
+                props.type === 'rect' ? '8px' : props.type === 'cylinder' ? '50px' : '25px',
+            }}
+          >
+            <div className="absolute inset-0 flex items-center justify-center">
+              <span className="text-white font-bold" style={{ fontSize: `${fontSize}px` }}>
+                {props.text as string}
+              </span>
+            </div>
+          </div>
         );
       }
 

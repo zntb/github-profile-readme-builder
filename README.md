@@ -60,6 +60,8 @@
 | 🎨 **Custom Theme Builder**   | Create fully custom themes with visual color picker for stats cards   |
 | 💾 **Save Custom Themes**     | Save custom themes to local storage or export to file for backup      |
 | 🎨 **Live Theme Preview**     | Real-time theme colors shown in canvas when selecting themes          |
+| 🌈 **Gradient Backgrounds**   | Add stunning gradient backgrounds to containers and headers           |
+| ✨ **Animated Backgrounds**   | Animate backgrounds with gradient flow, pulse, wave, and shimmer      |
 | 📦 **25+ Block Types**        | Headers, stats cards, badges, skill icons, graphs, and more           |
 | 🖼️ **Template Library**       | 11 ready-to-use templates for different developer profiles            |
 | 📱 **Fully Responsive**       | Optimized three-layout system for desktop, tablet, and mobile         |

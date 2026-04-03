@@ -101,6 +101,43 @@
   }
 }
 
+@keyframes gradient-flow {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+@keyframes wave {
+  0%,
+  100% {
+    background-position: 0% 0;
+  }
+  50% {
+    background-position: 100% 0;
+  }
+}
+
+.animate-gradient-flow {
+  animation: gradient-flow 3s ease infinite;
+  background-size: 200% 200%;
+}
+
+.animate-wave {
+  animation: wave 2s ease-in-out infinite;
+  background-size: 200% 100%;
+}
+
+.animate-shimmer {
+  animation: shimmer 2s linear infinite;
+  background-size: 200% 100%;
+}
+
 .dark {
   /* Dark Theme - Rich & Sophisticated */
   --background: oklch(0.08 0.02 250);

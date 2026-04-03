@@ -43,15 +43,61 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
 
   const renderPreview = () => {
     switch (type) {
-      case 'container':
+      case 'container': {
+        const bgType = (props.bgType as string) ?? 'solid';
+        const bgStartColor = (props.bgStartColor as string) ?? 'EEFF00';
+        const bgEndColor = (props.bgEndColor as string) ?? 'a82DA';
+        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
+        const bgSolidColor = (props.bgSolidColor as string) ?? 'transparent';
+
+        // Generate background style
+        let bgStyle: React.CSSProperties = {};
+        if (bgType === 'solid') {
+          bgStyle = {
+            backgroundColor: bgSolidColor === 'transparent' ? 'transparent' : `#${bgSolidColor}`,
+          };
+        } else {
+          const start = `#${bgStartColor}`;
+          const end = `#${bgEndColor}`;
+          switch (bgGradientDirection) {
+            case 'horizontal':
+              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
+              break;
+            case 'vertical':
+              bgStyle = { background: `linear-gradient(to bottom, ${start}, ${end})` };
+              break;
+            case 'diagonal':
+              bgStyle = { background: `linear-gradient(135deg, ${start}, ${end})` };
+              break;
+            case 'radial':
+              bgStyle = { background: `radial-gradient(circle, ${start}, ${end})` };
+              break;
+            case 'conic':
+              bgStyle = { background: `conic-gradient(from 0deg, ${start}, ${end})` };
+              break;
+            default:
+              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
+          }
+        }
+
         return (
-          <div className={cn('text-sm text-muted-foreground italic', className)}>
+          <div
+            className={cn(
+              'text-sm text-muted-foreground italic p-4 rounded-lg border-2 border-dashed',
+              className,
+            )}
+            style={bgType !== 'solid' ? bgStyle : {}}
+          >
             Container ({props.alignment as string}, {props.direction as string})
+            {bgType !== 'solid' && (
+              <span className="ml-2 text-xs">(gradient: {bgGradientDirection})</span>
+            )}
             {block.children && block.children.length > 0 && (
               <span className="ml-2 text-xs">({block.children.length} items)</span>
             )}
           </div>
         );
+      }
 
       case 'divider':
         return props.type === 'gif' && props.gifUrl ? (
@@ -70,12 +116,92 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
 
-      case 'capsule-header':
+      case 'capsule-header': {
+        // Support both new format (bgStartColor/bgEndColor) and legacy format (color)
+        const bgType = (props.bgType as string) ?? 'gradient';
+        let bgStartColor = props.bgStartColor as string;
+        let bgEndColor = props.bgEndColor as string;
+        const bgSolidColor = (props.bgSolidColor as string) ?? 'transparent';
+
+        // Parse legacy color format if new format is not present
+        if (!bgStartColor && !bgEndColor && props.color) {
+          const colorValue = props.color as string;
+          // Handle 'gradient' placeholder - use defaults
+          if (colorValue === 'gradient') {
+            // Use default colors
+          } else {
+            const colorParts = colorValue.split(',');
+            if (colorParts.length >= 2) {
+              const startMatch = colorParts[0].match(/\d+:([0-9a-fA-F]+)/);
+              const endMatch = colorParts[1].match(/\d+:([0-9a-fA-F]+)/);
+              if (startMatch) bgStartColor = startMatch[1].toUpperCase();
+              if (endMatch) bgEndColor = endMatch[1].toUpperCase();
+            }
+          }
+        }
+
+        // Apply defaults after legacy parsing
+        bgStartColor = bgStartColor ?? 'EEFF00';
+        bgEndColor = bgEndColor ?? 'a82DA';
+
+        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
+
+        // Generate background style
+        let bgStyle: React.CSSProperties = {};
+
+        if (bgType === 'solid') {
+          // Solid color background
+          const solidColor = bgSolidColor.startsWith('#') ? bgSolidColor : `#${bgSolidColor}`;
+          bgStyle = { background: solidColor };
+        } else {
+          // Gradient background
+          const start = `#${bgStartColor}`;
+          const end = `#${bgEndColor}`;
+          switch (bgGradientDirection) {
+            case 'horizontal':
+              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
+              break;
+            case 'vertical':
+              bgStyle = { background: `linear-gradient(to bottom, ${start}, ${end})` };
+              break;
+            case 'diagonal':
+              bgStyle = { background: `linear-gradient(135deg, ${start}, ${end})` };
+              break;
+            case 'radial':
+              bgStyle = { background: `radial-gradient(circle, ${start}, ${end})` };
+              break;
+            case 'conic':
+              bgStyle = { background: `conic-gradient(from 0deg, ${start}, ${end})` };
+              break;
+            default:
+              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
+          }
+        }
+
+        let fontSize = 30;
+        if (props.fontSize && typeof props.fontSize === 'number' && isFinite(props.fontSize)) {
+          fontSize = Math.max(12, Math.min(72, props.fontSize as number));
+        }
+
+        const fontColor = props.fontColor ? `#${props.fontColor}` : '#ffffff';
+
         return (
-          <div className="relative h-20 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 flex items-center justify-center">
-            <span className="font-bold text-foreground">{props.text as string}</span>
+          <div
+            className="relative rounded-lg flex items-center justify-center w-full overflow-hidden"
+            style={{
+              ...bgStyle,
+              height: `${props.height ?? 200}px`,
+            }}
+          >
+            <span
+              className="font-bold drop-shadow-md"
+              style={{ fontSize: `${fontSize}px`, color: fontColor }}
+            >
+              {props.text as string}
+            </span>
           </div>
         );
+      }
 
       case 'avatar':
         return (

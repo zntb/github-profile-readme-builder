@@ -19,7 +19,7 @@ This document provides a complete reference for all blocks available in the GitH
 
 ### Container
 
-A flex wrapper that organizes child blocks in a row or column layout.
+A flex wrapper that organizes child blocks in a row or column layout with optional gradient or animated backgrounds.
 
 **Type:** `container`
 
@@ -31,17 +31,25 @@ A flex wrapper that organizes child blocks in a row or column layout.
 {
   alignment: 'center',
   direction: 'column',
-  gap: 16
+  gap: 16,
+  bgType: 'solid',
+  bgSolidColor: 'transparent'
 }
 ```
 
 **Configuration Options:**
 
-| Property    | Type   | Options                         | Description                    |
-| ----------- | ------ | ------------------------------- | ------------------------------ |
-| `alignment` | string | `'left'`, `'center'`, `'right'` | Horizontal alignment           |
-| `direction` | string | `'row'`, `'column'`             | Flex direction                 |
-| `gap`       | number | `0-100`                         | Gap between children in pixels |
+| Property              | Type   | Options                                                           | Description                         |
+| --------------------- | ------ | ----------------------------------------------------------------- | ----------------------------------- |
+| `alignment`           | string | `'left'`, `'center'`, `'right'`                                   | Horizontal alignment                |
+| `direction`           | string | `'row'`, `'column'`                                               | Flex direction                      |
+| `gap`                 | number | `0-100`                                                           | Gap between children in pixels      |
+| `bgType`              | string | `'solid'`, `'gradient'`, `'animated'`                             | Background type                     |
+| `bgGradientDirection` | string | `'horizontal'`, `'vertical'`, `'diagonal'`, `'radial'`, `'conic'` | Gradient direction                  |
+| `bgAnimation`         | string | `'none'`, `'gradient'`, `'pulse'`, `'wave'`, `'shimmer'`          | Animation style (for animated type) |
+| `bgStartColor`        | string | hex color                                                         | Start color for gradient            |
+| `bgEndColor`          | string | hex color                                                         | End color for gradient              |
+| `bgSolidColor`        | string | hex color or `'transparent'`                                      | Solid background color              |
 
 **Markdown Output:**
 
@@ -126,7 +134,7 @@ Adds vertical spacing between blocks.
 
 ### Capsule Header
 
-An animated banner using capsule-render.
+An animated banner using capsule-render with customizable gradient or animated backgrounds.
 
 **Type:** `capsule-header`
 
@@ -138,21 +146,29 @@ An animated banner using capsule-render.
 {
   text: 'Hello World!',
   type: 'waving',
-  color: '0:EEFF00,100:a]82DA',
   height: 200,
-  section: 'header'
+  section: 'header',
+  bgType: 'gradient',
+  bgGradientDirection: 'horizontal',
+  bgAnimation: 'none',
+  bgStartColor: 'EEFF00',
+  bgEndColor: 'a82DA'
 }
 ```
 
 **Configuration Options:**
 
-| Property  | Type   | Options                            | Description                                     |
-| --------- | ------ | ---------------------------------- | ----------------------------------------------- |
-| `text`    | string | text                               | Banner text                                     |
-| `type`    | string | `'waving'`, `'typing'`, `'static'` | Animation type                                  |
-| `color`   | string | gradient                           | Gradient colors (format: `0:color1,100:color2`) |
-| `height`  | number | `100-300`                          | Banner height                                   |
-| `section` | string | `'header'`, `'footer'`             | Banner section                                  |
+| Property              | Type   | Options                                                           | Description              |
+| --------------------- | ------ | ----------------------------------------------------------------- | ------------------------ |
+| `text`                | string | text                                                              | Banner text              |
+| `type`                | string | `'waving'`, `'typing'`, `'static'`                                | Animation type           |
+| `height`              | number | `50-500`                                                          | Banner height            |
+| `section`             | string | `'header'`, `'footer'`                                            | Banner section           |
+| `bgType`              | string | `'solid'`, `'gradient'`, `'animated'`                             | Background type          |
+| `bgGradientDirection` | string | `'horizontal'`, `'vertical'`, `'diagonal'`, `'radial'`, `'conic'` | Gradient direction       |
+| `bgAnimation`         | string | `'none'`, `'gradient'`, `'pulse'`, `'wave'`, `'shimmer'`          | Animation style          |
+| `bgStartColor`        | string | hex color                                                         | Start color for gradient |
+| `bgEndColor`          | string | hex color                                                         | End color for gradient   |
 
 ---
 

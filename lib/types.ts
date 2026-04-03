@@ -49,6 +49,13 @@ export interface ContainerProps {
   alignment: 'left' | 'center' | 'right';
   direction: 'row' | 'column';
   gap: number;
+  // Background support
+  bgType?: 'solid' | 'gradient' | 'animated';
+  bgGradientDirection?: 'horizontal' | 'vertical' | 'diagonal' | 'radial' | 'conic';
+  bgAnimation?: 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer';
+  bgStartColor?: string;
+  bgEndColor?: string;
+  bgSolidColor?: string;
 }
 
 export interface DividerProps {
@@ -67,6 +74,13 @@ export interface CapsuleHeaderProps {
   color: string;
   height: number;
   section: string;
+  // Background support
+  bgType?: 'solid' | 'gradient' | 'animated';
+  bgGradientDirection?: 'horizontal' | 'vertical' | 'diagonal' | 'radial' | 'conic';
+  bgAnimation?: 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer';
+  bgStartColor?: string;
+  bgEndColor?: string;
+  bgSolidColor?: string;
 }
 
 export interface AvatarProps {
@@ -432,7 +446,13 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         type: 'container',
         label: 'Container',
         icon: 'Layout',
-        defaultProps: { alignment: 'center', direction: 'column', gap: 16 },
+        defaultProps: {
+          alignment: 'center',
+          direction: 'column',
+          gap: 16,
+          bgType: 'solid',
+          bgSolidColor: 'transparent',
+        },
       },
       {
         type: 'divider',
@@ -459,9 +479,14 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         defaultProps: {
           text: 'Hello World!',
           type: 'waving',
-          color: '0:EEFF00,100:a]82DA',
+          color: '0:EEFF00,100:a82DA',
           height: 200,
           section: 'header',
+          bgType: 'gradient',
+          bgGradientDirection: 'horizontal',
+          bgAnimation: 'none',
+          bgStartColor: 'EEFF00',
+          bgEndColor: 'a82DA',
         },
       },
       {

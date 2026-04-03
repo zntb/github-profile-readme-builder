@@ -63,9 +63,30 @@ export function BlockConfigFields({
           alignment={(props.alignment as string) ?? 'center'}
           direction={(props.direction as string) ?? 'column'}
           gap={(props.gap as number) ?? 16}
+          bgType={(props.bgType as 'solid' | 'gradient' | 'animated') ?? 'solid'}
+          bgGradientDirection={
+            (props.bgGradientDirection as
+              | 'horizontal'
+              | 'vertical'
+              | 'diagonal'
+              | 'radial'
+              | 'conic') ?? 'horizontal'
+          }
+          bgAnimation={
+            (props.bgAnimation as 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer') ?? 'none'
+          }
+          bgStartColor={(props.bgStartColor as string) ?? 'EEFF00'}
+          bgEndColor={(props.bgEndColor as string) ?? 'a82DA'}
+          bgSolidColor={(props.bgSolidColor as string) ?? 'transparent'}
           onAlignmentChange={(v) => update('alignment', v)}
           onDirectionChange={(v) => update('direction', v)}
           onGapChange={(v) => update('gap', v)}
+          onBgTypeChange={(v) => update('bgType', v)}
+          onBgGradientDirectionChange={(v) => update('bgGradientDirection', v)}
+          onBgAnimationChange={(v) => update('bgAnimation', v)}
+          onBgStartColorChange={(v) => update('bgStartColor', v)}
+          onBgEndColorChange={(v) => update('bgEndColor', v)}
+          onBgSolidColorChange={(v) => update('bgSolidColor', v)}
         />
       );
 
@@ -163,18 +184,61 @@ export function BlockConfigFields({
       );
 
     case 'capsule-header':
+      // Support both new format (bgStartColor/bgEndColor) and legacy format (color)
+      let bgStartColor = props.bgStartColor as string;
+      let bgEndColor = props.bgEndColor as string;
+
+      // Parse legacy color format if new format is not present
+      if (!bgStartColor && !bgEndColor && props.color) {
+        const colorValue = props.color as string;
+        const colorParts = colorValue.split(',');
+        if (colorParts.length >= 2) {
+          const startMatch = colorParts[0].match(/\d+:([0-9a-fA-F]+)/);
+          const endMatch = colorParts[1].match(/\d+:([0-9a-fA-F]+)/);
+          if (startMatch) bgStartColor = startMatch[1].toUpperCase();
+          if (endMatch) bgEndColor = endMatch[1].toUpperCase();
+        }
+      }
+
+      // Apply defaults after legacy parsing
+      bgStartColor = bgStartColor ?? 'EEFF00';
+      bgEndColor = bgEndColor ?? 'a82DA';
+
       return (
         <CapsuleHeaderConfig
           text={props.text as string}
           type={(props.type as string) ?? 'waving'}
           section={(props.section as string) ?? 'header'}
-          color={(props.color as string) ?? ''}
           height={getNumberProp('height', 200)}
+          fontSize={getNumberProp('fontSize', 30)}
+          bgType={(props.bgType as 'solid' | 'gradient' | 'animated') ?? 'gradient'}
+          bgGradientDirection={
+            (props.bgGradientDirection as
+              | 'horizontal'
+              | 'vertical'
+              | 'diagonal'
+              | 'radial'
+              | 'conic') ?? 'horizontal'
+          }
+          bgAnimation={
+            (props.bgAnimation as 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer') ?? 'none'
+          }
+          bgStartColor={bgStartColor}
+          bgEndColor={bgEndColor}
+          bgSolidColor={(props.bgSolidColor as string) ?? 'transparent'}
+          fontColor={(props.fontColor as string) ?? 'ffffff'}
           onTextChange={(v) => update('text', v)}
           onTypeChange={(v) => update('type', v)}
           onSectionChange={(v) => update('section', v)}
-          onColorChange={(v) => update('color', v)}
           onHeightChange={(v) => update('height', v)}
+          onFontSizeChange={(v) => update('fontSize', v)}
+          onFontColorChange={(v) => update('fontColor', v)}
+          onBgTypeChange={(v) => update('bgType', v)}
+          onBgGradientDirectionChange={(v) => update('bgGradientDirection', v)}
+          onBgAnimationChange={(v) => update('bgAnimation', v)}
+          onBgStartColorChange={(v) => update('bgStartColor', v)}
+          onBgEndColorChange={(v) => update('bgEndColor', v)}
+          onBgSolidColorChange={(v) => update('bgSolidColor', v)}
         />
       );
 
