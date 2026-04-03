@@ -48,7 +48,7 @@ import {
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { useBuilderStore } from '@/lib/store';
 import { templates } from '@/lib/templates';
-import type { BlockType } from '@/lib/types';
+import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
 
 // Block type to icon mapping
 const blockIcons: Record<BlockType, React.ComponentType<{ className?: string }>> = {
@@ -156,6 +156,17 @@ export function CommandPalette({ onOpenChange }: CommandPaletteProps) {
   const redo = useBuilderStore((s) => s.redo);
   const clearBlocks = useBuilderStore((s) => s.clearBlocks);
   const blocks = useBuilderStore((s) => s.blocks);
+  const blockDefaultProps = useMemo(() => {
+    return BLOCK_CATEGORIES.reduce(
+      (acc, category) => {
+        category.blocks.forEach((block) => {
+          acc[block.type] = block.defaultProps;
+        });
+        return acc;
+      },
+      {} as Record<BlockType, Record<string, unknown>>,
+    );
+  }, []);
 
   // Keyboard shortcut handler
   useEffect(() => {
@@ -193,7 +204,11 @@ export function CommandPalette({ onOpenChange }: CommandPaletteProps) {
           icon: Icon,
           category: 'blocks',
           action: () => {
-            addBlock({ id: `block-${Date.now()}`, type, props: {} });
+            addBlock({
+              id: `block-${Date.now()}`,
+              type,
+              props: { ...(blockDefaultProps[type] ?? {}) },
+            });
             toast.success(`Added ${type.replace(/-/g, ' ')} block`);
             setOpen(false);
           },
@@ -203,7 +218,7 @@ export function CommandPalette({ onOpenChange }: CommandPaletteProps) {
     });
 
     return commands;
-  }, [addBlock]);
+  }, [addBlock, blockDefaultProps]);
 
   // Generate template commands
   const templateCommands = useMemo<CommandAction[]>(() => {
