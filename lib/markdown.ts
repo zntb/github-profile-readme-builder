@@ -93,13 +93,37 @@ export function renderBlock(block: Block, origin: string = ''): string {
     case 'capsule-header': {
       const {
         text,
-        type: headerType,
-        height,
-        section,
-        color,
+        type: headerType = 'waving',
+        height = 200,
+        section = 'header',
+        fontSize = 50,
+        fontColor = 'ffffff',
+        bgType = 'gradient',
+        bgStartColor = 'EEFF00',
+        bgEndColor = 'A82DAA',
+        bgSolidColor = 'EEFF00',
+        bgGradientDirection = 'horizontal',
       } = props as Record<string, string | number>;
       // Use native capsule API instead of third-party API
-      const capsuleUrl = `/api/capsule?type=${headerType}&color=${encodeURIComponent(String(color))}&height=${height}&section=${section}&text=${encodeURIComponent(String(text))}&fontSize=50&animation=fadeIn&fontColor=ffffff`;
+      // Determine color based on bgType - use gradient colors if not solid
+      const bgColor = bgType === 'solid' ? bgSolidColor || 'EEFF00' : bgStartColor || 'EEFF00';
+      const colorEnd = bgType !== 'solid' ? bgEndColor || 'A82DAA' : '';
+      const capsuleUrl = buildExternalUrl(
+        'capsule',
+        {
+          type: headerType,
+          color: bgColor,
+          colorEnd,
+          height,
+          section,
+          text,
+          fontSize,
+          fontColor,
+          animation: 'fadeIn',
+          gradientDirection: bgGradientDirection,
+        },
+        origin,
+      );
       return `<div align="center">\n  <img src="${capsuleUrl}" />\n</div>`;
     }
 
