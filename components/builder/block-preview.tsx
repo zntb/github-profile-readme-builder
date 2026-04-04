@@ -668,12 +668,107 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
 
-      case 'footer-banner':
+      case 'footer-banner': {
+        // Determine background settings
+        const bgType = (props.bgType as string) ?? 'gradient';
+        const bgAnimation = (props.bgAnimation as string) ?? 'none';
+        let bgStartColor = props.bgStartColor ? String(props.bgStartColor) : undefined;
+        let bgEndColor = props.bgEndColor ? String(props.bgEndColor) : undefined;
+        const bgSolidColor = (props.bgSolidColor as string) ?? '3B82F6';
+
+        // Parse legacy waveColor format ONLY if modern properties are NOT present
+        if ((!bgStartColor || !bgEndColor) && props.waveColor) {
+          const colorValue = props.waveColor as string;
+          const colorParts = colorValue.split(':');
+          if (colorParts.length >= 2) {
+            bgStartColor = colorParts[0]?.replace(/.*:/, '') || '3B82F6';
+            bgEndColor = colorParts[1] || '8B5CF6';
+          } else if (colorParts.length === 1) {
+            bgStartColor = colorParts[0] || '3B82F6';
+            bgEndColor = '8B5CF6';
+          }
+        }
+
+        bgStartColor = bgStartColor ?? '3B82F6';
+        bgEndColor = bgEndColor ?? '8B5CF6';
+
+        const type = (props.type as string) ?? 'waving';
+        const height = Number(props.height) || 80;
+
+        // Apply animation class
+        const animationClass =
+          bgAnimation !== 'none'
+            ? bgAnimation === 'gradient'
+              ? 'animate-gradient-flow'
+              : bgAnimation === 'pulse'
+                ? 'animate-pulse'
+                : bgAnimation === 'waving'
+                  ? 'animate-wave'
+                  : bgAnimation === 'shimmer'
+                    ? 'animate-shimmer'
+                    : ''
+            : '';
+
+        // Add required background size for animations
+        const animationBgSize =
+          animationClass !== ''
+            ? {
+                backgroundSize: bgAnimation === 'gradient' ? '200% 200%' : '200% 100%',
+              }
+            : {};
+
+        // Build gradient style
+        const gradientStyle =
+          bgType === 'solid'
+            ? { backgroundColor: `#${bgSolidColor}` }
+            : {
+                backgroundImage: `linear-gradient(to right, #${bgStartColor}, #${bgEndColor})`,
+                ...animationBgSize,
+              };
+
+        // Build border radius - use explicit undefined check to respect explicit 0 values
+        // Footer banner always uses rounded bottom corners (matching Capsule Header header styling)
+        const heightVal = Number(props.height) || 80;
+        const maxR = Math.floor(heightVal / 2);
+        const borderRadiusTL =
+          props.borderRadiusTL !== undefined ? Math.min(Number(props.borderRadiusTL), maxR) : 0;
+        const borderRadiusTR =
+          props.borderRadiusTR !== undefined ? Math.min(Number(props.borderRadiusTR), maxR) : 0;
+        const borderRadiusBR =
+          props.borderRadiusBR !== undefined ? Math.min(Number(props.borderRadiusBR), maxR) : 24;
+        const borderRadiusBL =
+          props.borderRadiusBL !== undefined ? Math.min(Number(props.borderRadiusBL), maxR) : 24;
+
+        const hasCustomRadius =
+          props.borderRadiusTL !== undefined ||
+          props.borderRadiusTR !== undefined ||
+          props.borderRadiusBR !== undefined ||
+          props.borderRadiusBL !== undefined;
+        const borderRadiusValue = hasCustomRadius
+          ? `${borderRadiusTL}px ${borderRadiusTR}px ${borderRadiusBR}px ${borderRadiusBL}px`
+          : type === 'rect'
+            ? '8px'
+            : type === 'cylinder'
+              ? '9999px'
+              : type === 'soft'
+                ? '36px'
+                : type === 'slice'
+                  ? '48px 10px 48px 10px'
+                  : '24px 24px 0 0';
+
         return (
-          <div className="relative h-16 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 flex items-center justify-center">
-            <span className="font-medium text-foreground">{props.text as string}</span>
+          <div
+            className={`relative flex items-center justify-center ${animationClass}`}
+            style={{
+              ...gradientStyle,
+              borderRadius: borderRadiusValue,
+              height: `${height}px`,
+            }}
+          >
+            <span className="font-medium text-white">{props.text as string}</span>
           </div>
         );
+      }
 
       case 'support-link':
         return (

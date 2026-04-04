@@ -567,19 +567,129 @@ export function BlockConfigFields({
         />
       );
 
-    case 'footer-banner':
+    case 'footer-banner': {
+      // Support both new format (bgStartColor/bgEndColor) and legacy format (waveColor)
+      let bgStartColor = props.bgStartColor as string;
+      let bgEndColor = props.bgEndColor as string;
+
+      if (props.waveColor) {
+        const colorValue = props.waveColor as string;
+        const colorParts = colorValue.split(':');
+        if (colorParts.length >= 2) {
+          bgStartColor = colorParts[0]?.replace(/.*:/, '') || '3B82F6';
+          bgEndColor = colorParts[1] || '8B5CF6';
+        } else if (colorParts.length === 1) {
+          bgStartColor = colorParts[0] || '3B82F6';
+          bgEndColor = '8B5CF6';
+        }
+      }
+
+      bgStartColor = bgStartColor ?? '3B82F6';
+      bgEndColor = bgEndColor ?? '8B5CF6';
+
+      const currentType = (props.type as string) ?? 'waving';
+      const currentSection = (props.section as string) ?? 'footer';
+      const currentHeight = getNumberProp('height', 80);
+      const maxR = Math.floor(currentHeight / 2);
+
       return (
         <FooterBannerConfig
           text={(props.text as string) ?? 'Thanks for visiting!'}
-          waveColor={(props.waveColor as string) ?? ''}
-          fontColor={(props.fontColor as string) ?? ''}
-          height={Number(props.height) || 80}
+          type={currentType}
+          section={currentSection}
+          height={currentHeight}
+          fontSize={getNumberProp('fontSize', 24)}
+          bgType={(props.bgType as 'solid' | 'gradient' | 'animated') ?? 'gradient'}
+          bgGradientDirection={
+            (props.bgGradientDirection as
+              | 'horizontal'
+              | 'vertical'
+              | 'diagonal'
+              | 'radial'
+              | 'conic') ?? 'horizontal'
+          }
+          bgAnimation={
+            (props.bgAnimation as 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer') ?? 'none'
+          }
+          bgStartColor={bgStartColor}
+          bgEndColor={bgEndColor}
+          bgSolidColor={(props.bgSolidColor as string) ?? '3B82F6'}
+          fontColor={(props.fontColor as string) ?? 'ffffff'}
+          borderRadiusTL={
+            props.borderRadiusTL !== undefined
+              ? Math.min(Number(props.borderRadiusTL), maxR)
+              : undefined
+          }
+          borderRadiusTR={
+            props.borderRadiusTR !== undefined
+              ? Math.min(Number(props.borderRadiusTR), maxR)
+              : undefined
+          }
+          borderRadiusBR={
+            props.borderRadiusBR !== undefined
+              ? Math.min(Number(props.borderRadiusBR), maxR)
+              : undefined
+          }
+          borderRadiusBL={
+            props.borderRadiusBL !== undefined
+              ? Math.min(Number(props.borderRadiusBL), maxR)
+              : undefined
+          }
           onTextChange={(v) => update('text', v)}
-          onWaveColorChange={(v) => update('waveColor', v)}
+          onTypeChange={(v) => {
+            update('type', v);
+            update('waveColor', undefined);
+          }}
+          onSectionChange={(v) => update('section', v)}
+          onHeightChange={(v) => {
+            update('height', v);
+            update('waveColor', undefined);
+          }}
+          onFontSizeChange={(v) => update('fontSize', v)}
           onFontColorChange={(v) => update('fontColor', v)}
-          onHeightChange={(v) => update('height', v)}
+          onBgTypeChange={(v) => {
+            update('bgType', v);
+            update('waveColor', undefined);
+          }}
+          onBgGradientDirectionChange={(v) => {
+            update('bgGradientDirection', v);
+            update('waveColor', undefined);
+          }}
+          onBgAnimationChange={(v) => {
+            update('bgAnimation', v);
+            update('waveColor', undefined);
+          }}
+          onBgStartColorChange={(v) => {
+            update('bgStartColor', v);
+            update('waveColor', undefined);
+          }}
+          onBgEndColorChange={(v) => {
+            update('bgEndColor', v);
+            update('waveColor', undefined);
+          }}
+          onBgSolidColorChange={(v) => {
+            update('bgSolidColor', v);
+            update('waveColor', undefined);
+          }}
+          onBorderRadiusTLChange={(v) => {
+            update('borderRadiusTL', v);
+            update('waveColor', undefined);
+          }}
+          onBorderRadiusTRChange={(v) => {
+            update('borderRadiusTR', v);
+            update('waveColor', undefined);
+          }}
+          onBorderRadiusBRChange={(v) => {
+            update('borderRadiusBR', v);
+            update('waveColor', undefined);
+          }}
+          onBorderRadiusBLChange={(v) => {
+            update('borderRadiusBL', v);
+            update('waveColor', undefined);
+          }}
         />
       );
+    }
 
     case 'support-link':
       return (

@@ -1125,27 +1125,186 @@ function PreviewBlock({
       }
 
       case 'footer-banner': {
-        // Use native rendering instead of external API
-        const waveColor = String(props.waveColor || 'EEFF00').replace('#', '');
-        const normalizedWaveColor = `#${waveColor}`;
-        const fontColor = `#${String(props.fontColor || 'ffffff').replace('#', '')}`;
-        const text = props.text as string;
+        // Determine the color to use based on bgType
+        const bgType = (props.bgType as string) ?? 'gradient';
+        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
+        const bgAnimation = (props.bgAnimation as string) ?? 'none';
+        let bgStartColor = props.bgStartColor ? String(props.bgStartColor) : undefined;
+        let bgEndColor = props.bgEndColor ? String(props.bgEndColor) : undefined;
+        const bgSolidColor = (props.bgSolidColor as string) ?? '3B82F6';
+
+        // Parse legacy waveColor format ONLY if modern properties are NOT present
+        if ((!bgStartColor || !bgEndColor) && props.waveColor) {
+          const colorValue = props.waveColor as string;
+          const colorParts = colorValue.split(':');
+          if (colorParts.length >= 2) {
+            bgStartColor = colorParts[0]?.replace(/.*:/, '') || '3B82F6';
+            bgEndColor = colorParts[1] || '8B5CF6';
+          } else if (colorParts.length === 1) {
+            bgStartColor = colorParts[0] || '3B82F6';
+            bgEndColor = '8B5CF6';
+          }
+        }
+
+        // Always apply defaults - this ensures new blocks get proper colors immediately
+        bgStartColor = bgStartColor ?? '3B82F6';
+        bgEndColor = bgEndColor ?? '8B5CF6';
+
+        const normalizeHex = (value: string, fallback: string) => {
+          const sanitized = value?.replace('#', '').trim();
+          return sanitized || fallback;
+        };
+
+        // For solid type, render natively (no external API needed)
+        if (bgType === 'solid') {
+          const fontSize = (props.fontSize as number) ?? 24;
+          const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
+          const solidColor = normalizeHex(bgSolidColor, '3B82F6');
+          const normalizedSolidColor = solidColor.startsWith('#') ? solidColor : `#${solidColor}`;
+
+          const type = (props.type as string) ?? 'waving';
+
+          // Compute border radius based on type and section - with proper operator precedence
+          // Footer banner always uses rounded bottom corners (matching Capsule Header header styling)
+          let borderRadiusValue: string;
+          if (type === 'rect') {
+            borderRadiusValue = '8px';
+          } else if (type === 'cylinder') {
+            borderRadiusValue = '9999px';
+          } else if (type === 'soft') {
+            borderRadiusValue = '36px';
+          } else if (type === 'slice') {
+            borderRadiusValue = '48px 10px 48px 10px';
+          } else {
+            // Default: waving or other types - use rounded bottom corners for footer banner
+            borderRadiusValue = '24px 24px 0 0';
+          }
+
+          return (
+            <div
+              className="relative overflow-hidden"
+              style={{
+                width: '100%',
+                maxWidth: '896px',
+                height: `${props.height}px`,
+                backgroundColor: normalizedSolidColor,
+                borderRadius: borderRadiusValue,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
+                {props.text as string}
+              </span>
+            </div>
+          );
+        }
+
+        // For gradient/animated types
+        const startColor = bgStartColor?.startsWith('#') ? bgStartColor : `#${bgStartColor}`;
+        const endColor = bgEndColor?.startsWith('#') ? bgEndColor : `#${bgEndColor}`;
+
+        let gradientBgImage: string;
+        switch (bgGradientDirection) {
+          case 'horizontal':
+            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
+            break;
+          case 'vertical':
+            gradientBgImage = `linear-gradient(to bottom, ${startColor}, ${endColor})`;
+            break;
+          case 'diagonal':
+            gradientBgImage = `linear-gradient(135deg, ${startColor}, ${endColor})`;
+            break;
+          case 'radial':
+            gradientBgImage = `radial-gradient(circle, ${startColor}, ${endColor})`;
+            break;
+          case 'conic':
+            gradientBgImage = `conic-gradient(from 0deg, ${startColor}, ${endColor})`;
+            break;
+          default:
+            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
+        }
+
+        const section = (props.section as string) ?? 'footer';
+        const type = (props.type as string) ?? 'waving';
+        const fontSize = (props.fontSize as number) ?? 24;
+        const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
+
+        // Apply animation for animated type
+        const animationClass =
+          bgAnimation !== 'none'
+            ? bgAnimation === 'gradient'
+              ? 'animate-gradient-flow'
+              : bgAnimation === 'pulse'
+                ? 'animate-pulse'
+                : bgAnimation === 'waving'
+                  ? 'animate-wave'
+                  : bgAnimation === 'shimmer'
+                    ? 'animate-shimmer'
+                    : ''
+            : '';
+
+        // Add required background size for animations
+        const animationBgSize =
+          animationClass !== ''
+            ? {
+                backgroundSize: bgAnimation === 'gradient' ? '200% 200%' : '200% 100%',
+              }
+            : {};
+
+        // Get custom border radius from props if defined - use explicit check for undefined
+        // Note: Add parentheses around ternary expressions to fix operator precedence issues
+        // Footer banner always uses rounded bottom corners (matching Capsule Header header styling)
+        const height = Number(props.height) || 80;
+        const maxR = Math.floor(height / 2);
+        const cornerTL = props.borderRadiusTL;
+        const cornerTR = props.borderRadiusTR;
+        const cornerBR = props.borderRadiusBR;
+        const cornerBL = props.borderRadiusBL;
+        const borderRadiusTL = cornerTL !== undefined ? Math.min(Number(cornerTL), maxR) : 0;
+        const borderRadiusTR = cornerTR !== undefined ? Math.min(Number(cornerTR), maxR) : 0;
+        const borderRadiusBR = cornerBR !== undefined ? Math.min(Number(cornerBR), maxR) : 24;
+        const borderRadiusBL = cornerBL !== undefined ? Math.min(Number(cornerBL), maxR) : 24;
+
+        const defaultRadiusValue =
+          type === 'rect'
+            ? '8px'
+            : type === 'cylinder'
+              ? '9999px'
+              : type === 'soft'
+                ? '36px'
+                : type === 'slice'
+                  ? '48px 10px 48px 10px'
+                  : section === 'footer'
+                    ? '24px 24px 0 0'
+                    : '0 0 24px 24px';
+
+        const borderRadius =
+          props.borderRadiusTL !== undefined ||
+          props.borderRadiusTR !== undefined ||
+          props.borderRadiusBR !== undefined ||
+          props.borderRadiusBL !== undefined
+            ? `${borderRadiusTL}px ${borderRadiusTR}px ${borderRadiusBR}px ${borderRadiusBL}px`
+            : defaultRadiusValue;
 
         return (
           <div
+            className={`relative overflow-hidden ${animationClass}`}
             style={{
               width: '100%',
               maxWidth: '896px',
-              height: `${props.height}px`,
-              backgroundColor: normalizedWaveColor,
-              borderRadius: '24px 24px 0 0',
+              height: `${height}px`,
+              backgroundImage: gradientBgImage,
+              borderRadius,
+              ...animationBgSize,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <span className="font-bold" style={{ fontSize: '24px', color: fontColor }}>
-              {text}
+            <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
+              {props.text as string}
             </span>
           </div>
         );
