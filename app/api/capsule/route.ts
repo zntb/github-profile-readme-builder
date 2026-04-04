@@ -29,10 +29,10 @@ export async function GET(request: NextRequest) {
 
   // Sanitize text to prevent XSS attacks
   text = text
-    .replace(/&/g, '&')
-    .replace(/</g, '<')
-    .replace(/>/g, '>')
-    .replace(/"/g, '"')
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
     .replace(/'/g, '&#x27;');
 
   // Parse color - remove # if present and validate hex format
@@ -110,15 +110,21 @@ export async function GET(request: NextRequest) {
     }
   }
 
-  // Create SVG with the requested parameters
+  // Create SVG with the requested parameters.
+  //
+  // IMPORTANT: The @import url() for Google Fonts is intentionally omitted.
+  // GitHub proxies all README images through camo.githubusercontent.com and
+  // enforces a strict Content Security Policy that blocks external resource
+  // loading (fonts, stylesheets, scripts) inside SVGs rendered as <img>.
+  // Including @import url('https://fonts.googleapis.com/...') causes GitHub
+  // to refuse to display the image entirely. System fonts are used instead.
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="896" height="${height}" viewBox="0 0 896 ${height}">
   <defs>
     <style>
-      @import url('https://fonts.googleapis.com/css2?family=Inter:wght@700&display=swap');
       ${keyframes}
       .text {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
         font-size: ${fontSize}px;
         font-weight: 700;
         fill: #${txtColor};
