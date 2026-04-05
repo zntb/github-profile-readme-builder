@@ -62,61 +62,6 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
 
   const renderPreview = () => {
     switch (type) {
-      case 'container': {
-        const bgType = (props.bgType as string) ?? 'solid';
-        const bgStartColor = (props.bgStartColor as string) ?? 'EEFF00';
-        const bgEndColor = (props.bgEndColor as string) ?? 'A82DAA';
-        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
-        const bgSolidColor = (props.bgSolidColor as string) ?? 'transparent';
-
-        let bgStyle: React.CSSProperties = {};
-        if (bgType === 'solid') {
-          bgStyle = {
-            backgroundColor: bgSolidColor === 'transparent' ? 'transparent' : `#${bgSolidColor}`,
-          };
-        } else {
-          const start = `#${bgStartColor}`;
-          const end = `#${bgEndColor}`;
-          switch (bgGradientDirection) {
-            case 'horizontal':
-              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
-              break;
-            case 'vertical':
-              bgStyle = { background: `linear-gradient(to bottom, ${start}, ${end})` };
-              break;
-            case 'diagonal':
-              bgStyle = { background: `linear-gradient(135deg, ${start}, ${end})` };
-              break;
-            case 'radial':
-              bgStyle = { background: `radial-gradient(circle, ${start}, ${end})` };
-              break;
-            case 'conic':
-              bgStyle = { background: `conic-gradient(from 0deg, ${start}, ${end})` };
-              break;
-            default:
-              bgStyle = { background: `linear-gradient(to right, ${start}, ${end})` };
-          }
-        }
-
-        return (
-          <div
-            className={cn(
-              'text-sm text-muted-foreground italic p-4 rounded-lg border-2 border-dashed',
-              className,
-            )}
-            style={bgType !== 'solid' ? bgStyle : {}}
-          >
-            Container ({props.alignment as string}, {props.direction as string})
-            {bgType !== 'solid' && (
-              <span className="ml-2 text-xs">(gradient: {bgGradientDirection})</span>
-            )}
-            {block.children && block.children.length > 0 && (
-              <span className="ml-2 text-xs">({block.children.length} items)</span>
-            )}
-          </div>
-        );
-      }
-
       case 'divider':
         return props.type === 'gif' && props.gifUrl ? (
           <img src={props.gifUrl as string} alt="Divider" className="h-4 w-full object-cover" />

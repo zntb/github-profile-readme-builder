@@ -5,7 +5,6 @@ import { BlockType } from '@/lib/types';
 // Block descriptions for tooltips
 const BLOCK_DESCRIPTIONS: Record<BlockType, string> = {
   // Layout
-  container: 'Group blocks together with flexible alignment and direction',
   divider: 'Visual separator between sections with customizable line or GIF',
   spacer: 'Add vertical spacing between blocks',
   // Hero
@@ -44,14 +43,6 @@ const BLOCK_DESCRIPTIONS: Record<BlockType, string> = {
 export function BlockTooltipPreview({ type }: { type: BlockType }) {
   const renderPreview = () => {
     switch (type) {
-      case 'container':
-        return (
-          <div className="flex gap-2 p-2 border border-dashed border-border rounded">
-            <div className="w-8 h-8 bg-primary/20 rounded" />
-            <div className="w-8 h-8 bg-primary/20 rounded" />
-          </div>
-        );
-
       case 'divider':
         return (
           <div className="w-full h-3 flex items-center justify-center">

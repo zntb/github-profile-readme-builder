@@ -235,20 +235,6 @@ export function SpacerSkeleton() {
 }
 
 /**
- * Skeleton loader for container
- */
-export function ContainerSkeleton() {
-  return (
-    <div className="w-full p-4 border border-dashed border-muted-foreground/20 rounded-lg">
-      <div className="flex gap-4">
-        <BlockSkeleton className="flex-1 h-16" />
-        <BlockSkeleton className="flex-1 h-16" />
-      </div>
-    </div>
-  );
-}
-
-/**
  * Skeleton loader for collapsible
  */
 export function CollapsibleSkeleton() {
@@ -350,8 +336,6 @@ export function BlockTypeSkeleton({ type }: { type: string }) {
       return <DividerSkeleton />;
     case 'spacer':
       return <SpacerSkeleton />;
-    case 'container':
-      return <ContainerSkeleton />;
     case 'collapsible':
       return <CollapsibleSkeleton />;
     case 'footer-banner':

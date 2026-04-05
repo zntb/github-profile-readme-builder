@@ -71,15 +71,6 @@ export function renderBlock(block: Block, origin: string = ''): string {
   const { type, props, children } = block;
 
   switch (type) {
-    case 'container': {
-      const childrenMd = children?.map((child) => renderBlock(child, origin)).join('\n') || '';
-      const alignment = props.alignment as string;
-      if (alignment === 'center') {
-        return `<div align="center">\n\n${childrenMd}\n\n</div>`;
-      }
-      return childrenMd;
-    }
-
     case 'stats-row': {
       const direction = (props.direction as string) || 'row';
       const gap = Number(props.gap ?? 12);

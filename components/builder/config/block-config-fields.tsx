@@ -9,7 +9,6 @@ import { AvatarConfig } from './blocks/avatar-config';
 import { CapsuleHeaderConfig } from './blocks/capsule-header-config';
 import { CodeBlockConfig } from './blocks/code-block-config';
 import { CollapsibleConfig } from './blocks/collapsible-config';
-import { ContainerConfig } from './blocks/container-config';
 import { CustomBadgeConfig } from './blocks/custom-badge-config';
 import { DividerConfig } from './blocks/divider-config';
 import { FooterBannerConfig } from './blocks/footer-banner-config';
@@ -58,39 +57,6 @@ export function BlockConfigFields({
   const statsChildTypes: StatsChildType[] = ['stats-card', 'top-languages', 'streak-stats'];
 
   switch (type) {
-    case 'container':
-      return (
-        <ContainerConfig
-          alignment={(props.alignment as string) ?? 'center'}
-          direction={(props.direction as string) ?? 'column'}
-          gap={(props.gap as number) ?? 16}
-          bgType={(props.bgType as 'solid' | 'gradient' | 'animated') ?? 'solid'}
-          bgGradientDirection={
-            (props.bgGradientDirection as
-              | 'horizontal'
-              | 'vertical'
-              | 'diagonal'
-              | 'radial'
-              | 'conic') ?? 'horizontal'
-          }
-          bgAnimation={
-            (props.bgAnimation as 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer') ?? 'none'
-          }
-          bgStartColor={(props.bgStartColor as string) ?? 'EEFF00'}
-          bgEndColor={(props.bgEndColor as string) ?? 'A82DAA'}
-          bgSolidColor={(props.bgSolidColor as string) ?? 'transparent'}
-          onAlignmentChange={(v) => update('alignment', v)}
-          onDirectionChange={(v) => update('direction', v)}
-          onGapChange={(v) => update('gap', v)}
-          onBgTypeChange={(v) => update('bgType', v)}
-          onBgGradientDirectionChange={(v) => update('bgGradientDirection', v)}
-          onBgAnimationChange={(v) => update('bgAnimation', v)}
-          onBgStartColorChange={(v) => update('bgStartColor', v)}
-          onBgEndColorChange={(v) => update('bgEndColor', v)}
-          onBgSolidColorChange={(v) => update('bgSolidColor', v)}
-        />
-      );
-
     case 'stats-row': {
       const statsChildren =
         block.children?.filter((child): child is Block & { type: StatsChildType } =>

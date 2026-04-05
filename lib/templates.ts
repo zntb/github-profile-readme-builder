@@ -525,29 +525,22 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'oss-2',
-        type: 'container',
-        props: { alignment: 'center', direction: 'column', gap: 8 },
-        children: [
-          {
-            id: 'oss-2a',
-            type: 'avatar',
-            props: {
-              imageUrl: 'https://github.com/github.png',
-              size: 120,
-              borderRadius: 50,
-            },
-          },
-          {
-            id: 'oss-2b',
-            type: 'greeting',
-            props: {
-              text: 'Hey, I build things for the community',
-              emoji: '🛠️',
-              alignment: 'center',
-            },
-          },
-        ],
+        id: 'oss-2a',
+        type: 'avatar',
+        props: {
+          imageUrl: 'https://github.com/github.png',
+          size: 120,
+          borderRadius: 50,
+        },
+      },
+      {
+        id: 'oss-2b',
+        type: 'greeting',
+        props: {
+          text: 'Hey, I build things for the community',
+          emoji: '🛠️',
+          alignment: 'center',
+        },
       },
       {
         id: 'oss-3',
@@ -1017,29 +1010,22 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'ds-2',
-        type: 'container',
-        props: { alignment: 'center', direction: 'column', gap: 12 },
-        children: [
-          {
-            id: 'ds-2a',
-            type: 'avatar',
-            props: {
-              imageUrl: 'https://github.com/github.png',
-              size: 130,
-              borderRadius: 15,
-            },
-          },
-          {
-            id: 'ds-2b',
-            type: 'greeting',
-            props: {
-              text: 'Turning data into decisions',
-              emoji: '🧠',
-              alignment: 'center',
-            },
-          },
-        ],
+        id: 'ds-2a',
+        type: 'avatar',
+        props: {
+          imageUrl: 'https://github.com/github.png',
+          size: 130,
+          borderRadius: 15,
+        },
+      },
+      {
+        id: 'ds-2b',
+        type: 'greeting',
+        props: {
+          text: 'Turning data into decisions',
+          emoji: '🧠',
+          alignment: 'center',
+        },
       },
       {
         id: 'ds-3',
@@ -1541,29 +1527,22 @@ kubectl apply -f https://raw.githubusercontent.com/yourusername/platform/main/bo
         },
       },
       {
-        id: 'stu-2',
-        type: 'container',
-        props: { alignment: 'center', direction: 'column', gap: 8 },
-        children: [
-          {
-            id: 'stu-2a',
-            type: 'avatar',
-            props: {
-              imageUrl: 'https://github.com/github.png',
-              size: 120,
-              borderRadius: 50,
-            },
-          },
-          {
-            id: 'stu-2b',
-            type: 'greeting',
-            props: {
-              text: "Hi! I'm [Your Name], a CS Student",
-              emoji: '🎓',
-              alignment: 'center',
-            },
-          },
-        ],
+        id: 'stu-2a',
+        type: 'avatar',
+        props: {
+          imageUrl: 'https://github.com/github.png',
+          size: 120,
+          borderRadius: 50,
+        },
+      },
+      {
+        id: 'stu-2b',
+        type: 'greeting',
+        props: {
+          text: "Hi! I'm [Your Name], a CS Student",
+          emoji: '🎓',
+          alignment: 'center',
+        },
       },
       {
         id: 'stu-3',
@@ -1834,42 +1813,35 @@ $ cat /etc/skills
         },
       },
       {
-        id: 'sec-4',
-        type: 'container',
-        props: { alignment: 'center', direction: 'row', gap: 8 },
-        children: [
-          {
-            id: 'sec-4a',
-            type: 'custom-badge',
-            props: {
-              label: 'HackTheBox',
-              message: 'Pro Hacker',
-              color: '9FEF00',
-              style: 'for-the-badge',
-              logo: 'hackthebox',
-            },
-          },
-          {
-            id: 'sec-4b',
-            type: 'custom-badge',
-            props: {
-              label: 'TryHackMe',
-              message: 'Top 1%',
-              color: '212C42',
-              style: 'for-the-badge',
-            },
-          },
-          {
-            id: 'sec-4c',
-            type: 'custom-badge',
-            props: {
-              label: 'OSCP',
-              message: 'Certified',
-              color: 'EF4444',
-              style: 'for-the-badge',
-            },
-          },
-        ],
+        id: 'sec-4a',
+        type: 'custom-badge',
+        props: {
+          label: 'HackTheBox',
+          message: 'Pro Hacker',
+          color: '9FEF00',
+          style: 'for-the-badge',
+          logo: 'hackthebox',
+        },
+      },
+      {
+        id: 'sec-4b',
+        type: 'custom-badge',
+        props: {
+          label: 'TryHackMe',
+          message: 'Top 1%',
+          color: '212C42',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'sec-4c',
+        type: 'custom-badge',
+        props: {
+          label: 'OSCP',
+          message: 'Certified',
+          color: 'EF4444',
+          style: 'for-the-badge',
+        },
       },
       {
         id: 'sec-5',
@@ -2105,31 +2077,24 @@ $ cat /etc/skills
         },
       },
       {
-        id: 'gd-6',
-        type: 'container',
-        props: { alignment: 'center', direction: 'row', gap: 8 },
-        children: [
-          {
-            id: 'gd-6a',
-            type: 'custom-badge',
-            props: {
-              label: 'itch.io',
-              message: 'Games Published',
-              color: 'FA5C5C',
-              style: 'for-the-badge',
-            },
-          },
-          {
-            id: 'gd-6b',
-            type: 'custom-badge',
-            props: {
-              label: 'Game Jams',
-              message: 'Participated',
-              color: 'FFB86C',
-              style: 'for-the-badge',
-            },
-          },
-        ],
+        id: 'gd-6a',
+        type: 'custom-badge',
+        props: {
+          label: 'itch.io',
+          message: 'Games Published',
+          color: 'FA5C5C',
+          style: 'for-the-badge',
+        },
+      },
+      {
+        id: 'gd-6b',
+        type: 'custom-badge',
+        props: {
+          label: 'Game Jams',
+          message: 'Participated',
+          color: 'FFB86C',
+          style: 'for-the-badge',
+        },
       },
       {
         id: 'gd-7',

@@ -2,7 +2,6 @@
 
 export type BlockType =
   // Layout
-  | 'container'
   | 'divider'
   | 'spacer'
   // Hero
@@ -42,20 +41,6 @@ export interface Block {
   props: Record<string, unknown>;
   children?: Block[];
   locked?: boolean;
-}
-
-// Block Props Types
-export interface ContainerProps {
-  alignment: 'left' | 'center' | 'right';
-  direction: 'row' | 'column';
-  gap: number;
-  // Background support
-  bgType?: 'solid' | 'gradient' | 'animated';
-  bgGradientDirection?: 'horizontal' | 'vertical' | 'diagonal' | 'radial' | 'conic';
-  bgAnimation?: 'none' | 'gradient' | 'pulse' | 'wave' | 'shimmer';
-  bgStartColor?: string;
-  bgEndColor?: string;
-  bgSolidColor?: string;
 }
 
 export interface DividerProps {
@@ -444,18 +429,6 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
     name: 'Layout',
     description: 'Structure your README',
     blocks: [
-      {
-        type: 'container',
-        label: 'Container',
-        icon: 'Layout',
-        defaultProps: {
-          alignment: 'center',
-          direction: 'column',
-          gap: 16,
-          bgType: 'solid',
-          bgSolidColor: 'transparent',
-        },
-      },
       {
         type: 'divider',
         label: 'Divider',

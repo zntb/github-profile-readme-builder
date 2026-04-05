@@ -17,7 +17,6 @@ const DEFAULT_WEIGHTS: QualityWeights = {
 
 // Block categories for variety scoring
 const BLOCK_CATEGORIES_MAP: Record<BlockType, string> = {
-  container: 'layout',
   divider: 'layout',
   spacer: 'layout',
   'capsule-header': 'hero',
@@ -47,7 +46,6 @@ const BLOCK_CATEGORIES_MAP: Record<BlockType, string> = {
 
 // Content fields that should be filled
 const CONTENT_FIELDS: Record<BlockType, string[]> = {
-  container: [],
   divider: [],
   spacer: [],
   'capsule-header': ['text'],

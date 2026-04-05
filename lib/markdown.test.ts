@@ -4,32 +4,6 @@ import { renderBlock, renderMarkdown } from './markdown';
 import type { Block } from './types';
 
 describe('renderBlock', () => {
-  // TE-ITEM-1.1: renderBlock - Container Block (Center)
-  describe('container', () => {
-    it('should render center-aligned container with children', () => {
-      const block: Block = {
-        id: 'test',
-        type: 'container',
-        props: { alignment: 'center' },
-        children: [{ id: 'child', type: 'paragraph', props: { text: 'Hello', alignment: 'left' } }],
-      };
-      const result = renderBlock(block);
-      expect(result).toContain('<div align="center">');
-      expect(result).toContain('Hello');
-    });
-
-    it('should render left-aligned container without wrapper', () => {
-      const block: Block = {
-        id: 'test',
-        type: 'container',
-        props: { alignment: 'left' },
-        children: [{ id: 'child', type: 'paragraph', props: { text: 'World', alignment: 'left' } }],
-      };
-      const result = renderBlock(block);
-      expect(result).toContain('World');
-    });
-  });
-
   // TE-ITEM-1.2: renderBlock - Divider Block
   describe('divider', () => {
     it('should render line divider', () => {

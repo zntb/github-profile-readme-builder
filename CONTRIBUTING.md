@@ -192,7 +192,6 @@ In [`lib/types.ts`](lib/types.ts), add your block to the `BlockType` union:
 
 ```typescript
 export type BlockType =
-  | 'container'
   | 'divider'
   // ... existing types
   | 'your-new-block'; // Add here

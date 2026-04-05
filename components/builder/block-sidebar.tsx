@@ -149,7 +149,7 @@ export function BlockSidebar() {
       id: generateId(),
       type,
       props,
-      children: type === 'container' || type === 'collapsible' ? [] : undefined,
+      children: type === 'collapsible' ? [] : undefined,
     };
   };
 

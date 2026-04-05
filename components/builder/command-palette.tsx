@@ -6,7 +6,6 @@ import {
   Award,
   Badge,
   BarChart2,
-  Box,
   ChevronRight,
   Clock,
   Code,
@@ -52,7 +51,6 @@ import { BLOCK_CATEGORIES, type BlockType } from '@/lib/types';
 
 // Block type to icon mapping
 const blockIcons: Record<BlockType, React.ComponentType<{ className?: string }>> = {
-  container: Box,
   divider: Minus,
   spacer: Space,
   'capsule-header': StickyNote,
@@ -84,7 +82,7 @@ const blockIcons: Record<BlockType, React.ComponentType<{ className?: string }>>
 const blockCategories = {
   layout: {
     title: 'Layout',
-    types: ['container', 'divider', 'spacer'] as BlockType[],
+    types: ['divider', 'spacer'] as BlockType[],
     icon: Layout,
   },
   hero: {

@@ -489,29 +489,6 @@ function PreviewBlock({
   /* eslint-disable react-hooks/preserve-manual-memoization, react-hooks/exhaustive-deps */
   const renderBlock = useMemo(() => {
     switch (type) {
-      case 'container':
-        return (
-          <div
-            style={{
-              display: 'flex',
-              flexDirection: props.direction as 'row' | 'column',
-              alignItems:
-                props.alignment === 'center'
-                  ? 'center'
-                  : props.alignment === 'right'
-                    ? 'flex-end'
-                    : 'flex-start',
-              gap: `${props.gap}px`,
-              width: '100%',
-              justifyContent: 'center',
-            }}
-          >
-            {children?.map((child) => (
-              <PreviewBlock key={child.id} block={child} />
-            ))}
-          </div>
-        );
-
       case 'stats-row': {
         const direction = (props.direction as 'row' | 'column') ?? 'row';
         const gap = Number(props.gap ?? 12);
