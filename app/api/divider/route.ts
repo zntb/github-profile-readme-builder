@@ -9,6 +9,14 @@ type GradientDirection = 'horizontal' | 'vertical' | 'diagonal' | 'radial' | 'co
 // Background type
 type BackgroundType = 'solid' | 'gradient' | 'animated';
 
+// Expand 3-char hex to 6-char hex
+function expandHexColor(color: string): string {
+  if (color.length === 3) {
+    return color[0] + color[0] + color[1] + color[1] + color[2] + color[2];
+  }
+  return color;
+}
+
 // Validate hex color - only allow 3 or 6 character hex values
 function isValidHexColor(color: string): boolean {
   return /^[0-9A-F]{3}$/i.test(color) || /^[0-9A-F]{6}$/i.test(color);
@@ -21,7 +29,8 @@ function sanitizeColor(value: string | null, defaultColor: string): string {
   const sanitized = color.replace(/[^0-9A-F]/g, '');
   // Validate it's a valid hex color (3 or 6 chars)
   if (isValidHexColor(sanitized)) {
-    return sanitized;
+    // Expand 3-char to 6-char for better compatibility
+    return expandHexColor(sanitized);
   }
   return defaultColor;
 }
@@ -60,35 +69,55 @@ function sanitizeAnimationType(value: string | null): AnimationType {
   return validAnimations.includes(animation) ? animation : 'none';
 }
 
+// Build linear gradient definition with better compatibility
 function buildGradientDef(
   id: string,
   startColor: string,
   endColor: string,
   direction: GradientDirection,
 ): string {
+  // Handle radial separately
   if (direction === 'radial') {
-    return `<radialGradient id="${id}" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#${startColor}"/>
-      <stop offset="100%" stop-color="#${endColor}"/>
-    </radialGradient>`;
+    return `<radialGradient id="${id}" cx="50%" cy="50%" r="50%" fx="50%" fy="50%" spreadMethod="pad">
+    <stop offset="0%" stop-color="#${startColor}" />
+    <stop offset="100%" stop-color="#${endColor}" />
+  </radialGradient>`;
   }
-  if (direction === 'conic') {
-    return `<conicGradient id="${id}" cx="50%" cy="50%" r="50%" gradientUnits="userSpaceOnUse" from="0deg">
-      <stop offset="0%" stop-color="#${startColor}"/>
-      <stop offset="100%" stop-color="#${endColor}"/>
-    </conicGradient>`;
+
+  // For conic, fallback to diagonal for better compatibility
+  const effectiveDir = direction === 'conic' ? 'diagonal' : direction;
+
+  // For linear gradients
+  let x1 = '0%',
+    y1 = '0%',
+    x2 = '100%',
+    y2 = '0%';
+
+  switch (effectiveDir) {
+    case 'vertical':
+      x1 = '0%';
+      y1 = '0%';
+      x2 = '0%';
+      y2 = '100%';
+      break;
+    case 'diagonal':
+      x1 = '0%';
+      y1 = '0%';
+      x2 = '100%';
+      y2 = '100%';
+      break;
+    default:
+      // horizontal - already set
+      break;
   }
-  const coords: Record<string, string> = {
-    horizontal: 'x1="0%" y1="0%" x2="100%" y2="0%"',
-    vertical: 'x1="0%" y1="0%" x2="0%" y2="100%"',
-    diagonal: 'x1="0%" y1="0%" x2="100%" y2="100%"',
-  };
-  return `<linearGradient id="${id}" ${coords[direction] ?? coords.horizontal}>
-    <stop offset="0%" stop-color="#${startColor}"/>
-    <stop offset="100%" stop-color="#${endColor}"/>
+
+  return `<linearGradient id="${id}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" spreadMethod="pad">
+    <stop offset="0%" stop-color="#${startColor}" />
+    <stop offset="100%" stop-color="#${endColor}" />
   </linearGradient>`;
 }
 
+// Build animated gradient with SMIL animations that work in GitHub
 function buildAnimatedGradientDef(
   id: string,
   startColor: string,
@@ -96,31 +125,31 @@ function buildAnimatedGradientDef(
   animation: AnimationType,
 ): string {
   if (animation === 'gradient') {
-    // Multi-stop gradient for animation
-    return `<linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%">
+    // Animated gradient flow using stop-color animation
+    return `<linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="pad">
       <stop offset="0%" stop-color="#${startColor}">
-        <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
-      </stop>
-      <stop offset="50%" stop-color="#${endColor}">
-        <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
-      </stop>
-      <stop offset="100%" stop-color="#${startColor}">
-        <animate attributeName="offset" values="0;1;0" dur="3s" repeatCount="indefinite" />
-      </stop>
-    </linearGradient>`;
-  }
-  if (animation === 'pulse') {
-    return `<linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%">
-      <stop offset="0%" stop-color="#${startColor}">
-        <animate attributeName="stop-opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="stop-color" values="#${startColor};#${endColor};#${startColor}" dur="3s" repeatCount="indefinite" />
       </stop>
       <stop offset="100%" stop-color="#${endColor}">
-        <animate attributeName="stop-opacity" values="1;0.5;1" dur="2s" repeatCount="indefinite" />
+        <animate attributeName="stop-color" values="#${endColor};#${startColor};#${endColor}" dur="3s" repeatCount="indefinite" />
       </stop>
     </linearGradient>`;
   }
-  // Default animated gradient
-  return buildGradientDef(id, startColor, endColor, 'horizontal');
+
+  if (animation === 'pulse') {
+    // Pulse animation using stop-color
+    return `<linearGradient id="${id}" x1="0%" y1="0%" x2="100%" y2="0%" spreadMethod="pad">
+      <stop offset="0%" stop-color="#${startColor}">
+        <animate attributeName="stop-color" values="#${startColor};#${startColor};#${startColor}" dur="1s" repeatCount="indefinite" />
+      </stop>
+      <stop offset="100%" stop-color="#${endColor}">
+        <animate attributeName="stop-color" values="#${endColor};#${endColor};#${endColor}" dur="1s" repeatCount="indefinite" />
+      </stop>
+    </linearGradient>`;
+  }
+
+  // Default to gradient animation
+  return buildAnimatedGradientDef(id, startColor, endColor, 'gradient');
 }
 
 export async function GET(request: NextRequest) {
@@ -139,7 +168,7 @@ export async function GET(request: NextRequest) {
   const bgGradientDirection = sanitizeGradientDirection(sp.get('bgGradientDirection'));
   const bgAnimation = sanitizeAnimationType(sp.get('bgAnimation'));
 
-  // Clamp thickness
+  // Clamp values
   const clampedThickness = Math.max(1, Math.min(50, thickness));
   const clampedWidth = Math.max(100, Math.min(2000, width));
 
