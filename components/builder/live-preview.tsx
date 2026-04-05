@@ -1164,7 +1164,7 @@ function PreviewBlock({
             borderRadiusValue = '48px 10px 48px 10px';
           } else {
             // Default: waving or other types - use rounded bottom corners for footer banner
-            borderRadiusValue = '24px 24px 0 0';
+            borderRadiusValue = '0 0 24px 24px';
           }
 
           return (
@@ -1264,8 +1264,8 @@ function PreviewBlock({
                 : type === 'slice'
                   ? '48px 10px 48px 10px'
                   : section === 'footer'
-                    ? '24px 24px 0 0'
-                    : '0 0 24px 24px';
+                    ? '0 0 24px 24px'
+                    : '24px 24px 0 0';
 
         const borderRadius =
           props.borderRadiusTL !== undefined ||

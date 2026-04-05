@@ -742,7 +742,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
                 ? '36px'
                 : type === 'slice'
                   ? '48px 10px 48px 10px'
-                  : '24px 24px 0 0';
+                  : '0 0 24px 24px';
 
         return (
           <div
