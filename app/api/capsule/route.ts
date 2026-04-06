@@ -133,9 +133,11 @@ export async function GET(request: NextRequest) {
     defTL = defTR = defBR = defBL = 36;
   } else if (type === 'waving') {
     if (section === 'header') {
-      defBR = defBL = 24;
-    } else {
       defTL = defTR = 24;
+      defBR = defBL = 0;
+    } else {
+      defTL = defTR = 0;
+      defBR = defBL = 24;
     }
   }
   // 'slice' handled separately below

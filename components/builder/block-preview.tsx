@@ -46,8 +46,8 @@ function defaultCapRadii(
   if (type === 'soft') return { tl: 36, tr: 36, br: 36, bl: 36 };
   if (type === 'waving') {
     return section === 'header'
-      ? { tl: 0, tr: 0, br: 24, bl: 24 }
-      : { tl: 24, tr: 24, br: 0, bl: 0 };
+      ? { tl: 24, tr: 24, br: 0, bl: 0 }
+      : { tl: 0, tr: 0, br: 24, bl: 24 };
   }
   return { tl: 0, tr: 0, br: 0, bl: 0 };
 }

@@ -68,8 +68,8 @@ function defaultRadii(type: string, section: string, height: number): CornerRadi
   if (type === 'soft') return { tl: 36, tr: 36, br: 36, bl: 36 };
   if (type === 'waving') {
     return section === 'header'
-      ? { tl: 0, tr: 0, br: 24, bl: 24 }
-      : { tl: 24, tr: 24, br: 0, bl: 0 };
+      ? { tl: 24, tr: 24, br: 0, bl: 0 }
+      : { tl: 0, tr: 0, br: 24, bl: 24 };
   }
   return { tl: 0, tr: 0, br: 0, bl: 0 };
 }
@@ -212,8 +212,8 @@ export function CapsuleHeaderConfig({
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="header">Header (rounded bottom)</SelectItem>
-            <SelectItem value="footer">Footer (rounded top)</SelectItem>
+            <SelectItem value="header">Header (rounded top)</SelectItem>
+            <SelectItem value="footer">Footer (rounded bottom)</SelectItem>
           </SelectContent>
         </Select>
       </FieldGroup>
