@@ -674,28 +674,32 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         const quoteText = String(props.quote ?? '');
         const quoteAuthor = String(props.author ?? '');
         const quoteTheme = String(props.theme ?? 'default');
+        const textAlign = (props.textAlign as string) ?? 'center';
+        const authorAlign = (props.authorAlign as string) ?? 'center';
         const { bg, text, accent, border } = getQuoteTheme(quoteTheme);
 
+        // Default layout with alignment support
         return (
           <div
-            className="rounded-lg p-4 text-center"
+            className="rounded-lg p-4"
             style={{
               backgroundColor: bg,
               border: `1px solid`,
               borderColor: border,
+              textAlign: textAlign as 'left' | 'center' | 'right',
             }}
           >
             <p className="text-sm italic" style={{ color: text }}>
               {quoteText ? `"${quoteText}"` : '"Random inspirational quote..."'}
             </p>
             {quoteAuthor && (
-              <p className="text-xs mt-1" style={{ color: accent }}>
+              <p
+                className="text-xs mt-1"
+                style={{ color: accent, textAlign: authorAlign as 'left' | 'center' | 'right' }}
+              >
                 - {quoteAuthor}
               </p>
             )}
-            <p className="text-xs mt-2" style={{ color: text, opacity: 0.5 }}>
-              Theme: {quoteTheme}
-            </p>
           </div>
         );
       }

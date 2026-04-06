@@ -543,11 +543,13 @@ export function BlockConfigFields({
           quote={(props.quote as string) ?? ''}
           author={(props.author as string) ?? ''}
           theme={(props.theme as string) ?? 'default'}
-          type={(props.type as string) ?? 'default'}
+          textAlign={(props.textAlign as string) ?? 'center'}
+          authorAlign={(props.authorAlign as string) ?? 'center'}
           onQuoteChange={(v) => update('quote', v)}
           onAuthorChange={(v) => update('author', v)}
           onThemeChange={(v) => update('theme', v)}
-          onTypeChange={(v) => update('type', v)}
+          onTextAlignChange={(v) => update('textAlign', v)}
+          onAuthorAlignChange={(v) => update('authorAlign', v)}
         />
       );
 

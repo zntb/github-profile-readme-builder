@@ -708,7 +708,10 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         icon: 'Quote',
         defaultProps: {
           theme: 'default',
-          type: 'horizontal',
+          quote: '',
+          author: '',
+          textAlign: 'center',
+          authorAlign: 'center',
         },
       },
       // ─── FIXED: all modern gradient fields included; no legacy waveColor ───
