@@ -1,10 +1,16 @@
 'use client';
 
 import { Label } from '@/components/ui/label';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Slider } from '@/components/ui/slider';
 
 import { FieldGroup } from '../field-group';
-import { ThemeField } from '../theme-field';
 
 interface SkillIconsConfigProps {
   icons: string[];
@@ -67,7 +73,18 @@ export function SkillIconsConfig({
           step={1}
         />
       </FieldGroup>
-      <ThemeField value={theme} onChange={onThemeChange} />
+      <FieldGroup>
+        <Label>Theme</Label>
+        <Select value={theme} onValueChange={onThemeChange}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="light">Light</SelectItem>
+            <SelectItem value="dark">Dark</SelectItem>
+          </SelectContent>
+        </Select>
+      </FieldGroup>
     </>
   );
 }
