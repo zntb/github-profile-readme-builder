@@ -47,7 +47,7 @@ const eslintConfig = defineConfig([
       'import/no-default-export': 'off',
     },
   },
-  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts']),
+  globalIgnores(['.next/**', 'out/**', 'build/**', 'next-env.d.ts', 'playwright-report']),
 ]);
 
 export default eslintConfig;

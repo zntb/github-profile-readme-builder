@@ -321,7 +321,7 @@ Freeform text with alignment control.
 
 ### Collapsible
 
-A GitHub `<details>` block with nested children.
+A collapsible/expandable section that can contain nested child blocks.
 
 **Type:** `collapsible`
 
@@ -343,13 +343,33 @@ A GitHub `<details>` block with nested children.
 | `title`       | string  | text            | Collapsible title        |
 | `defaultOpen` | boolean | `true`, `false` | Initially expanded state |
 
+**Adding Nested Blocks:**
+
+To add nested blocks inside a Collapsible:
+
+1. Add a Collapsible block from the Content category
+2. Click the Collapsible block to select it
+3. Add content blocks (Heading, Paragraph, Code Block, Image, GIF, Divider, or Spacer) from the sidebar
+4. The new blocks will automatically be nested inside the Collapsible
+5. Click any nested block to select it and edit its properties
+
+**Allowed Child Blocks:**
+
+- Heading
+- Paragraph
+- Code Block
+- Image
+- GIF
+- Divider
+- Spacer
+
 **Markdown Output:**
 
 ```markdown
 <details>
 <summary>Title</summary>
 
-<!-- Child blocks -->
+<!-- Child blocks here -->
 
 </details>
 ```

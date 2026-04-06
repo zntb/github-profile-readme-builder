@@ -133,6 +133,15 @@ export function BlockSidebar() {
     'visitor-counter',
   ];
   const STATS_ROW_CHILD_BLOCKS: BlockType[] = ['stats-card', 'top-languages', 'streak-stats'];
+  const COLLASIBLE_CHILD_BLOCKS: BlockType[] = [
+    'heading',
+    'paragraph',
+    'code-block',
+    'image',
+    'gif',
+    'divider',
+    'spacer',
+  ];
   const selectedBlock = selectedBlockId ? findBlockById(blocks, selectedBlockId) : null;
 
   const createBlock = (type: BlockType, defaultProps: Record<string, unknown>): Block => {
@@ -163,6 +172,12 @@ export function BlockSidebar() {
       selectedBlock.children &&
       selectedBlock.children.length < 2
     ) {
+      addChildBlock(selectedBlock.id, createBlock(type, defaultProps));
+      return;
+    }
+
+    // Add child blocks to collapsible when it's selected
+    if (selectedBlock?.type === 'collapsible' && COLLASIBLE_CHILD_BLOCKS.includes(type)) {
       addChildBlock(selectedBlock.id, createBlock(type, defaultProps));
       return;
     }
