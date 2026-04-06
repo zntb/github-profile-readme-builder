@@ -259,7 +259,10 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         );
       }
 
-      case 'avatar':
+      case 'avatar': {
+        const avatarSize = Math.min(props.size as number, 100);
+        const avatarBorderRadius = `${props.borderRadius}%`;
+        const avatarBorderColor = props.borderColor as string;
         return (
           <div className="flex justify-center">
             <img
@@ -267,13 +270,17 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
               alt="Avatar"
               className="object-cover"
               style={{
-                width: Math.min(props.size as number, 100),
-                height: Math.min(props.size as number, 100),
-                borderRadius: `${props.borderRadius}%`,
+                width: avatarSize,
+                height: avatarSize,
+                borderRadius: avatarBorderRadius,
+                borderWidth: avatarBorderColor ? 3 : 0,
+                borderColor: avatarBorderColor || 'transparent',
+                borderStyle: 'solid',
               }}
             />
           </div>
         );
+      }
 
       case 'greeting':
         return (

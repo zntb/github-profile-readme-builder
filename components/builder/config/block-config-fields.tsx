@@ -278,9 +278,11 @@ export function BlockConfigFields({
           imageUrl={(props.imageUrl as string) ?? ''}
           size={getNumberProp('size', 150)}
           borderRadius={getNumberProp('borderRadius', 50)}
+          borderColor={(props.borderColor as string) ?? ''}
           onImageUrlChange={(v) => update('imageUrl', v)}
           onSizeChange={(v) => update('size', v)}
           onBorderRadiusChange={(v) => update('borderRadius', v)}
+          onBorderColorChange={(v) => update('borderColor', v)}
         />
       );
 

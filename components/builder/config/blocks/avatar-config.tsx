@@ -9,18 +9,22 @@ interface AvatarConfigProps {
   imageUrl: string;
   size: number;
   borderRadius: number;
+  borderColor?: string;
   onImageUrlChange: (value: string) => void;
   onSizeChange: (value: number) => void;
   onBorderRadiusChange: (value: number) => void;
+  onBorderColorChange: (value: string) => void;
 }
 
 export function AvatarConfig({
   imageUrl,
   size,
   borderRadius,
+  borderColor,
   onImageUrlChange,
   onSizeChange,
   onBorderRadiusChange,
+  onBorderColorChange,
 }: AvatarConfigProps) {
   return (
     <>
@@ -64,6 +68,23 @@ export function AvatarConfig({
             className="w-20"
           />
           <span className="flex items-center text-sm text-muted-foreground">%</span>
+        </div>
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Border Color</Label>
+        <div className="flex gap-2 items-center">
+          <Input
+            type="color"
+            value={borderColor || '#000000'}
+            onChange={(e) => onBorderColorChange(e.target.value)}
+            className="w-10 h-10 p-1 cursor-pointer"
+          />
+          <Input
+            value={borderColor || ''}
+            onChange={(e) => onBorderColorChange(e.target.value)}
+            placeholder="#000000"
+            className="w-24"
+          />
         </div>
       </FieldGroup>
     </>
