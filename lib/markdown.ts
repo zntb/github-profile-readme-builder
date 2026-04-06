@@ -416,15 +416,19 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'quote': {
-      const { theme, type, quote, author } = props as Record<string, string>;
+      const { theme, type, quote, author, textAlign } = props as Record<string, string>;
+      const align = textAlign || 'center';
       if (quote && author) {
-        return `<div align="center">\n\n> "${quote}"\n> — ${author}\n\n</div>`;
+        // Use align attribute only if not left (GitHub default)
+        const wrapper = align === 'left' ? '' : `<div align="${align}">`;
+        const wrapperEnd = align === 'left' ? '' : '</div>';
+        return `${wrapper}\n\n> "${quote}"\n> — ${author}\n\n${wrapperEnd}`;
       }
       const params = { type, theme };
       const url = origin
         ? buildExternalUrl('quotes', params, origin)
         : buildInternalUrl('quotes', params);
-      return `<div align="center">\n  <img src="${url}" alt="Quote" />\n</div>`;
+      return `<div align="${align}">\n  <img src="${url}" alt="Quote" />\n</div>`;
     }
 
     case 'footer-banner': {
