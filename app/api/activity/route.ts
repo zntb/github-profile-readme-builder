@@ -117,7 +117,11 @@ function generateActivityGraph(
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
 
-  const username = searchParams.get('username') || 'github';
+  const username = searchParams.get('username');
+  if (!username) {
+    return new NextResponse('Username is required', { status: 400 });
+  }
+
   const themeName = searchParams.get('theme') || 'tokyo-night';
   const hideBorder = searchParams.get('hide_border') === 'true';
 

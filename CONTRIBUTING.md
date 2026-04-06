@@ -391,13 +391,49 @@ npm run lint:fix
 
 ### Running Tests
 
+#### Unit Tests (Jest)
+
 ```bash
 npm run test        # Run all tests
 npm run test:watch # Watch mode
 npm run test:coverage # Coverage report
 ```
 
+#### End-to-End Tests (Playwright)
+
+We use [Playwright](https://playwright.dev) for end-to-end testing.
+
+```bash
+# Run all E2E tests
+npm run e2e
+
+# Run with visible browser
+npm run e2e:headed
+
+# Open Playwright UI for interactive testing
+npm run e2e:ui
+
+# View HTML test report
+npm run e2e:report
+```
+
+#### Test Structure
+
+- `e2e/navigation.e2e.ts` - Page navigation tests
+- `e2e/api.e2e.ts` - API integration tests
+- `e2e/authentication.e2e.ts` - Authentication flow tests
+- `e2e/visual.e2e.ts` - Visual regression tests
+
+#### Key Features
+
+- **HTML Reports**: Generated in `playwright-report/` with screenshots on failure
+- **Parallel Execution**: Tests run in parallel for faster execution
+- **Retry Logic**: Failed tests are automatically retried (2x in CI)
+- **Mobile Testing**: Tests run on both desktop and mobile viewports
+
 ### Writing Tests
+
+#### Unit Tests (Jest)
 
 We use Jest and React Testing Library. Place tests alongside components:
 
@@ -524,6 +560,7 @@ Brief description of changes made.
 ## Testing
 
 - [ ] Unit tests added/updated
+- [ ] E2E tests added/updated (if applicable)
 - [ ] Manual testing completed
 
 ## Screenshots
