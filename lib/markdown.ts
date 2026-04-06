@@ -428,7 +428,17 @@ export function renderBlock(block: Block, origin: string = ''): string {
     }
 
     case 'footer-banner': {
-      const { text, waveColor, fontColor, height } = props as Record<string, string | number>;
+      const {
+        text,
+        waveColor,
+        fontColor,
+        height,
+        bgType,
+        bgGradientDirection,
+        bgStartColor,
+        bgEndColor,
+        bgSolidColor,
+      } = props as Record<string, string | number>;
       const capsuleProps = {
         type: 'waving',
         color: waveColor,
@@ -437,6 +447,11 @@ export function renderBlock(block: Block, origin: string = ''): string {
         text: text ?? '',
         fontSize: 24,
         fontColor: fontColor ?? 'ffffff',
+        bgType: bgType ?? 'gradient',
+        bgGradientDirection: bgGradientDirection ?? 'horizontal',
+        bgStartColor: bgStartColor ?? 'EEFF00',
+        bgEndColor: bgEndColor ?? 'A82DAA',
+        bgSolidColor: bgSolidColor ?? 'EEFF00',
       };
       const url = buildCapsuleUrl(capsuleProps, origin);
       return `<div align="center">\n  <img src="${url}" />\n</div>`;
