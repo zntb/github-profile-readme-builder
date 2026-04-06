@@ -74,6 +74,19 @@ export const QUOTE_THEMES: Record<string, QuoteThemeColors> = {
   blue: { bg: '#0d1117', text: '#c9d1d9', accent: '#58a6ff', border: '#30363d' },
 };
 
+// Custom theme format: custom:bg_accent_text_icon_border
 export function getQuoteTheme(themeName: string): QuoteThemeColors {
+  // Handle custom themes
+  if (themeName.startsWith('custom:')) {
+    const parts = themeName.replace('custom:', '').split('_');
+    if (parts.length >= 5) {
+      return {
+        bg: `#${parts[0]}`, // background
+        accent: `#${parts[1]}`, // accent
+        text: `#${parts[2]}`, // text
+        border: `#${parts[4]}`, // border (parts[3] is icon which we don't use for quotes)
+      };
+    }
+  }
   return QUOTE_THEMES[themeName] || QUOTE_THEMES.default;
 }

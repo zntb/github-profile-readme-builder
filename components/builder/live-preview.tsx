@@ -123,13 +123,13 @@ function usePrefetchedImages(
             break;
           }
           case 'quote': {
-            if (!block.props.quote || !block.props.author) {
-              const params = new URLSearchParams({
-                type: (block.props.type as string) || 'default',
-                theme: (block.props.theme as string) || 'default',
-              });
-              urlSet.add(`/api/quotes?${params.toString()}`);
-            }
+            const params = new URLSearchParams({
+              type: (block.props.type as string) || 'default',
+              theme: (block.props.theme as string) || 'default',
+              ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
+              ...(block.props.author ? { author: String(block.props.author) } : {}),
+            });
+            urlSet.add(`/api/quotes?${params.toString()}`);
             break;
           }
         }
@@ -241,6 +241,22 @@ function isBlockLoading(
   ];
   if (!apiBlockTypes.includes(block.type)) return false;
 
+  // Quote blocks don't need a username, handle separately
+  if (block.type === 'quote') {
+    // For quote blocks, only show loading if no custom quote/author provided
+    if (block.props.quote && block.props.author) return false;
+
+    const quoteParams = new URLSearchParams({
+      type: (block.props.type as string) || 'default',
+      theme: (block.props.theme as string) || 'default',
+      ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
+      ...(block.props.author ? { author: String(block.props.author) } : {}),
+    });
+    const quoteUrl = `/api/quotes?${quoteParams.toString()}`;
+    const state = imageStates.get(quoteUrl);
+    return state?.loading ?? false;
+  }
+
   const getUsername = (blockUsername: string) => {
     return (!blockUsername || blockUsername === 'github') && globalUsername
       ? globalUsername
@@ -251,9 +267,6 @@ function isBlockLoading(
 
   // No username means no API call, so not loading
   if (!username || username === 'github') return false;
-
-  // For quote blocks, only show loading if no custom quote/author provided
-  if (block.type === 'quote' && block.props.quote && block.props.author) return false;
 
   const baseUrl = getApiUrlForBlock(block, username);
   if (!baseUrl) return false;
@@ -326,6 +339,8 @@ function getApiUrlForBlock(block: Block, username: string): string | null {
       const params = new URLSearchParams({
         type: (block.props.type as string) || 'default',
         theme: (block.props.theme as string) || 'default',
+        ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
+        ...(block.props.author ? { author: String(block.props.author) } : {}),
       });
       return `/api/quotes?${params.toString()}`;
     }
@@ -1132,45 +1147,32 @@ function PreviewBlock({
         const quoteText = String(props.quote ?? '');
         const quoteAuthor = String(props.author ?? '');
         const quoteTheme = String(props.theme ?? 'default');
-        const quoteType = String(props.type ?? 'default');
+        const textAlign = (props.textAlign as string) ?? 'center';
+        const authorAlign = (props.authorAlign as string) ?? 'center';
         const { bg, text, accent, border } = getQuoteTheme(quoteTheme);
 
-        const quoteParams = new URLSearchParams({
-          type: quoteType,
-          theme: quoteTheme,
-          ...(quoteText ? { quote: quoteText } : {}),
-          ...(quoteAuthor ? { author: quoteAuthor } : {}),
-        });
-        const quoteUrl = `/api/quotes?${quoteParams.toString()}`;
-        const prefetchedQuoteSrc = getPrefetchedSrc(quoteUrl);
-
-        // Show custom quote text if available, otherwise show random quote image
-        if (quoteText && quoteAuthor) {
-          return (
-            <div
-              className="text-center p-4 rounded-lg"
-              style={{
-                backgroundColor: bg,
-                border: `1px solid`,
-                borderColor: border,
-              }}
-            >
-              <p className="text-sm italic" style={{ color: text }}>
-                &ldquo;{quoteText}&rdquo;
-              </p>
-              <p className="text-xs mt-1" style={{ color: accent }}>
-                — {quoteAuthor}
-              </p>
-              <p className="text-xs mt-2" style={{ color: text, opacity: 0.5 }}>
-                Theme: {quoteTheme}
-              </p>
-            </div>
-          );
-        }
-
+        // Default layout with alignment support
         return (
-          <div className="text-center">
-            <img src={prefetchedQuoteSrc ?? quoteUrl} alt="Quote" style={imageSizeStyle} />
+          <div
+            className="rounded-lg p-4"
+            style={{
+              backgroundColor: bg,
+              border: `1px solid`,
+              borderColor: border,
+              textAlign: textAlign as 'left' | 'center' | 'right',
+            }}
+          >
+            <p className="text-sm italic" style={{ color: text }}>
+              {quoteText ? `"${quoteText}"` : '"Random inspirational quote..."'}
+            </p>
+            {quoteAuthor && (
+              <p
+                className="text-xs mt-1"
+                style={{ color: accent, textAlign: authorAlign as 'left' | 'center' | 'right' }}
+              >
+                - {quoteAuthor}
+              </p>
+            )}
           </div>
         );
       }

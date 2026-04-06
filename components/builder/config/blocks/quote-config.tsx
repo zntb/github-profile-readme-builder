@@ -18,22 +18,26 @@ interface QuoteConfigProps {
   quote: string;
   author: string;
   theme: string;
-  type: string;
+  textAlign?: string;
+  authorAlign?: string;
   onQuoteChange: (value: string) => void;
   onAuthorChange: (value: string) => void;
   onThemeChange: (value: string) => void;
-  onTypeChange: (value: string) => void;
+  onTextAlignChange?: (value: string) => void;
+  onAuthorAlignChange?: (value: string) => void;
 }
 
 export function QuoteConfig({
   quote,
   author,
   theme,
-  type,
+  textAlign,
+  authorAlign,
   onQuoteChange,
   onAuthorChange,
   onThemeChange,
-  onTypeChange,
+  onTextAlignChange,
+  onAuthorAlignChange,
 }: QuoteConfigProps) {
   return (
     <>
@@ -52,15 +56,28 @@ export function QuoteConfig({
       </FieldGroup>
       <ThemeField value={theme} onChange={onThemeChange} />
       <FieldGroup>
-        <Label>Layout</Label>
-        <Select value={type} onValueChange={onTypeChange}>
+        <Label>Text Alignment</Label>
+        <Select value={textAlign || 'center'} onValueChange={onTextAlignChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="default">Default</SelectItem>
-            <SelectItem value="horizontal">Horizontal</SelectItem>
-            <SelectItem value="vertical">Vertical</SelectItem>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
+          </SelectContent>
+        </Select>
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Author Alignment</Label>
+        <Select value={authorAlign || 'center'} onValueChange={onAuthorAlignChange}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
           </SelectContent>
         </Select>
       </FieldGroup>
