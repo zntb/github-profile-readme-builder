@@ -422,7 +422,7 @@ export function renderBlock(block: Block, origin: string = ''): string {
         // Use align attribute only if not left (GitHub default)
         const wrapper = align === 'left' ? '' : `<div align="${align}">`;
         const wrapperEnd = align === 'left' ? '' : '</div>';
-        return `${wrapper}\n\n> "${quote}"\n> — ${author}\n\n${wrapperEnd}`;
+        return `${wrapper}\n\n> "${quote}"\n> <br/>\n> — ${author}\n\n${wrapperEnd}`;
       }
       const params = { type, theme };
       const url = origin
