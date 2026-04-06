@@ -198,6 +198,7 @@ const themes: Record<string, { bg: string; text: string; accent: string; border:
   gruvbox: { bg: '282828', text: 'ebdbb2', accent: 'fe8019', border: '3c3836' },
   tokyonight: { bg: '1a1b27', text: '38bdae', accent: '70a5fd', border: '24283b' },
   'tokyo-night': { bg: '1a1b27', text: '38bdae', accent: '70a5fd', border: '24283b' },
+  rogue: { bg: '0d0d0d', text: 'ffffff', accent: '00ff00', border: '1a1a1a' },
   onedark: { bg: '282c34', text: 'abb2bf', accent: 'e5c07b', border: '3e4451' },
   cobalt: { bg: '002240', text: 'ffffff', accent: 'f68825', border: '00509e' },
   synthwave: { bg: '1a1a2e', text: 'ffffff', accent: 'ff2a6d', border: '05051a' },

@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 
 import { resolveFooterBannerColors } from '@/lib/footer-banner-utils';
+import { getQuoteTheme } from '@/lib/quote-themes';
 import { getActivityTheme, getLangTheme, getStatsTheme, getStreakTheme } from '@/lib/themes';
 import type { Block } from '@/lib/types';
 import { cn } from '@/lib/utils';
@@ -669,17 +670,35 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
 
-      case 'quote':
+      case 'quote': {
+        const quoteText = String(props.quote ?? '');
+        const quoteAuthor = String(props.author ?? '');
+        const quoteTheme = String(props.theme ?? 'default');
+        const { bg, text, accent, border } = getQuoteTheme(quoteTheme);
+
         return (
-          <div className="rounded-lg bg-muted/50 p-4 text-center italic">
-            <p className="text-sm">
-              {props.quote ? `"${props.quote as string}"` : '"Random inspirational quote..."'}
+          <div
+            className="rounded-lg p-4 text-center"
+            style={{
+              backgroundColor: bg,
+              border: `1px solid`,
+              borderColor: border,
+            }}
+          >
+            <p className="text-sm italic" style={{ color: text }}>
+              {quoteText ? `"${quoteText}"` : '"Random inspirational quote..."'}
             </p>
-            {props.author ? (
-              <p className="text-xs text-muted-foreground mt-1">- {String(props.author)}</p>
-            ) : null}
+            {quoteAuthor && (
+              <p className="text-xs mt-1" style={{ color: accent }}>
+                - {quoteAuthor}
+              </p>
+            )}
+            <p className="text-xs mt-2" style={{ color: text, opacity: 0.5 }}>
+              Theme: {quoteTheme}
+            </p>
           </div>
         );
+      }
 
       case 'footer-banner': {
         // Determine background settings

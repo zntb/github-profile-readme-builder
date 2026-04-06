@@ -5,6 +5,7 @@ import { Eye } from 'lucide-react';
 import { JSX, useEffect, useMemo, useState, type CSSProperties } from 'react';
 
 import { resolveFooterBannerColors } from '@/lib/footer-banner-utils';
+import { getQuoteTheme } from '@/lib/quote-themes';
 import { useBuilderStore } from '@/lib/store';
 import type { Block } from '@/lib/types';
 
@@ -124,8 +125,8 @@ function usePrefetchedImages(
           case 'quote': {
             if (!block.props.quote || !block.props.author) {
               const params = new URLSearchParams({
-                type: block.props.type as string,
-                theme: block.props.theme as string,
+                type: (block.props.type as string) || 'default',
+                theme: (block.props.theme as string) || 'default',
               });
               urlSet.add(`/api/quotes?${params.toString()}`);
             }
@@ -324,7 +325,7 @@ function getApiUrlForBlock(block: Block, username: string): string | null {
     case 'quote': {
       const params = new URLSearchParams({
         type: (block.props.type as string) || 'default',
-        theme: (block.props.theme as string) || 'tokyonight',
+        theme: (block.props.theme as string) || 'default',
       });
       return `/api/quotes?${params.toString()}`;
     }
@@ -1130,8 +1131,9 @@ function PreviewBlock({
       case 'quote': {
         const quoteText = String(props.quote ?? '');
         const quoteAuthor = String(props.author ?? '');
-        const quoteTheme = String(props.theme ?? 'tokyonight');
+        const quoteTheme = String(props.theme ?? 'default');
         const quoteType = String(props.type ?? 'default');
+        const { bg, text, accent, border } = getQuoteTheme(quoteTheme);
 
         const quoteParams = new URLSearchParams({
           type: quoteType,
@@ -1140,24 +1142,35 @@ function PreviewBlock({
           ...(quoteAuthor ? { author: quoteAuthor } : {}),
         });
         const quoteUrl = `/api/quotes?${quoteParams.toString()}`;
+        const prefetchedQuoteSrc = getPrefetchedSrc(quoteUrl);
 
         // Show custom quote text if available, otherwise show random quote image
         if (quoteText && quoteAuthor) {
           return (
-            <div className="text-center p-4 bg-gradient-to-r from-purple-900/20 to-pink-900/20 rounded-lg">
-              <p className="text-sm italic text-foreground">&ldquo;{quoteText}&rdquo;</p>
-              <p className="text-xs text-muted-foreground mt-1">— {quoteAuthor}</p>
-              <p className="text-xs text-muted-foreground/50 mt-2">Theme: {quoteTheme}</p>
+            <div
+              className="text-center p-4 rounded-lg"
+              style={{
+                backgroundColor: bg,
+                border: `1px solid`,
+                borderColor: border,
+              }}
+            >
+              <p className="text-sm italic" style={{ color: text }}>
+                &ldquo;{quoteText}&rdquo;
+              </p>
+              <p className="text-xs mt-1" style={{ color: accent }}>
+                — {quoteAuthor}
+              </p>
+              <p className="text-xs mt-2" style={{ color: text, opacity: 0.5 }}>
+                Theme: {quoteTheme}
+              </p>
             </div>
           );
         }
 
         return (
           <div className="text-center">
-            <p className="text-xs text-muted-foreground mb-2">
-              Random Quote ({quoteType}, {quoteTheme})
-            </p>
-            <img src={quoteUrl} alt="Quote" style={{ maxWidth: '100%', height: 'auto' }} />
+            <img src={prefetchedQuoteSrc ?? quoteUrl} alt="Quote" style={imageSizeStyle} />
           </div>
         );
       }

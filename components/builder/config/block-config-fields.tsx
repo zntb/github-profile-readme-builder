@@ -87,7 +87,7 @@ export function BlockConfigFields({
           gap={(props.gap as number) ?? 12}
           card1={statsChildren[0]}
           card2={statsChildren[1]}
-          theme={(props.theme as string) ?? 'tokyonight'}
+          theme={(props.theme as string) ?? 'default'}
           hideBorder={(props.hideBorder as boolean) ?? false}
           onDirectionChange={(v) => update('direction', v)}
           onGapChange={(v) => update('gap', v)}

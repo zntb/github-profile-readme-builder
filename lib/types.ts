@@ -707,7 +707,7 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
         label: 'Quote',
         icon: 'Quote',
         defaultProps: {
-          theme: 'tokyonight',
+          theme: 'default',
           type: 'horizontal',
         },
       },

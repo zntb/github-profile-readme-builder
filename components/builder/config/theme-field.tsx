@@ -62,7 +62,7 @@ export function ThemeField({ value, onChange, label = 'Theme' }: ThemeFieldProps
         </Button>
       </div>
       <div className="space-y-2">
-        <Select value={isCustom ? 'custom' : value} onValueChange={handlePresetChange}>
+        <Select value={isCustom ? 'custom' : value || 'default'} onValueChange={handlePresetChange}>
           <SelectTrigger>
             <SelectValue />
           </SelectTrigger>
