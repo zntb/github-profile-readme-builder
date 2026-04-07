@@ -315,13 +315,13 @@ describe('renderBlock', () => {
         id: 'test',
         type: 'quote',
         props: {
-          text: 'The only way to do great work is to love what you do.',
+          quote: 'The only way to do great work is to love what you do.',
           author: 'Steve Jobs',
-          alignment: 'left',
+          theme: 'default',
+          textAlign: 'left',
         },
       };
       const result = renderBlock(block);
-      // Quote block renders an image
       expect(result).toContain('<img');
     });
 
@@ -332,7 +332,6 @@ describe('renderBlock', () => {
         props: { useRandom: true },
       };
       const result = renderBlock(block);
-      // Quote block renders an image
       expect(result).toContain('<img');
     });
   });
