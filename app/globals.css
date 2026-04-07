@@ -50,6 +50,15 @@
   --animate-shimmer: shimmer 2s linear infinite;
 }
 
+/* Will-change utility for GPU-accelerated animations */
+.will-change-transform {
+  will-change: transform;
+}
+
+.will-change-opacity {
+  will-change: opacity;
+}
+
 @keyframes slide-up {
   from {
     opacity: 0;

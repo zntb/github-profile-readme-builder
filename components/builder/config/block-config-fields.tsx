@@ -1,35 +1,127 @@
 'use client';
 
+import dynamic from 'next/dynamic';
+
 import { resolveFooterBannerColors } from '@/lib/footer-banner-utils';
 import { generateId } from '@/lib/store';
 import { SKILL_ICONS, type Block } from '@/lib/types';
 
-import { ActivityGraphConfig } from './blocks/activity-graph-config';
-import { AvatarConfig } from './blocks/avatar-config';
-import { CapsuleHeaderConfig } from './blocks/capsule-header-config';
-import { CodeBlockConfig } from './blocks/code-block-config';
-import { CollapsibleConfig } from './blocks/collapsible-config';
-import { CustomBadgeConfig } from './blocks/custom-badge-config';
-import { DividerConfig } from './blocks/divider-config';
-import { FooterBannerConfig } from './blocks/footer-banner-config';
-import { GifConfig } from './blocks/gif-config';
-import { GreetingConfig } from './blocks/greeting-config';
-import { HeadingConfig } from './blocks/heading-config';
-import { ImageConfig } from './blocks/image-config';
-import { ParagraphConfig } from './blocks/paragraph-config';
-import { QuoteConfig } from './blocks/quote-config';
-import { SkillIconsConfig } from './blocks/skill-icons-config';
-import { SocialBadgesConfig } from './blocks/social-badges-config';
-import { SpacerConfig } from './blocks/spacer-config';
-import { StatsCardConfig } from './blocks/stats-card-config';
-import { StatsRowConfig } from './blocks/stats-row-config';
-import { StreakStatsConfig } from './blocks/streak-stats-config';
-import { SupportLinkConfig } from './blocks/support-link-config';
-import { TopLanguagesConfig } from './blocks/top-languages-config';
-import { TrophiesConfig } from './blocks/trophies-config';
-import { TypingAnimationConfig } from './blocks/typing-animation-config';
-import { VisitorCounterConfig } from './blocks/visitor-counter-config';
 import { type BackgroundType, type GradientDirection } from './gradient-color-picker';
+
+// Lazy load block config components for code splitting
+// Each block type config will be loaded on-demand when that block is selected
+const ActivityGraphConfig = dynamic(
+  () => import('./blocks/activity-graph-config').then((m) => m.ActivityGraphConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const AvatarConfig = dynamic(() => import('./blocks/avatar-config').then((m) => m.AvatarConfig), {
+  ssr: false,
+  loading: () => <ConfigSkeleton />,
+});
+const CapsuleHeaderConfig = dynamic(
+  () => import('./blocks/capsule-header-config').then((m) => m.CapsuleHeaderConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const CodeBlockConfig = dynamic(
+  () => import('./blocks/code-block-config').then((m) => m.CodeBlockConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const CollapsibleConfig = dynamic(
+  () => import('./blocks/collapsible-config').then((m) => m.CollapsibleConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const CustomBadgeConfig = dynamic(
+  () => import('./blocks/custom-badge-config').then((m) => m.CustomBadgeConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const DividerConfig = dynamic(
+  () => import('./blocks/divider-config').then((m) => m.DividerConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const FooterBannerConfig = dynamic(
+  () => import('./blocks/footer-banner-config').then((m) => m.FooterBannerConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const GifConfig = dynamic(() => import('./blocks/gif-config').then((m) => m.GifConfig), {
+  ssr: false,
+  loading: () => <ConfigSkeleton />,
+});
+const GreetingConfig = dynamic(
+  () => import('./blocks/greeting-config').then((m) => m.GreetingConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const HeadingConfig = dynamic(
+  () => import('./blocks/heading-config').then((m) => m.HeadingConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const ImageConfig = dynamic(() => import('./blocks/image-config').then((m) => m.ImageConfig), {
+  ssr: false,
+  loading: () => <ConfigSkeleton />,
+});
+const ParagraphConfig = dynamic(
+  () => import('./blocks/paragraph-config').then((m) => m.ParagraphConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const QuoteConfig = dynamic(() => import('./blocks/quote-config').then((m) => m.QuoteConfig), {
+  ssr: false,
+  loading: () => <ConfigSkeleton />,
+});
+const SkillIconsConfig = dynamic(
+  () => import('./blocks/skill-icons-config').then((m) => m.SkillIconsConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const SocialBadgesConfig = dynamic(
+  () => import('./blocks/social-badges-config').then((m) => m.SocialBadgesConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const SpacerConfig = dynamic(() => import('./blocks/spacer-config').then((m) => m.SpacerConfig), {
+  ssr: false,
+  loading: () => <ConfigSkeleton />,
+});
+const StatsCardConfig = dynamic(
+  () => import('./blocks/stats-card-config').then((m) => m.StatsCardConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const StatsRowConfig = dynamic(
+  () => import('./blocks/stats-row-config').then((m) => m.StatsRowConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const StreakStatsConfig = dynamic(
+  () => import('./blocks/streak-stats-config').then((m) => m.StreakStatsConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const SupportLinkConfig = dynamic(
+  () => import('./blocks/support-link-config').then((m) => m.SupportLinkConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const TopLanguagesConfig = dynamic(
+  () => import('./blocks/top-languages-config').then((m) => m.TopLanguagesConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const TrophiesConfig = dynamic(
+  () => import('./blocks/trophies-config').then((m) => m.TrophiesConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const TypingAnimationConfig = dynamic(
+  () => import('./blocks/typing-animation-config').then((m) => m.TypingAnimationConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+const VisitorCounterConfig = dynamic(
+  () => import('./blocks/visitor-counter-config').then((m) => m.VisitorCounterConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
+
+// Skeleton component for loading state
+function ConfigSkeleton() {
+  return (
+    <div className="space-y-4 animate-pulse">
+      <div className="h-8 bg-muted rounded w-3/4" />
+      <div className="h-10 bg-muted rounded w-full" />
+      <div className="h-10 bg-muted rounded w-5/6" />
+      <div className="h-10 bg-muted rounded w-4/5" />
+    </div>
+  );
+}
 
 interface BlockConfigFieldsProps {
   block: Block;

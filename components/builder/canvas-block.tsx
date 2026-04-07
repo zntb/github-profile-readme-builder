@@ -181,7 +181,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
         {!nested && (
           <div
             className={cn(
-              'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200 z-10',
+              'absolute top-2 left-2 sm:-left-10 sm:top-1/2 sm:-translate-y-1/2 flex items-center gap-1 transition-all duration-200 z-10 will-change-transform',
               'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
               isSelected && 'sm:opacity-100',
             )}
@@ -205,7 +205,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
         {/* Quick Actions - positioned at top center for all blocks */}
         <div
           className={cn(
-            'absolute -top-3 left-1/2 -translate-x-1/2 flex flex-row items-center gap-0.5 bg-card border rounded-lg p-0.5 shadow-md z-20 transition-all duration-200',
+            'absolute -top-3 left-1/2 -translate-x-1/2 flex flex-row items-center gap-0.5 bg-card border rounded-lg p-0.5 shadow-md z-20 transition-all duration-200 will-change-transform',
             'opacity-100 sm:opacity-0 sm:group-hover:opacity-100',
             isSelected && 'opacity-100',
           )}
