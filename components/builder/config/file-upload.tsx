@@ -21,6 +21,7 @@ import { Label } from '@/components/ui/label';
 import { optimizeImage } from '@/lib/image-optimization';
 import { useImageOptimizationStore } from '@/lib/image-optimization-store';
 import { extractUploadThingFileKey, isUploadThingUrl } from '@/lib/uploadthing';
+import { formatBytes } from '@/lib/use-image-optimization';
 
 const { useUploadThing } = generateReactHelpers<OurFileRouter>();
 
@@ -250,19 +251,4 @@ export function FileUpload({
       </AlertDialog>
     </div>
   );
-}
-
-/**
- * Format bytes to human readable string
- */
-function formatBytes(bytes: number, decimals = 2): string {
-  if (bytes === 0) return '0 Bytes';
-
-  const k = 1024;
-  const dm = decimals < 0 ? 0 : decimals;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];
 }
