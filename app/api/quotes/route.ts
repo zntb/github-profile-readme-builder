@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import sharp from 'sharp';
 
 import { escapeHtml } from '@/lib/utils';
 
@@ -343,9 +344,16 @@ export async function GET(request: NextRequest) {
         textAlign,
         authorAlign,
       );
-      return new NextResponse(svg, {
+
+      // Convert SVG to PNG for GitHub compatibility
+      const pngBuffer = await sharp(Buffer.from(svg))
+        .resize(990, 320, { fit: 'fill' })
+        .png()
+        .toBuffer();
+
+      return new NextResponse(pngBuffer as unknown as Blob, {
         headers: {
-          'Content-Type': 'image/svg+xml',
+          'Content-Type': 'image/png',
           'Cache-Control': 'public, max-age=3600',
         },
       });
@@ -370,9 +378,15 @@ export async function GET(request: NextRequest) {
 
     const svg = generateQuoteSvg(quote, themeName, textAlign, authorAlign);
 
-    return new NextResponse(svg, {
+    // Convert SVG to PNG for GitHub compatibility
+    const pngBuffer = await sharp(Buffer.from(svg))
+      .resize(990, 320, { fit: 'fill' })
+      .png()
+      .toBuffer();
+
+    return new NextResponse(pngBuffer as unknown as Blob, {
       headers: {
-        'Content-Type': 'image/svg+xml',
+        'Content-Type': 'image/png',
         'Cache-Control': 'public, max-age=3600',
       },
     });
