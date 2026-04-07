@@ -4,8 +4,78 @@ import { UTApi } from 'uploadthing/server';
 // Allowed hosts for SSRF protection - only allow UploadThing domains
 const ALLOWED_HOSTS = ['utfs.io', 'ufs.sh', 'uploadthing.com'];
 
+// Private IP ranges to block (SSRF protection)
+const PRIVATE_IP_RANGES = [
+  // 127.0.0.0/8 (loopback)
+  /^127\./,
+  // 10.0.0.0/8
+  /^10\./,
+  // 172.16.0.0/12
+  /^172\.(1[6-9]|2\d|3[01])\./,
+  // 192.168.0.0/16
+  /^192\.168\./,
+  // 169.254.0.0/16 (link-local)
+  /^169\.254\./,
+  // 0.0.0.0/8
+  /^0\./,
+  // 100.64.0.0/10 (carrier-grade NAT)
+  /^100\.(6[4-9]|[7-9]\d|1[0-1]\d|12[0-7])\./,
+  // 192.0.0.0/24 (IETF Protocol Assignments)
+  /^192\.0\.0\./,
+  // 192.0.2.0/24 (TEST-NET-1)
+  /^192\.0\.2\./,
+  // 198.51.100.0/24 (TEST-NET-2)
+  /^198\.51\.100\./,
+  // 203.0.113.0/24 (TEST-NET-3)
+  /^203\.0\.113\./,
+  // 224.0.0.0/4 (multicast)
+  /^2[2-4]\d\./,
+  // 240.0.0.0/4 (reserved)
+  /^2[4-5]\d\./,
+];
+
+// Reserved/broadcast addresses
+const RESERVED_HOSTNAMES = [
+  'localhost',
+  'localhost.localdomain',
+  'broadcasthost',
+  'metadata.google.internal',
+  'metadata.google',
+];
+
+function isPrivateIP(ip: string): boolean {
+  return PRIVATE_IP_RANGES.some((pattern) => pattern.test(ip));
+}
+
+function isHostnameBlocked(hostname: string): boolean {
+  const lowerHostname = hostname.toLowerCase();
+
+  // Check reserved hostnames
+  if (RESERVED_HOSTNAMES.includes(lowerHostname)) {
+    return true;
+  }
+
+  // Check if it's an IP address (IPv4)
+  const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+  if (ipv4Regex.test(hostname)) {
+    return isPrivateIP(hostname);
+  }
+
+  // Check for localhost variants in domain
+  if (lowerHostname.includes('localhost') || lowerHostname === 'local') {
+    return true;
+  }
+
+  return false;
+}
+
 function isUrlAllowed(url: URL): boolean {
   const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
+
+  // First, check if hostname is blocked (private IP or reserved)
+  if (isHostnameBlocked(hostname)) {
+    return false;
+  }
 
   // Check if hostname is in allowed list
   if (ALLOWED_HOSTS.includes(hostname)) {
@@ -71,9 +141,10 @@ export async function POST(req: NextRequest) {
     // Generate filename - use custom filename or derive from source
     let fileName = customFileName;
     if (!fileName) {
-      // Try to extract filename from URL
-      const urlParts = sourceUrl.split('/');
-      const lastPart = urlParts[urlParts.length - 1];
+      // Use validated URL to extract filename (not the raw sourceUrl to avoid SSRF bypass)
+      const urlPath = validatedUrl.pathname;
+      const pathParts = urlPath.split('/').filter(Boolean);
+      const lastPart = pathParts[pathParts.length - 1] || '';
       // Remove any query strings or file keys
       const originalName = lastPart.includes('?') ? lastPart.split('?')[0] : lastPart;
       // Remove the file key prefix if present (uploadthing uses 'f' prefix)
