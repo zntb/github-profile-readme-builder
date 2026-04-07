@@ -278,8 +278,42 @@ function generateQuoteSvg(
   const authorAnchor =
     authorAlign === 'left' ? 'start' : authorAlign === 'right' ? 'end' : 'middle';
 
+  // Wrap text to fit within the box (max ~50 chars per line at 16px)
+  const maxCharsPerLine = 50;
+  const words = escapedText.split(' ');
+  const lines: string[] = [];
+  let currentLine = '';
+
+  for (const word of words) {
+    if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
+      currentLine = (currentLine + ' ' + word).trim();
+    } else {
+      if (currentLine) lines.push(currentLine);
+      currentLine = word;
+    }
+  }
+  if (currentLine) lines.push(currentLine);
+
+  // Calculate dynamic height based on number of lines
+  const lineHeight = 20;
+  const baseHeight = 160;
+  const extraLines = Math.max(0, lines.length - 2);
+  const height = baseHeight + extraLines * lineHeight;
+  const centerY = 40 + extraLines * lineHeight;
+
+  // Generate wrapped text lines with proper positioning
+  const textLines = lines
+    .map((line, index) => {
+      return `    <tspan x="${quoteX}" dy="${index === 0 ? 0 : lineHeight}">${line}</tspan>`;
+    })
+    .join('\n');
+
+  // Calculate divider and author positions based on height
+  const dividerY = centerY + lines.length * lineHeight + 10;
+  const authorY = dividerY + 20;
+
   return `
-<svg width="495" height="160" viewBox="0 0 495 160" xmlns="http://www.w3.org/2000/svg">
+<svg width="495" height="${height}" viewBox="0 0 495 ${height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#${bg};stop-opacity:1" />
@@ -307,18 +341,17 @@ function generateQuoteSvg(
     }
   </style>
 
-  <rect width="495" height="160" fill="url(#bgGradient)" rx="10"/>
-  <rect x="0" y="0" width="495" height="160" fill="none" rx="10" stroke="#${border}" stroke-width="1"/>
+  <rect width="495" height="${height}" fill="url(#bgGradient)" rx="10"/>
+  <rect x="0" y="0" width="495" height="${height}" fill="none" rx="10" stroke="#${border}" stroke-width="1"/>
 
-  <text x="${textAlign === 'left' ? 20 : textAlign === 'right' ? 460 : 247}" y="45" class="quote-mark" text-anchor="${quoteAnchor}">"</text>
-  <text x="${quoteX}" y="85" class="quote-text" text-anchor="${quoteAnchor}">
-    <tspan x="${quoteX}" dy="0">${escapedText}</tspan>
+  <text x="${textAlign === 'left' ? 20 : textAlign === 'right' ? 460 : 247}" y="30" class="quote-mark" text-anchor="${quoteAnchor}">"</text>
+  <text x="${quoteX}" y="${centerY}" class="quote-text" text-anchor="${quoteAnchor}">
+${textLines}
   </text>
 
-  <line x1="${textAlign === 'left' ? 25 : textAlign === 'right' ? 395 : 247}" y1="110" x2="${textAlign === 'left' ? 100 : textAlign === 'right' ? 470 : 395}" y2="110" class="divider"/>
+  <line x1="${textAlign === 'left' ? 25 : textAlign === 'right' ? 395 : 247}" y1="${dividerY}" x2="${textAlign === 'left' ? 100 : textAlign === 'right' ? 470 : 395}" y2="${dividerY}" class="divider"/>
 
-  <text x="${authorX}" y="135" class="author" text-anchor="${authorAnchor}">— ${escapedAuthor}</text>
-  <text x="380" y="145" font-family="'Segoe UI', Ubuntu, Sans-Serif" font-size="10" fill="#${text}" opacity="0.5">github-profile-maker</text>
+  <text x="${authorX}" y="${authorY}" class="author" text-anchor="${authorAnchor}">— ${escapedAuthor}</text>
 </svg>
   `.trim();
 }
