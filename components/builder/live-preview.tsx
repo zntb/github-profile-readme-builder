@@ -249,6 +249,8 @@ function isBlockLoading(
     const quoteParams = new URLSearchParams({
       type: (block.props.type as string) || 'default',
       theme: (block.props.theme as string) || 'default',
+      textAlign: (block.props.textAlign as string) || 'center',
+      authorAlign: (block.props.authorAlign as string) || 'center',
       ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
       ...(block.props.author ? { author: String(block.props.author) } : {}),
     });
@@ -339,6 +341,8 @@ function getApiUrlForBlock(block: Block, username: string): string | null {
       const params = new URLSearchParams({
         type: (block.props.type as string) || 'default',
         theme: (block.props.theme as string) || 'default',
+        textAlign: (block.props.textAlign as string) || 'center',
+        authorAlign: (block.props.authorAlign as string) || 'center',
         ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
         ...(block.props.author ? { author: String(block.props.author) } : {}),
       });
