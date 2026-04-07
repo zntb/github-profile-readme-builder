@@ -1,6 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { UTApi } from 'uploadthing/server';
 
+// Allowed hosts for SSRF protection - only allow UploadThing domains
+const ALLOWED_HOSTS = ['utfs.io', 'ufs.sh', 'uploadthing.com'];
+
+function isUrlAllowed(url: URL): boolean {
+  const hostname = url.hostname.toLowerCase().replace(/\.$/, '');
+
+  // Check if hostname is in allowed list
+  if (ALLOWED_HOSTS.includes(hostname)) {
+    return true;
+  }
+
+  // Check if hostname ends with an allowed domain
+  return ALLOWED_HOSTS.some((allowedHost) => hostname.endsWith(`.${allowedHost}`));
+}
+
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json();
@@ -12,11 +27,32 @@ export async function POST(req: NextRequest) {
 
     console.log('Duplicate API received:', { sourceUrl, customFileName });
 
+    // Validate and restrict the source URL to mitigate SSRF
+    let validatedUrl: URL;
+    try {
+      validatedUrl = new URL(sourceUrl);
+    } catch {
+      return NextResponse.json({ error: 'Invalid source URL format' }, { status: 400 });
+    }
+
+    // Only allow http and https protocols
+    if (validatedUrl.protocol !== 'http:' && validatedUrl.protocol !== 'https:') {
+      return NextResponse.json(
+        { error: 'Only HTTP and HTTPS protocols are allowed' },
+        { status: 400 },
+      );
+    }
+
+    // Check if the hostname is allowed
+    if (!isUrlAllowed(validatedUrl)) {
+      return NextResponse.json({ error: 'Source URL host is not allowed' }, { status: 400 });
+    }
+
     const utapi = new UTApi({ token: process.env.UPLOADTHING_TOKEN });
 
     // Download the source image
-    console.log('Downloading source image from:', sourceUrl);
-    const response = await fetch(sourceUrl);
+    console.log('Downloading source image from:', validatedUrl.toString());
+    const response = await fetch(validatedUrl.toString());
     console.log('Download response status:', response.status, response.statusText);
     if (!response.ok) {
       return NextResponse.json({ error: 'Failed to download source image' }, { status: 500 });
