@@ -195,7 +195,8 @@ function usePrefetchedImages(
     return Array.from(urlSet);
   }, [blocks, globalUsername]);
 
-  // Fetch all URLs in parallel on mount and when urls change
+  // Fetch images sequentially with priority - visible blocks first, then background
+  // This optimizes perceived performance by loading visible content before background content
   useEffect(() => {
     if (urls.length === 0) return;
 
@@ -209,32 +210,44 @@ function usePrefetchedImages(
     }
     setImageStates(initialStates);
 
-    // Fetch all URLs in parallel using Promise.allSettled
-    Promise.all(
-      urls.map(async (url) => {
+    // Fetch images sequentially to prioritize visible blocks
+    // This prevents bandwidth contention and gives faster visual feedback
+    let isCancelled = false;
+
+    const fetchSequentially = async () => {
+      for (const url of urls) {
+        if (isCancelled) break;
+
         try {
           const response = await fetch(url);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
           const blob = await response.blob();
           const dataUrl = await blobToDataUrl(blob);
-          return { url, dataUrl, success: true };
+
+          if (!isCancelled) {
+            setImageStates((prev) => {
+              const newStates = new Map(prev);
+              newStates.set(url, { loading: false, data: dataUrl, error: null });
+              return newStates;
+            });
+          }
         } catch (error) {
-          return { url, error: error as Error, success: false };
-        }
-      }),
-    ).then((results) => {
-      setImageStates((prev) => {
-        const newStates = new Map(prev);
-        for (const result of results) {
-          if (result.success && result.dataUrl) {
-            newStates.set(result.url, { loading: false, data: result.dataUrl, error: null });
-          } else {
-            newStates.set(result.url, { loading: false, data: null, error: result.error ?? null });
+          if (!isCancelled) {
+            setImageStates((prev) => {
+              const newStates = new Map(prev);
+              newStates.set(url, { loading: false, data: null, error: error as Error });
+              return newStates;
+            });
           }
         }
-        return newStates;
-      });
-    });
+      }
+    };
+
+    fetchSequentially();
+
+    return () => {
+      isCancelled = true;
+    };
   }, [urls]);
 
   // Refetch function for retry functionality

@@ -418,7 +418,7 @@ export function BlockSidebar() {
               >
                 <button
                   onClick={() => toggleCategory(category.name)}
-                  className="flex w-full touch-target-min items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200 group"
+                  className="flex w-full touch-target-min items-center justify-between rounded-lg px-3 py-2.5 text-sm font-medium text-sidebar-foreground hover:bg-sidebar-accent/50 transition-all duration-200 group will-change-transform"
                 >
                   <span className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-primary/60 group-hover:bg-primary transition-colors duration-200" />
