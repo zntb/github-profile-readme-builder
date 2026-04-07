@@ -271,20 +271,38 @@ function generateQuoteSvg(
   const escapedText = escapeHtml(quote.text);
   const escapedAuthor = escapeHtml(quote.author);
 
+  // Card geometry
+  const cardWidth = 495;
+  const horizontalPadding = 25;
+  const contentWidth = cardWidth - horizontalPadding * 2;
+
   // Calculate text positions based on alignment
-  const quoteX = textAlign === 'left' ? 25 : textAlign === 'right' ? 25 : 247;
+  const quoteX = textAlign === 'left' ? 25 : textAlign === 'right' ? 470 : 247;
   const quoteAnchor = textAlign === 'left' ? 'start' : textAlign === 'right' ? 'end' : 'middle';
   const authorX = authorAlign === 'left' ? 25 : authorAlign === 'right' ? 470 : 247;
   const authorAnchor =
     authorAlign === 'left' ? 'start' : authorAlign === 'right' ? 'end' : 'middle';
 
-  // Wrap text to fit within the box (max ~50 chars per line at 16px)
-  const maxCharsPerLine = 50;
-  const words = escapedText.split(' ');
+  // Wrap text to fit within the box using a lightweight width estimate.
+  const estimatedCharWidth = 7.6;
+  const maxCharsPerLine = Math.max(22, Math.floor(contentWidth / estimatedCharWidth));
+  const words = escapedText.split(/\s+/);
   const lines: string[] = [];
   let currentLine = '';
 
   for (const word of words) {
+    // Handle extra-long tokens that would otherwise overflow the frame.
+    if (word.length > maxCharsPerLine) {
+      if (currentLine) {
+        lines.push(currentLine);
+        currentLine = '';
+      }
+      for (let i = 0; i < word.length; i += maxCharsPerLine) {
+        lines.push(word.slice(i, i + maxCharsPerLine));
+      }
+      continue;
+    }
+
     if ((currentLine + ' ' + word).trim().length <= maxCharsPerLine) {
       currentLine = (currentLine + ' ' + word).trim();
     } else {
@@ -295,11 +313,11 @@ function generateQuoteSvg(
   if (currentLine) lines.push(currentLine);
 
   // Calculate dynamic height based on number of lines
-  const lineHeight = 20;
-  const baseHeight = 160;
+  const lineHeight = 22;
+  const baseHeight = 140;
   const extraLines = Math.max(0, lines.length - 2);
   const height = baseHeight + extraLines * lineHeight;
-  const centerY = 40 + extraLines * lineHeight;
+  const centerY = 44;
 
   // Generate wrapped text lines with proper positioning
   const textLines = lines
@@ -313,7 +331,7 @@ function generateQuoteSvg(
   const authorY = dividerY + 20;
 
   return `
-<svg width="495" height="${height}" viewBox="0 0 495 ${height}" xmlns="http://www.w3.org/2000/svg">
+<svg width="${cardWidth}" height="${height}" viewBox="0 0 ${cardWidth} ${height}" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bgGradient" x1="0%" y1="0%" x2="100%" y2="100%">
       <stop offset="0%" style="stop-color:#${bg};stop-opacity:1" />
@@ -341,11 +359,15 @@ function generateQuoteSvg(
     }
   </style>
 
-  <rect width="495" height="${height}" fill="url(#bgGradient)" rx="10"/>
-  <rect x="0" y="0" width="495" height="${height}" fill="none" rx="10" stroke="#${border}" stroke-width="1"/>
+  <clipPath id="quoteClip">
+    <rect x="${horizontalPadding}" y="14" width="${contentWidth}" height="${height - 58}" rx="2"/>
+  </clipPath>
+
+  <rect width="${cardWidth}" height="${height}" fill="url(#bgGradient)" rx="10"/>
+  <rect x="0" y="0" width="${cardWidth}" height="${height}" fill="none" rx="10" stroke="#${border}" stroke-width="1"/>
 
   <text x="${textAlign === 'left' ? 20 : textAlign === 'right' ? 460 : 247}" y="30" class="quote-mark" text-anchor="${quoteAnchor}">"</text>
-  <text x="${quoteX}" y="${centerY}" class="quote-text" text-anchor="${quoteAnchor}">
+  <text x="${quoteX}" y="${centerY}" class="quote-text" text-anchor="${quoteAnchor}" clip-path="url(#quoteClip)">
 ${textLines}
   </text>
 
