@@ -55,7 +55,7 @@ import {
   LazyShareButton,
   LazyTemplatesDialog,
 } from '@/lib/lazy-components';
-import { renderMarkdown } from '@/lib/markdown';
+import { renderMarkdown, resolveMarkdownOrigin } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 import { generateShareUrl } from '@/lib/url-state';
 
@@ -85,7 +85,7 @@ export function BuilderHeader() {
   const [showSettings, setShowSettings] = useState(false);
 
   const handleExport = () => {
-    const markdown = renderMarkdown(blocks, window.location.origin);
+    const markdown = renderMarkdown(blocks, resolveMarkdownOrigin(window.location.origin));
     const blob = new Blob([markdown], { type: 'text/markdown' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

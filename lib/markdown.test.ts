@@ -1,6 +1,6 @@
 import { describe, expect, it } from '@jest/globals';
 
-import { renderBlock, renderMarkdown } from './markdown';
+import { renderBlock, renderMarkdown, resolveMarkdownOrigin } from './markdown';
 import type { Block } from './types';
 
 describe('renderBlock', () => {
@@ -512,5 +512,22 @@ describe('renderMarkdown', () => {
     expect((result.match(/alt="GitHub Stats"/g) || []).length).toBe(1);
     expect((result.match(/alt="GitHub Streak"/g) || []).length).toBe(1);
     expect((result.match(/<div align="center">/g) || []).length).toBeGreaterThanOrEqual(1);
+  });
+});
+
+describe('resolveMarkdownOrigin', () => {
+  it('should return the same origin for public hosts', () => {
+    expect(resolveMarkdownOrigin('https://github-profile-maker.vercel.app')).toBe(
+      'https://github-profile-maker.vercel.app',
+    );
+  });
+
+  it('should use production origin for localhost URLs', () => {
+    expect(resolveMarkdownOrigin('http://localhost:3000')).toBe(
+      'https://github-profile-maker.vercel.app',
+    );
+    expect(resolveMarkdownOrigin('http://127.0.0.1:3000')).toBe(
+      'https://github-profile-maker.vercel.app',
+    );
   });
 });

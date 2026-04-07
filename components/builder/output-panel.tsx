@@ -5,7 +5,12 @@ import { useMemo, useState } from 'react';
 
 import { Button } from '@/components/ui/button';
 import { LazyLivePreview } from '@/lib/lazy-components';
-import { copyToClipboard, downloadMarkdown, renderMarkdown } from '@/lib/markdown';
+import {
+  copyToClipboard,
+  downloadMarkdown,
+  renderMarkdown,
+  resolveMarkdownOrigin,
+} from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 
 interface OutputPanelProps {
@@ -18,7 +23,7 @@ export function OutputPanel({ mode }: OutputPanelProps) {
 
   const markdown = useMemo(() => {
     if (typeof window === 'undefined') return '';
-    return renderMarkdown(blocks, window.location.origin);
+    return renderMarkdown(blocks, resolveMarkdownOrigin(window.location.origin));
   }, [blocks]);
 
   const handleCopy = async () => {

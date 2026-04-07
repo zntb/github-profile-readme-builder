@@ -16,7 +16,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
-import { renderMarkdown } from '@/lib/markdown';
+import { renderMarkdown, resolveMarkdownOrigin } from '@/lib/markdown';
 import { useBuilderStore } from '@/lib/store';
 
 interface GistResponse {
@@ -77,7 +77,7 @@ export function SaveToGist({ showDesktopButton = true }: SaveToGistProps) {
     setIsLoading(true);
 
     try {
-      const content = renderMarkdown(blocks, window.location.origin);
+      const content = renderMarkdown(blocks, resolveMarkdownOrigin(window.location.origin));
 
       const response = await fetch('/api/gist', {
         method: 'POST',

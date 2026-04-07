@@ -1,6 +1,27 @@
 import { useBuilderStore } from './store';
 import type { Block } from './types';
 
+const DEFAULT_PUBLIC_ORIGIN = 'https://github-profile-maker.vercel.app';
+
+/**
+ * Resolve a public origin safe for README image URLs.
+ * Localhost URLs render in browser preview, but are unreachable from GitHub.
+ */
+export function resolveMarkdownOrigin(origin?: string): string {
+  if (!origin) return DEFAULT_PUBLIC_ORIGIN;
+
+  try {
+    const parsed = new URL(origin);
+    const localHosts = new Set(['localhost', '127.0.0.1', '0.0.0.0', '[::1]', '::1']);
+    if (localHosts.has(parsed.hostname)) {
+      return DEFAULT_PUBLIC_ORIGIN;
+    }
+    return parsed.origin;
+  } catch {
+    return DEFAULT_PUBLIC_ORIGIN;
+  }
+}
+
 // Build internal API URL
 function buildInternalUrl(endpoint: string, params: Record<string, unknown>): string {
   const filteredParams: Record<string, string> = {};
