@@ -55,6 +55,12 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:bg-primary focus:text-primary-foreground focus:rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
+        >
+          Skip to main content
+        </a>
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -62,7 +68,9 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <NotificationProvider>
-            <div className="flex-1 flex flex-col">{children}</div>
+            <main id="main-content" className="flex-1 flex flex-col">
+              <div className="flex-1 flex flex-col">{children}</div>
+            </main>
             <Toaster position="bottom-right" richColors />
           </NotificationProvider>
         </ThemeProvider>

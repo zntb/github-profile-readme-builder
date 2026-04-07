@@ -34,7 +34,11 @@ export function ConfigPanel() {
 
   if (!selectedBlockId) {
     return (
-      <div className="flex h-full w-full flex-col border-l border-border bg-sidebar">
+      <div
+        className="flex h-full w-full flex-col border-l border-border bg-sidebar"
+        role="region"
+        aria-label="Configuration panel"
+      >
         <div className="border-b border-border p-4">
           <h2 className="text-sm font-semibold text-sidebar-foreground">Configuration</h2>
         </div>
@@ -63,6 +67,7 @@ export function ConfigPanel() {
           size="icon"
           className="hidden lg:flex h-6 w-6"
           onClick={() => selectBlock(null)}
+          aria-label="Close configuration panel"
         >
           <X className="h-4 w-4" />
         </Button>

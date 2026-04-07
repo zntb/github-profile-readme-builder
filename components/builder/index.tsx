@@ -150,6 +150,7 @@ export function Builder() {
                 variant="ghost"
                 size="icon"
                 className="absolute left-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                aria-label="Open blocks panel"
               >
                 <Blocks className="w-5 h-5" />
               </Button>
@@ -177,6 +178,7 @@ export function Builder() {
                 variant="ghost"
                 size="icon"
                 className="absolute right-2 top-16 z-20 md:flex hidden lg:hidden hover:bg-primary/10 hover:text-primary transition-colors duration-200"
+                aria-label="Open configuration panel"
               >
                 {selectedBlockId ? <Settings2 className="w-5 h-5" /> : <Eye className="w-5 h-5" />}
               </Button>

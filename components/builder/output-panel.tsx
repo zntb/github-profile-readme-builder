@@ -40,7 +40,11 @@ export function OutputPanel({ mode }: OutputPanelProps) {
 
   if (mode === 'preview') {
     return (
-      <div className="flex h-full flex-col bg-background/50">
+      <div
+        className="flex h-full flex-col bg-background/50"
+        role="region"
+        aria-label="Preview panel"
+      >
         <div className="flex items-center justify-between px-4 py-2 border-b border-border/50 bg-gradient-to-r from-card/50 to-transparent">
           <div className="flex items-center gap-2 text-xs text-muted-foreground">
             <div className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />

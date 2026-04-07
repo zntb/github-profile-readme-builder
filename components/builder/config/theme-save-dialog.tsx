@@ -277,6 +277,7 @@ export function ThemeSaveDialog({
                             e.stopPropagation();
                             setShowDeleteConfirm(theme.id);
                           }}
+                          aria-label="Delete theme"
                         >
                           <Trash2 className="h-4 w-4" />
                         </Button>

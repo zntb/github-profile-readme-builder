@@ -223,7 +223,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
               e.stopPropagation();
               toggleBlockLock(block.id);
             }}
-            title={isLocked ? 'Unlock block' : 'Lock block'}
+            aria-label={isLocked ? 'Unlock block' : 'Lock block'}
           >
             {isLocked ? <Unlock className="h-3.5 w-3.5" /> : <Lock className="h-3.5 w-3.5" />}
           </Button>
@@ -234,6 +234,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-200"
                 onClick={handleDuplicate}
+                aria-label="Duplicate block"
               >
                 <Copy className="h-3.5 w-3.5" />
               </Button>
@@ -242,6 +243,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
                 size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
                 onClick={handleDeleteClick}
+                aria-label="Delete block"
               >
                 <Trash2 className="h-3.5 w-3.5" />
               </Button>
@@ -264,6 +266,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
                 e.stopPropagation();
                 handleAlignment('left');
               }}
+              aria-label="Align left"
             >
               <AlignLeft className="h-3 w-3" />
             </Button>
@@ -275,6 +278,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
                 e.stopPropagation();
                 handleAlignment('center');
               }}
+              aria-label="Align center"
             >
               <AlignCenter className="h-3 w-3" />
             </Button>
@@ -286,6 +290,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
                 e.stopPropagation();
                 handleAlignment('right');
               }}
+              aria-label="Align right"
             >
               <AlignRight className="h-3 w-3" />
             </Button>

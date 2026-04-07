@@ -50,6 +50,7 @@ export function TypingAnimationConfig({
                     const newLines = lines.filter((_, idx) => idx !== i);
                     onLinesChange(newLines);
                   }}
+                  aria-label="Remove line"
                 >
                   <Trash2 className="h-4 w-4" />
                 </Button>

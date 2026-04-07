@@ -211,7 +211,7 @@ export function Canvas() {
   const shouldVirtualize = blocks.length >= VIRTUALIZATION_THRESHOLD;
 
   return (
-    <ScrollArea className="h-full bg-background/30">
+    <ScrollArea className="h-full bg-background/30" role="region" aria-label="Canvas area">
       <div className="min-h-full p-4 sm:p-8" onClick={handleCanvasClick}>
         <div className="mx-auto max-w-4xl">
           {/* Canvas header */}

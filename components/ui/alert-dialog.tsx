@@ -43,16 +43,52 @@ function AlertDialogContent({
 }: React.ComponentProps<typeof AlertDialogPrimitive.Content> & {
   size?: 'default' | 'sm';
 }) {
+  const focusRef = React.useRef<HTMLDivElement>(null);
+
+  // Prevent focus from escaping the dialog (WCAG 2.1.2)
+  React.useEffect(() => {
+    const handleKeyDown = (e: Event) => {
+      const keyboardEvent = e as unknown as KeyboardEvent;
+      if (keyboardEvent.key === 'Tab') {
+        const focusableElements = focusRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusableElements && focusableElements.length > 0) {
+          const firstElement = focusableElements[0] as HTMLElement;
+          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+          if (keyboardEvent.shiftKey && document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          } else if (!keyboardEvent.shiftKey && document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    const overlay = document.querySelector('[data-slot="alert-dialog-overlay"]');
+    if (overlay) {
+      overlay.addEventListener('keydown', handleKeyDown);
+      return () => overlay.removeEventListener('keydown', handleKeyDown);
+    }
+  }, []);
+
   return (
     <AlertDialogPortal>
       <AlertDialogOverlay />
       <AlertDialogPrimitive.Content
+        ref={focusRef}
         data-slot="alert-dialog-content"
         data-size={size}
         className={cn(
           'group/alert-dialog-content fixed top-1/2 left-1/2 z-50 grid w-full -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none data-[size=default]:max-w-xs data-[size=sm]:max-w-xs data-[size=default]:sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
           className,
         )}
+        onCloseAutoFocus={(e) => {
+          e.preventDefault();
+        }}
         {...props}
       />
     </AlertDialogPortal>

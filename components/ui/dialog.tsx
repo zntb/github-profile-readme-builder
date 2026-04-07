@@ -47,21 +47,63 @@ function DialogContent({
 }: React.ComponentProps<typeof DialogPrimitive.Content> & {
   showCloseButton?: boolean;
 }) {
+  const focusRef = React.useRef<HTMLDivElement>(null);
+
+  // Prevent focus from escaping the dialog (WCAG 2.1.2)
+  React.useEffect(() => {
+    const handleKeyDown = (e: Event) => {
+      const keyboardEvent = e as unknown as KeyboardEvent;
+      if (keyboardEvent.key === 'Tab') {
+        const focusableElements = focusRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
+        );
+        if (focusableElements && focusableElements.length > 0) {
+          const firstElement = focusableElements[0] as HTMLElement;
+          const lastElement = focusableElements[focusableElements.length - 1] as HTMLElement;
+
+          if (keyboardEvent.shiftKey && document.activeElement === firstElement) {
+            e.preventDefault();
+            lastElement.focus();
+          } else if (!keyboardEvent.shiftKey && document.activeElement === lastElement) {
+            e.preventDefault();
+            firstElement.focus();
+          }
+        }
+      }
+    };
+
+    const overlay = document.querySelector('[data-slot="dialog-overlay"]');
+    if (overlay) {
+      overlay.addEventListener('keydown', handleKeyDown);
+      return () => overlay.removeEventListener('keydown', handleKeyDown);
+    }
+  }, []);
+
   return (
     <DialogPortal>
       <DialogOverlay />
       <DialogPrimitive.Content
+        ref={focusRef}
         data-slot="dialog-content"
         className={cn(
           'fixed top-1/2 left-1/2 z-50 grid w-full max-w-[calc(100%-2rem)] -translate-x-1/2 -translate-y-1/2 gap-4 rounded-xl bg-popover p-4 text-sm text-popover-foreground ring-1 ring-foreground/10 duration-100 outline-none sm:max-w-sm data-open:animate-in data-open:fade-in-0 data-open:zoom-in-95 data-closed:animate-out data-closed:fade-out-0 data-closed:zoom-out-95',
           className,
         )}
+        onCloseAutoFocus={(e) => {
+          // Prevent focus from moving to trigger when closing dialog
+          e.preventDefault();
+        }}
         {...props}
       >
         {children}
         {showCloseButton && (
           <DialogPrimitive.Close data-slot="dialog-close" asChild>
-            <Button variant="ghost" className="absolute top-2 right-2" size="icon-sm">
+            <Button
+              variant="ghost"
+              className="absolute top-2 right-2"
+              size="icon-sm"
+              aria-label="Close dialog"
+            >
               <XIcon />
               <span className="sr-only">Close</span>
             </Button>
