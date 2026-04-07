@@ -1,7 +1,7 @@
 'use client';
 
 import { generateReactHelpers } from '@uploadthing/react';
-import { Loader2 } from 'lucide-react';
+import { AlertTriangle, Loader2 } from 'lucide-react';
 import { useRef, useState } from 'react';
 
 import type { OurFileRouter } from '@/app/api/uploadthing/core';
@@ -44,6 +44,8 @@ export function FileUpload({
   const [isUploading, setIsUploading] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [isOptimizing, setIsOptimizing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState<number | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   // Get optimization settings from store
   const settings = useImageOptimizationStore((state) => state.settings);
@@ -55,11 +57,17 @@ export function FileUpload({
       }
       setIsUploading(false);
       setIsOptimizing(false);
+      setUploadProgress(null);
     },
-    onUploadError: (error) => {
-      console.error('Upload error:', error);
+    onUploadError: (uploadError) => {
+      console.error('Upload error:', uploadError);
+      setError(uploadError.message || 'Upload failed. Please try again.');
       setIsUploading(false);
       setIsOptimizing(false);
+      setUploadProgress(null);
+    },
+    onUploadProgress: (progress) => {
+      setUploadProgress(progress);
     },
   });
 
@@ -69,19 +77,23 @@ export function FileUpload({
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Clear previous error
+    setError(null);
+
     const validTypes = accept.split(',').map((t) => t.trim());
     if (!validTypes.some((type) => file.type.match(type))) {
-      console.error('Invalid file type');
+      setError('Invalid file type. Please select a supported format.');
       return;
     }
 
     const maxSize = 8 * 1024 * 1024;
     if (file.size > maxSize) {
-      console.error('File too large (max 8MB)');
+      setError('File too large. Maximum size is 8MB.');
       return;
     }
 
     setIsUploading(true);
+    setUploadProgress(0);
 
     try {
       let fileToUpload = file;
@@ -133,10 +145,12 @@ export function FileUpload({
       }
 
       await startUpload([fileToUpload]);
-    } catch (error) {
-      console.error('Error uploading file:', error);
+    } catch (err) {
+      console.error('Error uploading file:', err);
+      setError('Upload failed. Please try again.');
       setIsUploading(false);
       setIsOptimizing(false);
+      setUploadProgress(null);
     } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = '';
@@ -146,6 +160,7 @@ export function FileUpload({
 
   const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     onChange(e.target.value);
+    setError(null);
   };
 
   const handleClearClick = () => {
@@ -154,6 +169,7 @@ export function FileUpload({
     } else {
       onChange('');
     }
+    setError(null);
   };
 
   const handleDeleteConfirm = async () => {
@@ -170,8 +186,8 @@ export function FileUpload({
           console.error('UploadThing delete failed:', errorText);
           return;
         }
-      } catch (error) {
-        console.error('Error deleting file:', error);
+      } catch (deleteError) {
+        console.error('Error deleting file:', deleteError);
         return;
       }
     }
@@ -185,7 +201,13 @@ export function FileUpload({
 
   // Show combined loading state
   const isLoading = isUploadingAny || isOptimizing;
-  const loadingText = isOptimizing ? 'Optimizing...' : isUploading ? 'Uploading...' : null;
+  const loadingText = isOptimizing
+    ? 'Optimizing...'
+    : isUploading
+      ? uploadProgress
+        ? `${Math.round(uploadProgress)}%`
+        : 'Uploading...'
+      : null;
 
   return (
     <div className="space-y-2">
@@ -227,6 +249,28 @@ export function FileUpload({
           </Button>
         )}
       </div>
+
+      {/* Progress bar for uploads */}
+      {isUploading && uploadProgress !== null && (
+        <div className="space-y-1">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-muted">
+            <div
+              className="h-full bg-primary transition-all duration-300 ease-in-out"
+              style={{ width: `${uploadProgress}%` }}
+            />
+          </div>
+          <p className="text-xs text-muted-foreground">Uploading: {Math.round(uploadProgress)}%</p>
+        </div>
+      )}
+
+      {/* Error display */}
+      {error && (
+        <div className="flex items-center gap-2 rounded-md bg-destructive/10 p-2 text-sm text-destructive">
+          <AlertTriangle className="h-4 w-4 flex-shrink-0" />
+          <span>{error}</span>
+        </div>
+      )}
+
       <Label className="text-xs text-muted-foreground">
         Supported: {accept.replace(/image\//g, '')} (max 8MB)
         {settings.enabled && ' • Auto-optimization enabled'}

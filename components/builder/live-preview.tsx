@@ -1,9 +1,10 @@
 /* eslint-disable @next/next/no-img-element */
 'use client';
 
-import { Eye } from 'lucide-react';
-import { JSX, useEffect, useMemo, useState, type CSSProperties } from 'react';
+import { AlertTriangle, Eye, RefreshCw } from 'lucide-react';
+import { JSX, useCallback, useEffect, useMemo, useState, type CSSProperties } from 'react';
 
+import { Button } from '@/components/ui/button';
 import { resolveFooterBannerColors } from '@/lib/footer-banner-utils';
 import { getQuoteTheme } from '@/lib/quote-themes';
 import { useBuilderStore } from '@/lib/store';
@@ -21,6 +22,56 @@ interface ImageState {
 }
 
 /**
+ * Check if a block has an error in its API call
+ */
+function isBlockErrored(
+  block: Block,
+  imageStates: Map<string, ImageState>,
+  globalUsername: string,
+): boolean {
+  // For non-API blocks, no error tracking needed
+  const apiBlockTypes = [
+    'stats-card',
+    'top-languages',
+    'streak-stats',
+    'activity-graph',
+    'trophies',
+    'quote',
+  ];
+  if (!apiBlockTypes.includes(block.type)) return false;
+
+  // Quote blocks don't need a username, handle separately
+  if (block.type === 'quote') {
+    const quoteParams = new URLSearchParams({
+      type: (block.props.type as string) || 'default',
+      theme: (block.props.theme as string) || 'default',
+      textAlign: (block.props.textAlign as string) || 'center',
+      authorAlign: (block.props.authorAlign as string) || 'center',
+      ...(block.props.quote ? { quote: String(block.props.quote) } : {}),
+      ...(block.props.author ? { author: String(block.props.author) } : {}),
+    });
+    const quoteUrl = `/api/quotes?${quoteParams.toString()}`;
+    const state = imageStates.get(quoteUrl);
+    return state?.error !== null;
+  }
+
+  const getUsername = (blockUsername: string) => {
+    return (!blockUsername || blockUsername === 'github') && globalUsername
+      ? globalUsername
+      : blockUsername;
+  };
+
+  const username = getUsername(block.props.username as string);
+  if (!username || username === 'github') return false;
+
+  const baseUrl = getApiUrlForBlock(block, username);
+  if (!baseUrl) return false;
+
+  const state = imageStates.get(baseUrl);
+  return state?.error !== null;
+}
+
+/**
  * Hook to prefetch all API images in parallel for a list of blocks.
  * Returns a map of URL -> { loading, data, error } for each image URL.
  * Also returns an isLoading state for overall loading progress.
@@ -31,6 +82,7 @@ function usePrefetchedImages(
 ): {
   imageStates: Map<string, ImageState>;
   isLoading: boolean;
+  refetch: () => void;
 } {
   const [imageStates, setImageStates] = useState<Map<string, ImageState>>(new Map());
 
@@ -185,6 +237,48 @@ function usePrefetchedImages(
     });
   }, [urls]);
 
+  // Refetch function for retry functionality
+  const refetch = useCallback(() => {
+    if (urls.length === 0) return;
+
+    // Set all URLs to loading again
+    setImageStates((prev) => {
+      const newStates = new Map(prev);
+      for (const url of urls) {
+        const currentState = prev.get(url);
+        newStates.set(url, { loading: true, data: currentState?.data ?? null, error: null });
+      }
+      return newStates;
+    });
+
+    // Refetch all URLs
+    Promise.all(
+      urls.map(async (url) => {
+        try {
+          const response = await fetch(url);
+          if (!response.ok) throw new Error(`HTTP ${response.status}`);
+          const blob = await response.blob();
+          const dataUrl = await blobToDataUrl(blob);
+          return { url, dataUrl, success: true };
+        } catch (fetchError) {
+          return { url, error: fetchError as Error, success: false };
+        }
+      }),
+    ).then((results) => {
+      setImageStates((prev) => {
+        const newStates = new Map(prev);
+        for (const result of results) {
+          if (result.success && result.dataUrl) {
+            newStates.set(result.url, { loading: false, data: result.dataUrl, error: null });
+          } else {
+            newStates.set(result.url, { loading: false, data: null, error: result.error ?? null });
+          }
+        }
+        return newStates;
+      });
+    });
+  }, [urls]);
+
   // Check if any images are still loading
   const isLoading = useMemo(() => {
     if (urls.length === 0) return false;
@@ -195,7 +289,7 @@ function usePrefetchedImages(
     return false;
   }, [imageStates, urls]);
 
-  return { imageStates, isLoading };
+  return { imageStates, isLoading, refetch } as const;
 }
 
 /**
@@ -355,7 +449,7 @@ function getApiUrlForBlock(block: Block, username: string): string | null {
 
 export function LivePreview({ blocks }: LivePreviewProps) {
   const globalUsername = useBuilderStore((state) => state.username);
-  const { imageStates: prefetchedImages } = usePrefetchedImages(blocks, globalUsername);
+  const { imageStates: prefetchedImages, refetch } = usePrefetchedImages(blocks, globalUsername);
 
   if (blocks.length === 0) {
     return (
@@ -427,8 +521,9 @@ export function LivePreview({ blocks }: LivePreviewProps) {
                 continue;
               }
 
-              // Check if this block needs to show a loading skeleton
+              // Check if this block needs to show a loading skeleton or error
               const blockLoading = isBlockLoading(block, prefetchedImages, globalUsername);
+              const blockError = isBlockErrored(block, prefetchedImages, globalUsername);
 
               items.push(
                 <div
@@ -438,6 +533,24 @@ export function LivePreview({ blocks }: LivePreviewProps) {
                 >
                   {blockLoading ? (
                     <BlockTypeSkeleton type={block.type} />
+                  ) : blockError ? (
+                    <div className="rounded-lg border border-destructive/20 bg-destructive/5 p-4">
+                      <div className="flex flex-col items-center gap-2 text-center">
+                        <AlertTriangle className="h-5 w-5 text-destructive" />
+                        <p className="text-sm text-muted-foreground">
+                          Failed to load {block.type.replace('-', ' ')}. Click to retry.
+                        </p>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => refetch()}
+                          className="mt-1"
+                        >
+                          <RefreshCw className="mr-2 h-3 w-3" />
+                          Retry
+                        </Button>
+                      </div>
+                    </div>
                   ) : (
                     <PreviewBlock block={block} prefetchedImages={prefetchedImages} />
                   )}

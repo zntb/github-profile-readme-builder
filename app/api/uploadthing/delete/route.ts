@@ -17,14 +17,13 @@ export async function POST(req: NextRequest) {
     const result = await utapi.deleteFiles(fileKey);
     console.log('Delete API result:', result);
 
-    if (!result.success || result.deletedCount < 1) {
-      return NextResponse.json(
-        { error: 'UploadThing did not delete the requested file', result },
-        { status: 500 },
-      );
+    // Consider successful if the API returned success, even if deletedCount is 0
+    // This handles cases where file was already deleted or doesn't exist
+    if (result.success) {
+      return NextResponse.json({ success: true, deletedCount: result.deletedCount });
     }
 
-    return NextResponse.json({ success: true, deletedCount: result.deletedCount });
+    return NextResponse.json({ error: 'Failed to delete file', result }, { status: 500 });
   } catch (error) {
     console.error('Error deleting file:', error);
     return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });

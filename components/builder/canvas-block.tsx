@@ -87,15 +87,15 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ fileKey }),
           });
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error('UploadThing delete failed:', errorText);
-            return;
+          const data = await response.json();
+          // Allow deletion to proceed even if UploadThing couldn't delete
+          // (file might not exist anymore)
+          if (!response.ok && !data.success) {
+            console.error('UploadThing delete failed:', data.error || (await response.text()));
           }
         }
       } catch (error) {
         console.error('Error deleting file:', error);
-        return;
       }
     }
     removeBlock(block.id);
