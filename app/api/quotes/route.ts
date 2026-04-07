@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import sharp from 'sharp';
 
 import { escapeHtml } from '@/lib/utils';
 
@@ -345,29 +344,13 @@ export async function GET(request: NextRequest) {
         authorAlign,
       );
 
-      try {
-        // Convert SVG to PNG for GitHub compatibility
-        const pngBuffer = await sharp(Buffer.from(svg))
-          .resize(990, 320, { fit: 'fill' })
-          .png()
-          .toBuffer();
-
-        return new NextResponse(pngBuffer as unknown as Blob, {
-          headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control': 'public, max-age=3600',
-          },
-        });
-      } catch (err) {
-        console.error('SVG to PNG conversion failed:', err);
-        // Return SVG as fallback
-        return new NextResponse(svg, {
-          headers: {
-            'Content-Type': 'image/svg+xml',
-            'Cache-Control': 'public, max-age=3600',
-          },
-        });
-      }
+      // Return SVG directly - works in GitHub
+      return new NextResponse(svg, {
+        headers: {
+          'Content-Type': 'image/svg+xml',
+          'Cache-Control': 'public, max-age=3600',
+        },
+      });
     }
 
     // Filter quotes by type (default to all quotes if type has no matches)
@@ -389,29 +372,13 @@ export async function GET(request: NextRequest) {
 
     const svg = generateQuoteSvg(quote, themeName, textAlign, authorAlign);
 
-    try {
-      // Convert SVG to PNG for GitHub compatibility
-      const pngBuffer = await sharp(Buffer.from(svg))
-        .resize(990, 320, { fit: 'fill' })
-        .png()
-        .toBuffer();
-
-      return new NextResponse(pngBuffer as unknown as Blob, {
-        headers: {
-          'Content-Type': 'image/png',
-          'Cache-Control': 'public, max-age=3600',
-        },
-      });
-    } catch (err) {
-      console.error('SVG to PNG conversion failed:', err);
-      // Return SVG as fallback - some GitHub instances may render it
-      return new NextResponse(svg, {
-        headers: {
-          'Content-Type': 'image/svg+xml',
-          'Cache-Control': 'public, max-age=3600',
-        },
-      });
-    }
+    // Return SVG directly - works in GitHub
+    return new NextResponse(svg, {
+      headers: {
+        'Content-Type': 'image/svg+xml',
+        'Cache-Control': 'public, max-age=3600',
+      },
+    });
   } catch (error) {
     console.error('Quote API Error:', error);
     return new NextResponse('Internal Server Error', { status: 500 });
