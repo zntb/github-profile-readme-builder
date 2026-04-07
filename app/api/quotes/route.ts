@@ -319,10 +319,23 @@ function generateQuoteSvg(
   const height = baseHeight + extraLines * lineHeight;
   const centerY = 44;
 
-  // Generate wrapped text lines with proper positioning
+  // Generate wrapped text lines with proper positioning, wrapping with quotation marks
   const textLines = lines
     .map((line, index) => {
-      return `    <tspan x="${quoteX}" dy="${index === 0 ? 0 : lineHeight}">${line}</tspan>`;
+      let wrappedLine = line;
+      const isFirstLine = index === 0;
+      const isLastLine = index === lines.length - 1;
+      if (isFirstLine && isLastLine) {
+        // Single line: wrap both sides
+        wrappedLine = `"${line}"`;
+      } else if (isFirstLine) {
+        // First line of multi-line: opening quote only
+        wrappedLine = `"${line}`;
+      } else if (isLastLine) {
+        // Last line of multi-line: closing quote only
+        wrappedLine = `${line}"`;
+      }
+      return `    <tspan x="${quoteX}" dy="${index === 0 ? 0 : lineHeight}">${wrappedLine}</tspan>`;
     })
     .join('\n');
 
