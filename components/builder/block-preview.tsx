@@ -164,12 +164,48 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         );
 
       case 'capsule-header': {
+        const capType = (props.type as string) ?? 'waving';
+        const capSection = (props.section as string) ?? 'header';
+        const parallaxEffect = props.parallaxEffect === true;
+
+        // For 'waving' type with parallax, render using API image for accurate wave preview
+        if (capType === 'waving' && parallaxEffect) {
+          // Build API URL with wave parameters
+          const wavePosition = props.wavePosition ?? 70;
+          const waveAmplitude = props.waveAmplitude ?? 20;
+          const waveSpeed = props.waveSpeed ?? 20;
+
+          const params = new URLSearchParams({
+            type: capType,
+            section: capSection,
+            height: String(props.height ?? 200),
+            text: String(props.text ?? ''),
+            fontSize: String(props.fontSize ?? 30),
+            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
+            color: String(props.bgStartColor ?? 'EEFF00'),
+            colorEnd: String(props.bgEndColor ?? 'A82DAA'),
+            gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
+            parallax: 'true',
+            wavePosition: String(wavePosition),
+            waveAmplitude: String(waveAmplitude),
+            waveSpeed: String(waveSpeed),
+          });
+
+          return (
+            <img
+              src={`/api/capsule?${params.toString()}`}
+              alt="Capsule Header"
+              className="w-full"
+              style={{ height: `${props.height ?? 200}px` }}
+            />
+          );
+        }
+
+        // Fall back to CSS-based rendering for non-parallax or other types
         const colorValue = props.color as string;
         const bgType = (props.bgType as string) ?? 'gradient';
         const bgAnimation = (props.bgAnimation as string) ?? 'none';
         const capHeight = (props.height as number) ?? 200;
-        const capType = (props.type as string) ?? 'waving';
-        const capSection = (props.section as string) ?? 'header';
 
         let bgStartColor = props.bgStartColor ? String(props.bgStartColor) : undefined;
         let bgEndColor = props.bgEndColor ? String(props.bgEndColor) : undefined;
@@ -734,6 +770,44 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
       }
 
       case 'footer-banner': {
+        const type = (props.type as string) ?? 'waving';
+        const section = (props.section as string) ?? 'footer';
+        const parallaxEffect = props.parallaxEffect === true;
+
+        // For 'waving' type with parallax, render using API image for accurate wave preview
+        if (type === 'waving' && parallaxEffect) {
+          // Build API URL with wave parameters
+          const wavePosition = props.wavePosition ?? 70;
+          const waveAmplitude = props.waveAmplitude ?? 20;
+          const waveSpeed = props.waveSpeed ?? 20;
+
+          const params = new URLSearchParams({
+            type,
+            section,
+            height: String(props.height ?? 80),
+            text: String(props.text ?? 'Thanks for visiting!'),
+            fontSize: String(props.fontSize ?? 24),
+            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
+            color: String(props.bgStartColor ?? '3B82F6'),
+            colorEnd: String(props.bgEndColor ?? '8B5CF6'),
+            gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
+            parallax: 'true',
+            wavePosition: String(wavePosition),
+            waveAmplitude: String(waveAmplitude),
+            waveSpeed: String(waveSpeed),
+          });
+
+          return (
+            <img
+              src={`/api/capsule?${params.toString()}`}
+              alt="Footer Banner"
+              className="w-full"
+              style={{ height: `${props.height ?? 80}px` }}
+            />
+          );
+        }
+
+        // Fall back to CSS-based rendering for non-parallax or other types
         // Determine background settings
         // FIXED: resolveFooterBannerColors() correctly handles both legacy
         // waveColor ("0:EEFF00,100:A82DAA") and modern (bgStartColor / bgEndColor)
@@ -744,7 +818,6 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         const bgAnimation = (props.bgAnimation as string) ?? 'none';
         const bgSolidColor = (props.bgSolidColor as string) ?? '3B82F6';
 
-        const type = (props.type as string) ?? 'waving';
         const height = Number(props.height) || 80;
 
         // Apply animation class

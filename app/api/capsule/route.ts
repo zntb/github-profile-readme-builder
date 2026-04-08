@@ -84,6 +84,12 @@ export async function GET(request: NextRequest) {
   const validAnimations = ['none', 'fadeIn', 'waving', 'scale'] as const;
   const validDirs = ['horizontal', 'vertical', 'diagonal', 'radial'] as const;
   const parallax = sp.get('parallax') === 'true';
+  const flipWave = sp.get('flipWave') === 'true';
+
+  // Wave parameters for Waving shape
+  const wavePosition = Math.min(Math.max(parseInt(sp.get('wavePosition') ?? '70', 10), 0), 100); // Percentage of height where wave starts (0-100)
+  const waveAmplitude = Math.min(Math.max(parseInt(sp.get('waveAmplitude') ?? '20', 10), 5), 50); // Wave height in pixels
+  const waveSpeed = Math.min(Math.max(parseInt(sp.get('waveSpeed') ?? '20', 10), 5), 60); // Animation duration in seconds
 
   const type = (validTypes as readonly string[]).includes(sp.get('type') ?? '')
     ? (sp.get('type') as (typeof validTypes)[number])
@@ -127,6 +133,11 @@ export async function GET(request: NextRequest) {
     sp.get('fontColor') ? (sp.get('fontColor') as string).replace(/^#/, '') : null,
     'ffffff',
   );
+
+  // Wave layer 2 colors (for parallax effect) - use different colors for depth effect
+  const waveColor2 = sanitizeHex(sp.get('waveColor2') ?? '', bgColor);
+  const waveColorEnd2 = sanitizeHex(sp.get('waveColorEnd2') ?? '', bgColorEnd);
+  const useGradient2 = waveColorEnd2.length === 6;
 
   const useGradient = bgColorEnd.length === 6;
 
@@ -205,12 +216,24 @@ export async function GET(request: NextRequest) {
 
   /* ── Gradient definition ──────────────────────────────────────── */
   const GRAD_ID = 'bg';
+  const GRAD_ID_2 = 'bg2';
   let gradientDef = '';
+  let gradientDef2 = '';
   let bgFill = `#${bgColor}`;
+  let bgFill2 = `#${waveColor2}`;
 
   if (useGradient) {
     gradientDef = buildGradientDef(GRAD_ID, bgColor, bgColorEnd, gradDir);
     bgFill = `url(#${GRAD_ID})`;
+  }
+
+  // Second gradient for parallax wave layer
+  if (useGradient2) {
+    gradientDef2 = buildGradientDef(GRAD_ID_2, waveColor2, waveColorEnd2, gradDir);
+    bgFill2 = `url(#${GRAD_ID_2})`;
+  } else {
+    // Use a slightly different opacity or blend for the second layer
+    bgFill2 = bgFill;
   }
 
   /* ── Shape markup ─────────────────────────────────────────────── */
@@ -223,30 +246,76 @@ export async function GET(request: NextRequest) {
   } else if (type === 'waving') {
     // Waving shape. With parallax enabled, render dual animated layers.
     if (parallax) {
-      const dur = '20s';
+      const dur = `${waveSpeed}s`;
+      // Calculate wave positions based on parameters
+      const baseWaveY = (height * wavePosition) / 100;
+      // Flip wave direction for browser preview (flipWave=true) to match GitHub display
+      const amplitude = flipWave ? -waveAmplitude : waveAmplitude;
+
+      // Create two distinct wave layers for parallax effect
+      // Layer 1 (background): positioned at wavePosition - offset for depth
+      // Layer 2 (foreground): positioned slightly lower for depth effect
+      const layer1Y = Math.round(baseWaveY - amplitude * 0.2);
+      const layer2Y = Math.round(baseWaveY + amplitude * 0.15);
+
+      // Animation phases - layer 2 starts at different time for parallax effect
+      const layer2Offset = waveSpeed * 0.33;
+
       if (section === 'header') {
+        // Header section - waves at the bottom
         shapeMarkup = `
-<path fill="${bgFill}" opacity="0.4">
-  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" values="M0 0L0 ${Math.round(height * 0.73)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.77)}T${WIDTH} ${Math.round(height * 0.85)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.82)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.8)}T${WIDTH} ${Math.round(height * 0.77)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.88)}Q${WIDTH / 4} ${Math.round(height * 0.78)} ${WIDTH / 2} ${Math.round(height * 0.88)}T${WIDTH} ${Math.round(height * 0.77)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.73)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.77)}T${WIDTH} ${Math.round(height * 0.85)}L${WIDTH} 0 Z"/>
+<!-- Background wave layer (slower, creates depth) -->
+<path fill="${bgFill}" opacity="0.5">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.25;0.5;0.75;1" values="
+    M0 ${layer1Y} Q${WIDTH * 0.125} ${layer1Y - amplitude * 0.6} ${WIDTH * 0.25} ${layer1Y} Q${WIDTH * 0.375} ${layer1Y + amplitude * 0.6} ${WIDTH * 0.5} ${layer1Y} Q${WIDTH * 0.625} ${layer1Y - amplitude * 0.4} ${WIDTH * 0.75} ${layer1Y} Q${WIDTH * 0.875} ${layer1Y + amplitude * 0.5} ${WIDTH} ${layer1Y} V${height} H0 Z;
+    M0 ${layer1Y + amplitude * 0.25} Q${WIDTH * 0.125} ${layer1Y - amplitude * 0.35} ${WIDTH * 0.25} ${layer1Y + amplitude * 0.25} Q${WIDTH * 0.375} ${layer1Y + amplitude * 0.85} ${WIDTH * 0.5} ${layer1Y + amplitude * 0.25} Q${WIDTH * 0.625} ${layer1Y - amplitude * 0.15} ${WIDTH * 0.75} ${layer1Y + amplitude * 0.25} Q${WIDTH * 0.875} ${layer1Y + amplitude * 0.75} ${WIDTH} ${layer1Y + amplitude * 0.25} V${height} H0 Z;
+    M0 ${layer1Y - amplitude * 0.15} Q${WIDTH * 0.125} ${layer1Y + amplitude * 0.45} ${WIDTH * 0.25} ${layer1Y - amplitude * 0.15} Q${WIDTH * 0.375} ${layer1Y - amplitude * 0.75} ${WIDTH * 0.5} ${layer1Y - amplitude * 0.15} Q${WIDTH * 0.625} ${layer1Y + amplitude * 0.25} ${WIDTH * 0.75} ${layer1Y - amplitude * 0.15} Q${WIDTH * 0.875} ${layer1Y - amplitude * 0.55} ${WIDTH} ${layer1Y - amplitude * 0.15} V${height} H0 Z;
+    M0 ${layer1Y + amplitude * 0.2} Q${WIDTH * 0.125} ${layer1Y - amplitude * 0.4} ${WIDTH * 0.25} ${layer1Y + amplitude * 0.2} Q${WIDTH * 0.375} ${layer1Y + amplitude * 0.6} ${WIDTH * 0.5} ${layer1Y + amplitude * 0.2} Q${WIDTH * 0.625} ${layer1Y - amplitude * 0.5} ${WIDTH * 0.75} ${layer1Y + amplitude * 0.2} Q${WIDTH * 0.875} ${layer1Y + amplitude * 0.4} ${WIDTH} ${layer1Y + amplitude * 0.2} V${height} H0 Z;
+    M0 ${layer1Y} Q${WIDTH * 0.125} ${layer1Y - amplitude * 0.6} ${WIDTH * 0.25} ${layer1Y} Q${WIDTH * 0.375} ${layer1Y + amplitude * 0.6} ${WIDTH * 0.5} ${layer1Y} Q${WIDTH * 0.625} ${layer1Y - amplitude * 0.4} ${WIDTH * 0.75} ${layer1Y} Q${WIDTH * 0.875} ${layer1Y + amplitude * 0.5} ${WIDTH} ${layer1Y} V${height} H0 Z"
+  />
 </path>
-<path fill="${bgFill}" opacity="0.4">
-  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-10s" values="M0 0L0 ${Math.round(height * 0.78)}Q${WIDTH / 4} ${Math.round(height * 0.93)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.87)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.83)}Q${WIDTH / 4} ${Math.round(height * 0.73)} ${WIDTH / 2} ${Math.round(height * 0.73)}T${WIDTH} ${Math.round(height * 0.8)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.82)}Q${WIDTH / 4} ${Math.round(height * 0.75)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.88)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.78)}Q${WIDTH / 4} ${Math.round(height * 0.93)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.87)}L${WIDTH} 0 Z"/>
+<!-- Foreground wave layer (faster, creates parallax depth) -->
+<path fill="${bgFill2}" opacity="0.6">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.25;0.5;0.75;1" begin="-${layer2Offset}s" values="
+    M0 ${layer2Y} Q${WIDTH * 0.125} ${layer2Y - amplitude * 0.5} ${WIDTH * 0.25} ${layer2Y} Q${WIDTH * 0.375} ${layer2Y + amplitude * 0.5} ${WIDTH * 0.5} ${layer2Y} Q${WIDTH * 0.625} ${layer2Y - amplitude * 0.3} ${WIDTH * 0.75} ${layer2Y} Q${WIDTH * 0.875} ${layer2Y + amplitude * 0.4} ${WIDTH} ${layer2Y} V${height} H0 Z;
+    M0 ${layer2Y + amplitude * 0.3} Q${WIDTH * 0.125} ${layer2Y - amplitude * 0.2} ${WIDTH * 0.25} ${layer2Y + amplitude * 0.3} Q${WIDTH * 0.375} ${layer2Y + amplitude * 0.8} ${WIDTH * 0.5} ${layer2Y + amplitude * 0.3} Q${WIDTH * 0.625} ${layer2Y} ${WIDTH * 0.75} ${layer2Y + amplitude * 0.3} Q${WIDTH * 0.875} ${layer2Y + amplitude * 0.7} ${WIDTH} ${layer2Y + amplitude * 0.3} V${height} H0 Z;
+    M0 ${layer2Y - amplitude * 0.2} Q${WIDTH * 0.125} ${layer2Y + amplitude * 0.4} ${WIDTH * 0.25} ${layer2Y - amplitude * 0.2} Q${WIDTH * 0.375} ${layer2Y - amplitude * 0.6} ${WIDTH * 0.5} ${layer2Y - amplitude * 0.2} Q${WIDTH * 0.625} ${layer2Y + amplitude * 0.2} ${WIDTH * 0.75} ${layer2Y - amplitude * 0.2} Q${WIDTH * 0.875} ${layer2Y - amplitude * 0.4} ${WIDTH} ${layer2Y - amplitude * 0.2} V${height} H0 Z;
+    M0 ${layer2Y + amplitude * 0.15} Q${WIDTH * 0.125} ${layer2Y - amplitude * 0.35} ${WIDTH * 0.25} ${layer2Y + amplitude * 0.15} Q${WIDTH * 0.375} ${layer2Y + amplitude * 0.55} ${WIDTH * 0.5} ${layer2Y + amplitude * 0.15} Q${WIDTH * 0.625} ${layer2Y - amplitude * 0.45} ${WIDTH * 0.75} ${layer2Y + amplitude * 0.15} Q${WIDTH * 0.875} ${layer2Y + amplitude * 0.35} ${WIDTH} ${layer2Y + amplitude * 0.15} V${height} H0 Z;
+    M0 ${layer2Y} Q${WIDTH * 0.125} ${layer2Y - amplitude * 0.5} ${WIDTH * 0.25} ${layer2Y} Q${WIDTH * 0.375} ${layer2Y + amplitude * 0.5} ${WIDTH * 0.5} ${layer2Y} Q${WIDTH * 0.625} ${layer2Y - amplitude * 0.3} ${WIDTH * 0.75} ${layer2Y} Q${WIDTH * 0.875} ${layer2Y + amplitude * 0.4} ${WIDTH} ${layer2Y} V${height} H0 Z"
+  />
 </path>`;
       } else {
+        // Footer section - waves at the top
         shapeMarkup = `
-<path fill="${bgFill}" opacity="0.4">
-  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" values="M0 ${height}L0 ${Math.round(height * 0.27)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.23)}T${WIDTH} ${Math.round(height * 0.15)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.18)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.2)}T${WIDTH} ${Math.round(height * 0.23)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.12)}Q${WIDTH / 4} ${Math.round(height * 0.22)} ${WIDTH / 2} ${Math.round(height * 0.12)}T${WIDTH} ${Math.round(height * 0.23)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.27)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.23)}T${WIDTH} ${Math.round(height * 0.15)}L${WIDTH} ${height} Z"/>
+<!-- Background wave layer (slower, creates depth) -->
+<path fill="${bgFill}" opacity="0.5">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.25;0.5;0.75;1" values="
+    M0 0 H${WIDTH} V${height - layer1Y} Q${WIDTH * 0.875} ${height - layer1Y + amplitude * 0.6} ${WIDTH * 0.75} ${height - layer1Y} Q${WIDTH * 0.625} ${height - layer1Y - amplitude * 0.6} ${WIDTH * 0.5} ${height - layer1Y} Q${WIDTH * 0.375} ${height - layer1Y + amplitude * 0.4} ${WIDTH * 0.25} ${height - layer1Y} Q${WIDTH * 0.125} ${height - layer1Y - amplitude * 0.5} 0 ${height - layer1Y} Z;
+    M0 0 H${WIDTH} V${height - layer1Y - amplitude * 0.25} Q${WIDTH * 0.875} ${height - layer1Y + amplitude * 0.35} ${WIDTH * 0.75} ${height - layer1Y - amplitude * 0.25} Q${WIDTH * 0.625} ${height - layer1Y - amplitude * 0.85} ${WIDTH * 0.5} ${height - layer1Y - amplitude * 0.25} Q${WIDTH * 0.375} ${height - layer1Y + amplitude * 0.15} ${WIDTH * 0.25} ${height - layer1Y - amplitude * 0.25} Q${WIDTH * 0.125} ${height - layer1Y - amplitude * 0.75} 0 ${height - layer1Y - amplitude * 0.25} Z;
+    M0 0 H${WIDTH} V${height - layer1Y + amplitude * 0.15} Q${WIDTH * 0.875} ${height - layer1Y - amplitude * 0.45} ${WIDTH * 0.75} ${height - layer1Y + amplitude * 0.15} Q${WIDTH * 0.625} ${height - layer1Y + amplitude * 0.75} ${WIDTH * 0.5} ${height - layer1Y + amplitude * 0.15} Q${WIDTH * 0.375} ${height - layer1Y - amplitude * 0.25} ${WIDTH * 0.25} ${height - layer1Y + amplitude * 0.15} Q${WIDTH * 0.125} ${height - layer1Y + amplitude * 0.55} 0 ${height - layer1Y + amplitude * 0.15} Z;
+    M0 0 H${WIDTH} V${height - layer1Y - amplitude * 0.2} Q${WIDTH * 0.875} ${height - layer1Y + amplitude * 0.4} ${WIDTH * 0.75} ${height - layer1Y - amplitude * 0.2} Q${WIDTH * 0.625} ${height - layer1Y - amplitude * 0.6} ${WIDTH * 0.5} ${height - layer1Y - amplitude * 0.2} Q${WIDTH * 0.375} ${height - layer1Y + amplitude * 0.5} ${WIDTH * 0.25} ${height - layer1Y - amplitude * 0.2} Q${WIDTH * 0.125} ${height - layer1Y - amplitude * 0.4} 0 ${height - layer1Y - amplitude * 0.2} Z;
+    M0 0 H${WIDTH} V${height - layer1Y} Q${WIDTH * 0.875} ${height - layer1Y + amplitude * 0.6} ${WIDTH * 0.75} ${height - layer1Y} Q${WIDTH * 0.625} ${height - layer1Y - amplitude * 0.6} ${WIDTH * 0.5} ${height - layer1Y} Q${WIDTH * 0.375} ${height - layer1Y + amplitude * 0.4} ${WIDTH * 0.25} ${height - layer1Y} Q${WIDTH * 0.125} ${height - layer1Y - amplitude * 0.5} 0 ${height - layer1Y} Z"
+  />
 </path>
-<path fill="${bgFill}" opacity="0.4">
-  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-10s" values="M0 ${height}L0 ${Math.round(height * 0.22)}Q${WIDTH / 4} ${Math.round(height * 0.07)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.13)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.17)}Q${WIDTH / 4} ${Math.round(height * 0.27)} ${WIDTH / 2} ${Math.round(height * 0.27)}T${WIDTH} ${Math.round(height * 0.2)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.18)}Q${WIDTH / 4} ${Math.round(height * 0.25)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.12)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.22)}Q${WIDTH / 4} ${Math.round(height * 0.07)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.13)}L${WIDTH} ${height} Z"/>
+<!-- Foreground wave layer (faster, creates parallax depth) -->
+<path fill="${bgFill2}" opacity="0.6">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.25;0.5;0.75;1" begin="-${layer2Offset}s" values="
+    M0 0 H${WIDTH} V${height - layer2Y} Q${WIDTH * 0.875} ${height - layer2Y + amplitude * 0.5} ${WIDTH * 0.75} ${height - layer2Y} Q${WIDTH * 0.625} ${height - layer2Y - amplitude * 0.5} ${WIDTH * 0.5} ${height - layer2Y} Q${WIDTH * 0.375} ${height - layer2Y + amplitude * 0.3} ${WIDTH * 0.25} ${height - layer2Y} Q${WIDTH * 0.125} ${height - layer2Y - amplitude * 0.4} 0 ${height - layer2Y} Z;
+    M0 0 H${WIDTH} V${height - layer2Y - amplitude * 0.3} Q${WIDTH * 0.875} ${height - layer2Y + amplitude * 0.2} ${WIDTH * 0.75} ${height - layer2Y - amplitude * 0.3} Q${WIDTH * 0.625} ${height - layer2Y - amplitude * 0.8} ${WIDTH * 0.5} ${height - layer2Y - amplitude * 0.3} Q${WIDTH * 0.375} ${height - layer2Y} ${WIDTH * 0.25} ${height - layer2Y - amplitude * 0.3} Q${WIDTH * 0.125} ${height - layer2Y - amplitude * 0.7} 0 ${height - layer2Y - amplitude * 0.3} Z;
+    M0 0 H${WIDTH} V${height - layer2Y + amplitude * 0.2} Q${WIDTH * 0.875} ${height - layer2Y - amplitude * 0.4} ${WIDTH * 0.75} ${height - layer2Y + amplitude * 0.2} Q${WIDTH * 0.625} ${height - layer2Y + amplitude * 0.6} ${WIDTH * 0.5} ${height - layer2Y + amplitude * 0.2} Q${WIDTH * 0.375} ${height - layer2Y - amplitude * 0.2} ${WIDTH * 0.25} ${height - layer2Y + amplitude * 0.2} Q${WIDTH * 0.125} ${height - layer2Y + amplitude * 0.4} 0 ${height - layer2Y + amplitude * 0.2} Z;
+    M0 0 H${WIDTH} V${height - layer2Y - amplitude * 0.15} Q${WIDTH * 0.875} ${height - layer2Y + amplitude * 0.35} ${WIDTH * 0.75} ${height - layer2Y - amplitude * 0.15} Q${WIDTH * 0.625} ${height - layer2Y - amplitude * 0.55} ${WIDTH * 0.5} ${height - layer2Y - amplitude * 0.15} Q${WIDTH * 0.375} ${height - layer2Y + amplitude * 0.45} ${WIDTH * 0.25} ${height - layer2Y - amplitude * 0.15} Q${WIDTH * 0.125} ${height - layer2Y - amplitude * 0.35} 0 ${height - layer2Y - amplitude * 0.15} Z;
+    M0 0 H${WIDTH} V${height - layer2Y} Q${WIDTH * 0.875} ${height - layer2Y + amplitude * 0.5} ${WIDTH * 0.75} ${height - layer2Y} Q${WIDTH * 0.625} ${height - layer2Y - amplitude * 0.5} ${WIDTH * 0.5} ${height - layer2Y} Q${WIDTH * 0.375} ${height - layer2Y + amplitude * 0.3} ${WIDTH * 0.25} ${height - layer2Y} Q${WIDTH * 0.125} ${height - layer2Y - amplitude * 0.4} 0 ${height - layer2Y} Z"
+  />
 </path>`;
       }
     } else {
-      const waveHeight = 20;
+      // Waving shape without parallax - use wave parameters
+      const waveY = Math.round((height * wavePosition) / 100);
+      const waveVar = Math.round(waveAmplitude * 0.5);
       if (section === 'header') {
-        shapeMarkup = `<path d="M0 ${waveHeight} Q${WIDTH / 4} ${waveHeight - 10} ${WIDTH / 2} ${waveHeight} T${WIDTH} ${waveHeight} V${height} H0 Z" fill="${bgFill}"/>`;
+        shapeMarkup = `<path d="M0 ${waveY} Q${WIDTH / 4} ${waveY - waveVar} ${WIDTH / 2} ${waveY} T${WIDTH} ${waveY} V${height} H0 Z" fill="${bgFill}"/>`;
       } else {
-        shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - waveHeight} Q${(WIDTH * 3) / 4} ${height - waveHeight + 10} ${WIDTH / 2} ${height - waveHeight} T0 ${height - waveHeight} Z" fill="${bgFill}"/>`;
+        shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - waveY} Q${(WIDTH * 3) / 4} ${height - waveY + waveVar} ${WIDTH / 2} ${height - waveY} T0 ${height - waveY} Z" fill="${bgFill}"/>`;
       }
     }
   } else if (type === 'wave') {
@@ -313,6 +382,7 @@ export async function GET(request: NextRequest) {
 <svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${WIDTH}" height="${height}" viewBox="0 0 ${WIDTH} ${height}">
   <defs>
     ${gradientDef}
+    ${gradientDef2}
     ${extraDefs}
     <style>
       ${keyframes}

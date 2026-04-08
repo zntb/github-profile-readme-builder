@@ -362,6 +362,12 @@ export function BlockConfigFields({
           onBorderRadiusBRChange={(v) => update('borderRadiusBR', v)}
           onBorderRadiusBLChange={(v) => update('borderRadiusBL', v)}
           onParallaxEffectChange={(v) => update('parallaxEffect', v)}
+          wavePosition={getNumberProp('wavePosition', 70)}
+          waveAmplitude={getNumberProp('waveAmplitude', 20)}
+          waveSpeed={getNumberProp('waveSpeed', 20)}
+          onWavePositionChange={(v) => update('wavePosition', v)}
+          onWaveAmplitudeChange={(v) => update('waveAmplitude', v)}
+          onWaveSpeedChange={(v) => update('waveSpeed', v)}
         />
       );
     }
@@ -761,6 +767,12 @@ export function BlockConfigFields({
             update('waveColor', undefined);
           }}
           onParallaxEffectChange={(v) => update('parallaxEffect', v)}
+          wavePosition={getNumberProp('wavePosition', 70)}
+          waveAmplitude={getNumberProp('waveAmplitude', 20)}
+          waveSpeed={getNumberProp('waveSpeed', 20)}
+          onWavePositionChange={(v) => update('wavePosition', v)}
+          onWaveAmplitudeChange={(v) => update('waveAmplitude', v)}
+          onWaveSpeedChange={(v) => update('waveSpeed', v)}
         />
       );
     }
