@@ -221,14 +221,33 @@ export async function GET(request: NextRequest) {
     const inset = 24;
     shapeMarkup = `<path d="M0 ${inset} L${inset} 0 H${WIDTH - inset} L${WIDTH} ${inset} V${height} H0 Z" fill="${bgFill}"/>`;
   } else if (type === 'waving') {
-    // Waving shape with parallax visualization effect
-    const waveHeight = 20;
-    if (section === 'header') {
-      // Header: rounded top with wavy bottom edge (parallax effect)
-      shapeMarkup = `<path d="M0 ${waveHeight} Q${WIDTH / 4} ${waveHeight - 10} ${WIDTH / 2} ${waveHeight} T${WIDTH} ${waveHeight} V${height} H0 Z" fill="${bgFill}"/>`;
+    // Waving shape. With parallax enabled, render dual animated layers.
+    if (parallax) {
+      const dur = '20s';
+      if (section === 'header') {
+        shapeMarkup = `
+<path fill="${bgFill}" opacity="0.4">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" values="M0 0L0 ${Math.round(height * 0.73)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.77)}T${WIDTH} ${Math.round(height * 0.85)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.82)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.8)}T${WIDTH} ${Math.round(height * 0.77)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.88)}Q${WIDTH / 4} ${Math.round(height * 0.78)} ${WIDTH / 2} ${Math.round(height * 0.88)}T${WIDTH} ${Math.round(height * 0.77)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.73)}Q${WIDTH / 4} ${Math.round(height * 0.87)} ${WIDTH / 2} ${Math.round(height * 0.77)}T${WIDTH} ${Math.round(height * 0.85)}L${WIDTH} 0 Z"/>
+</path>
+<path fill="${bgFill}" opacity="0.4">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-10s" values="M0 0L0 ${Math.round(height * 0.78)}Q${WIDTH / 4} ${Math.round(height * 0.93)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.87)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.83)}Q${WIDTH / 4} ${Math.round(height * 0.73)} ${WIDTH / 2} ${Math.round(height * 0.73)}T${WIDTH} ${Math.round(height * 0.8)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.82)}Q${WIDTH / 4} ${Math.round(height * 0.75)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.88)}L${WIDTH} 0 Z;M0 0L0 ${Math.round(height * 0.78)}Q${WIDTH / 4} ${Math.round(height * 0.93)} ${WIDTH / 2} ${Math.round(height * 0.83)}T${WIDTH} ${Math.round(height * 0.87)}L${WIDTH} 0 Z"/>
+</path>`;
+      } else {
+        shapeMarkup = `
+<path fill="${bgFill}" opacity="0.4">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" values="M0 ${height}L0 ${Math.round(height * 0.27)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.23)}T${WIDTH} ${Math.round(height * 0.15)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.18)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.2)}T${WIDTH} ${Math.round(height * 0.23)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.12)}Q${WIDTH / 4} ${Math.round(height * 0.22)} ${WIDTH / 2} ${Math.round(height * 0.12)}T${WIDTH} ${Math.round(height * 0.23)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.27)}Q${WIDTH / 4} ${Math.round(height * 0.13)} ${WIDTH / 2} ${Math.round(height * 0.23)}T${WIDTH} ${Math.round(height * 0.15)}L${WIDTH} ${height} Z"/>
+</path>
+<path fill="${bgFill}" opacity="0.4">
+  <animate attributeName="d" dur="${dur}" repeatCount="indefinite" keyTimes="0;0.333;0.667;1" calcMode="spline" keySplines="0.2 0 0.2 1;0.2 0 0.2 1;0.2 0 0.2 1" begin="-10s" values="M0 ${height}L0 ${Math.round(height * 0.22)}Q${WIDTH / 4} ${Math.round(height * 0.07)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.13)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.17)}Q${WIDTH / 4} ${Math.round(height * 0.27)} ${WIDTH / 2} ${Math.round(height * 0.27)}T${WIDTH} ${Math.round(height * 0.2)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.18)}Q${WIDTH / 4} ${Math.round(height * 0.25)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.12)}L${WIDTH} ${height} Z;M0 ${height}L0 ${Math.round(height * 0.22)}Q${WIDTH / 4} ${Math.round(height * 0.07)} ${WIDTH / 2} ${Math.round(height * 0.17)}T${WIDTH} ${Math.round(height * 0.13)}L${WIDTH} ${height} Z"/>
+</path>`;
+      }
     } else {
-      // Footer: rounded bottom with wavy top edge (parallax effect)
-      shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - waveHeight} Q${(WIDTH * 3) / 4} ${height - waveHeight + 10} ${WIDTH / 2} ${height - waveHeight} T0 ${height - waveHeight} Z" fill="${bgFill}"/>`;
+      const waveHeight = 20;
+      if (section === 'header') {
+        shapeMarkup = `<path d="M0 ${waveHeight} Q${WIDTH / 4} ${waveHeight - 10} ${WIDTH / 2} ${waveHeight} T${WIDTH} ${waveHeight} V${height} H0 Z" fill="${bgFill}"/>`;
+      } else {
+        shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - waveHeight} Q${(WIDTH * 3) / 4} ${height - waveHeight + 10} ${WIDTH / 2} ${height - waveHeight} T0 ${height - waveHeight} Z" fill="${bgFill}"/>`;
+      }
     }
   } else if (type === 'wave') {
     // Wave shape - creates a wave pattern at the bottom or top
@@ -287,11 +306,7 @@ export async function GET(request: NextRequest) {
     animStyle = 'animation:sc 0.8s ease-out forwards';
   }
 
-  // Parallax effect for Waving shape - creates a wave motion effect
-  if (parallax && type === 'waving') {
-    keyframes += `@keyframes parallax{0%{transform:translateY(0)}50%{transform:translateY(4px)}100%{transform:translateY(0)}}`;
-    animStyle = 'animation:parallax 3s ease-in-out infinite';
-  }
+  // Parallax for waving is encoded directly in SVG path animations.
 
   /* ── Final SVG ────────────────────────────────────────────────── */
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
