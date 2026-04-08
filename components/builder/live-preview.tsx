@@ -904,6 +904,41 @@ function PreviewBlock({
         else if (type === 'transparent' || type === 'blur') borderRadius = '0';
         else if (section === 'footer') borderRadius = '24px 24px 0 0';
 
+        // For 'waving' type with parallax, render using API image for accurate wave preview
+        if (type === 'waving' && props.parallaxEffect === true) {
+          const wavePosition = props.wavePosition ?? 70;
+          const waveAmplitude = props.waveAmplitude ?? 20;
+          const waveSpeed = props.waveSpeed ?? 20;
+
+          const params = new URLSearchParams({
+            type,
+            section,
+            height: String(props.height ?? 200),
+            text: String(props.text ?? ''),
+            fontSize: String(fontSize),
+            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
+            color: String(bgStartColor),
+            colorEnd: String(bgEndColor),
+            gradientDirection: bgGradientDirection,
+            parallax: 'true',
+            wavePosition: String(wavePosition),
+            waveAmplitude: String(waveAmplitude),
+            waveSpeed: String(waveSpeed),
+          });
+
+          return (
+            <img
+              src={`/api/capsule?${params.toString()}`}
+              alt="Capsule Header"
+              className="w-full"
+              style={{
+                height: `${props.height ?? 200}px`,
+                maxWidth: '896px',
+              }}
+            />
+          );
+        }
+
         // Special handling for transparent and blur types
         const isTransparent = type === 'transparent';
         const isBlur = type === 'blur';
@@ -1388,6 +1423,41 @@ function PreviewBlock({
           } else {
             // Default: waving or other types - use rounded bottom corners
             borderRadiusValue = '0 0 24px 24px';
+          }
+
+          // For 'waving' type with parallax, render using API image for accurate wave preview
+          if (type === 'waving' && props.parallaxEffect === true) {
+            const wavePosition = props.wavePosition ?? 70;
+            const waveAmplitude = props.waveAmplitude ?? 20;
+            const waveSpeed = props.waveSpeed ?? 20;
+
+            const params = new URLSearchParams({
+              type,
+              section: 'footer',
+              height: String(props.height ?? 80),
+              text: String(props.text ?? 'Thanks for visiting!'),
+              fontSize: String(props.fontSize ?? 24),
+              fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
+              color: String(bgStartColor),
+              colorEnd: String(bgEndColor),
+              gradientDirection: bgGradientDirection,
+              parallax: 'true',
+              wavePosition: String(wavePosition),
+              waveAmplitude: String(waveAmplitude),
+              waveSpeed: String(waveSpeed),
+            });
+
+            return (
+              <img
+                src={`/api/capsule?${params.toString()}`}
+                alt="Footer Banner"
+                className="w-full"
+                style={{
+                  height: `${props.height ?? 80}px`,
+                  maxWidth: '896px',
+                }}
+              />
+            );
           }
 
           // Special handling for transparent and blur types

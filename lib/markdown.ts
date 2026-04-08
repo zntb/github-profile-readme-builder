@@ -109,6 +109,10 @@ function buildCapsuleUrl(props: Record<string, unknown>, origin: string): string
     animation: 'fadeIn',
     gradientDirection: bgGradientDirection,
     parallax: props.parallaxEffect === true,
+    // Wave parameters for Waving shape
+    wavePosition: props.wavePosition ?? 70,
+    waveAmplitude: props.waveAmplitude ?? 20,
+    waveSpeed: props.waveSpeed ?? 20,
   };
 
   // Pass per-corner radii only when explicitly set (API falls back to type defaults otherwise)
@@ -476,6 +480,9 @@ export function renderBlock(block: Block, origin: string = ''): string {
         borderRadiusBR,
         borderRadiusBL,
         parallaxEffect,
+        wavePosition,
+        waveAmplitude,
+        waveSpeed,
       } = props as Record<string, string | number | boolean>;
       const capsuleProps = {
         type: (type as string) ?? 'waving',
@@ -495,6 +502,10 @@ export function renderBlock(block: Block, origin: string = ''): string {
         borderRadiusBR,
         borderRadiusBL,
         parallaxEffect: parallaxEffect ?? false,
+        // Wave parameters for Waving shape
+        wavePosition: wavePosition ?? 70,
+        waveAmplitude: waveAmplitude ?? 20,
+        waveSpeed: waveSpeed ?? 20,
       };
       const url = buildCapsuleUrl(capsuleProps, origin);
       return `<div align="center">\n  <img src="${url}" />\n</div>`;

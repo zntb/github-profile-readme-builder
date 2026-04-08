@@ -44,6 +44,9 @@ interface CapsuleHeaderConfigProps {
   borderRadiusBR?: number;
   borderRadiusBL?: number;
   parallaxEffect?: boolean;
+  wavePosition?: number;
+  waveAmplitude?: number;
+  waveSpeed?: number;
   onTextChange: (value: string) => void;
   onTypeChange: (value: string) => void;
   onSectionChange: (value: string) => void;
@@ -61,6 +64,9 @@ interface CapsuleHeaderConfigProps {
   onBorderRadiusBRChange?: (value: number) => void;
   onBorderRadiusBLChange?: (value: number) => void;
   onParallaxEffectChange?: (value: boolean) => void;
+  onWavePositionChange?: (value: number) => void;
+  onWaveAmplitudeChange?: (value: number) => void;
+  onWaveSpeedChange?: (value: number) => void;
 }
 
 /** Compute default corner radii from type + section (mirrors the API logic). */
@@ -146,6 +152,9 @@ export function CapsuleHeaderConfig({
   borderRadiusBR,
   borderRadiusBL,
   parallaxEffect,
+  wavePosition = 70,
+  waveAmplitude = 20,
+  waveSpeed = 20,
   onTextChange,
   onTypeChange,
   onSectionChange,
@@ -163,6 +172,9 @@ export function CapsuleHeaderConfig({
   onBorderRadiusBRChange,
   onBorderRadiusBLChange,
   onParallaxEffectChange,
+  onWavePositionChange,
+  onWaveAmplitudeChange,
+  onWaveSpeedChange,
 }: CapsuleHeaderConfigProps) {
   const defaults = defaultRadii(type, section, height);
   const maxR = Math.floor(height / 2);
@@ -251,6 +263,68 @@ export function CapsuleHeaderConfig({
             Adds a smooth parallax wave animation to the Waving shape
           </span>
         </FieldGroup>
+      )}
+
+      {/* Wave Settings - only for Waving shape */}
+      {type === 'waving' && (
+        <div className="space-y-4 border-t pt-4 mt-1">
+          <Label className="text-sm font-semibold">Wave Settings</Label>
+
+          {/* Wave Position */}
+          <FieldGroup>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Position</Label>
+              <span className="text-xs text-muted-foreground">{wavePosition}%</span>
+            </div>
+            <input
+              type="range"
+              min={0}
+              max={100}
+              value={wavePosition}
+              onChange={(e) => onWavePositionChange?.(parseInt(e.target.value, 10))}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-[10px] text-muted-foreground">
+              Vertical position of the wave (0% = top, 100% = bottom)
+            </span>
+          </FieldGroup>
+
+          {/* Wave Amplitude */}
+          <FieldGroup>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Height</Label>
+              <span className="text-xs text-muted-foreground">{waveAmplitude}px</span>
+            </div>
+            <input
+              type="range"
+              min={5}
+              max={50}
+              value={waveAmplitude}
+              onChange={(e) => onWaveAmplitudeChange?.(parseInt(e.target.value, 10))}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-[10px] text-muted-foreground">Height of the wave curvature</span>
+          </FieldGroup>
+
+          {/* Wave Speed */}
+          <FieldGroup>
+            <div className="flex items-center justify-between">
+              <Label className="text-xs">Speed</Label>
+              <span className="text-xs text-muted-foreground">{waveSpeed}s</span>
+            </div>
+            <input
+              type="range"
+              min={5}
+              max={60}
+              value={waveSpeed}
+              onChange={(e) => onWaveSpeedChange?.(parseInt(e.target.value, 10))}
+              className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer"
+            />
+            <span className="text-[10px] text-muted-foreground">
+              Animation speed (lower = faster)
+            </span>
+          </FieldGroup>
+        </div>
       )}
 
       <FieldGroup>
