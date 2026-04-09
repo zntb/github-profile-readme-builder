@@ -10,6 +10,7 @@ import {
   GripHorizontal,
   GripVertical,
   Lock,
+  Palette,
   Trash2,
   Unlock,
 } from 'lucide-react';
@@ -32,6 +33,7 @@ import { extractUploadThingFileKey, isUploadThingUrl } from '@/lib/uploadthing';
 import { cn } from '@/lib/utils';
 
 import { BlockPreview } from './block-preview';
+import { ColorTransferDialog } from './color-transfer-dialog';
 
 interface CanvasBlockProps {
   block: Block;
@@ -50,6 +52,7 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
   const blockRef = useRef<HTMLDivElement>(null);
   const [isResizing, setIsResizing] = useState(false);
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [showColorTransfer, setShowColorTransfer] = useState(false);
 
   // Get block style properties
   const blockWidth = block.props.blockWidth as number | undefined;
@@ -241,6 +244,15 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
               <Button
                 variant="ghost"
                 size="icon"
+                className="h-7 w-7 text-muted-foreground hover:text-foreground hover:bg-primary/10 transition-all duration-200"
+                onClick={() => setShowColorTransfer(true)}
+                aria-label="Transfer colors"
+              >
+                <Palette className="h-3.5 w-3.5" />
+              </Button>
+              <Button
+                variant="ghost"
+                size="icon"
                 className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all duration-200"
                 onClick={handleDeleteClick}
                 aria-label="Delete block"
@@ -363,6 +375,12 @@ export function CanvasBlock({ block, isSelected, onSelect, nested = false }: Can
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <ColorTransferDialog
+        sourceBlock={block}
+        open={showColorTransfer}
+        onOpenChange={setShowColorTransfer}
+      />
     </>
   );
 }
