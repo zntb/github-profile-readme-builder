@@ -20,79 +20,6 @@ function lerpColor(color1: string, color2: string, t: number): string {
   return [r, g, b].map((c) => c.toString(16).padStart(2, '0')).join('');
 }
 
-// Generate animated GIF from SVG frames
-async function generateAnimatedGif(
-  svgContent: string,
-  startColor: string,
-  endColor: string,
-  duration: number = 3,
-  fps: number = 10,
-): Promise<Buffer> {
-  const numFrames = Math.ceil(duration * fps);
-  const frames: Buffer[] = [];
-
-  // Generate frames with interpolated colors
-  for (let i = 0; i < numFrames; i++) {
-    // Use sine wave for smooth color interpolation (full cycle from 0 to 2π)
-    const t = (i / (numFrames - 1)) * 2 * Math.PI;
-    const blend = (Math.sin(t) + 1) / 2;
-    const currentStart = lerpColor(startColor, endColor, blend);
-    const currentEnd = lerpColor(endColor, startColor, blend);
-
-    // Create SVG with current colors
-    const frameSvg = svgContent.replace(/stop-color="#[A-Fa-f0-9]{6}"/g, (match) => {
-      if (match.includes('0%')) {
-        return `stop-color="#${currentStart}"`;
-      }
-      return `stop-color="#${currentEnd}"`;
-    });
-
-    // Render SVG to PNG using sharp
-    const pngBuffer = await sharp(Buffer.from(frameSvg)).png().toBuffer();
-    frames.push(pngBuffer);
-  }
-
-  // Create animated GIF
-  const gif = GIFEncoder();
-  const delay = Math.round(1000 / fps);
-
-  for (let i = 0; i < frames.length; i++) {
-    const pngBuffer = frames[i];
-
-    // Get image metadata first
-    const metadata = await sharp(pngBuffer).metadata();
-    const width = metadata.width || 896;
-    const height = metadata.height || 100;
-
-    // Get raw pixels as RGB (3 bytes per pixel)
-    const rgbData = await sharp(pngBuffer).removeAlpha().ensureAlpha().raw().toBuffer();
-
-    // Convert RGB to RGBA by adding alpha channel
-    const rgbaData = Buffer.alloc(width * height * 4);
-    for (let j = 0; j < width * height; j++) {
-      rgbaData[j * 4] = rgbData[j * 3]; // R
-      rgbaData[j * 4 + 1] = rgbData[j * 3 + 1]; // G
-      rgbaData[j * 4 + 2] = rgbData[j * 3 + 2]; // B
-      rgbaData[j * 4 + 3] = 255; // A (fully opaque)
-    }
-
-    // Quantize to create palette
-    const palette = quantize(rgbaData, 256, { oneBitAlpha: false });
-    const index = applyPalette(rgbaData, palette);
-
-    // Add frame to GIF
-    gif.writeFrame(index, width, height, {
-      palette,
-      delay: delay,
-    });
-
-    console.log('[GIF] Frame', i, ':', width, 'x', height, '- palette colors:', palette.length);
-  }
-
-  gif.finish();
-  return Buffer.from(gif.bytes());
-}
-
 type GradientDir = 'horizontal' | 'vertical' | 'diagonal' | 'radial';
 
 function buildGradientDef(
@@ -102,7 +29,6 @@ function buildGradientDef(
   direction: GradientDir,
   animate: boolean = false,
 ): string {
-  // If animation is enabled, add SMIL animations to gradient stops
   const animationAttrs = animate
     ? `
       <animate attributeName="stop-color" values="#${startColor};${startColor};${endColor};${startColor}" dur="3s" repeatCount="indefinite" />`
@@ -131,7 +57,6 @@ function buildGradientDef(
 
 /**
  * Generate an SVG path for a rectangle with independent corner radii.
- * Radii are clamped so they cannot exceed half the width or height.
  */
 function roundedRectPath(
   w: number,
@@ -141,7 +66,6 @@ function roundedRectPath(
   rbr: number,
   rbl: number,
 ): string {
-  // Clamp radii so adjacent corners don't overlap
   const maxH = h / 2;
   const maxW = w / 2;
   rtl = Math.min(rtl, maxH, maxW);
@@ -163,6 +87,119 @@ function roundedRectPath(
   ]
     .filter(Boolean)
     .join(' ');
+}
+
+interface GifFrameParams {
+  shapeMarkup: string;
+  width: number;
+  height: number;
+  text: string;
+  fontSize: number;
+  txtColor: string;
+  gradDir: GradientDir;
+  textAlignX: number;
+  textAlignY: number;
+  extraDefs?: string;
+  /** Optional second gradient colors (used by parallax waving shapes). */
+  startColor2?: string;
+  endColor2?: string;
+}
+
+/**
+ * Generate an animated GIF by rebuilding the SVG for each frame with
+ * per-frame interpolated gradient colours.
+ *
+ * The previous approach tried to regex-patch `stop-color` attributes inside the
+ * rendered SVG string, but that was broken in two ways:
+ *
+ *   1. The callback checked `match.includes('0%')`, which is always false because
+ *      `match` is the matched text (e.g. `stop-color="#EEFF00"`), never the
+ *      surrounding XML that contains `offset="0%"`.
+ *
+ *   2. The RGBA conversion loop read `rgbData[j * 3]` on a buffer that was already
+ *      RGBA (4 bytes/pixel) after `.removeAlpha().ensureAlpha()`, so every channel
+ *      was misread and the GIF was corrupt.
+ *
+ * The correct approach is to rebuild a clean per-frame SVG with a freshly
+ * constructed, non-animated gradient definition for each frame.
+ */
+async function generateAnimatedGif(
+  params: GifFrameParams,
+  startColor: string,
+  endColor: string,
+  duration: number = 3,
+  fps: number = 10,
+): Promise<Buffer> {
+  const {
+    shapeMarkup,
+    width,
+    height,
+    text,
+    fontSize,
+    txtColor,
+    gradDir,
+    textAlignX,
+    textAlignY,
+    extraDefs = '',
+    startColor2,
+    endColor2,
+  } = params;
+
+  const numFrames = Math.ceil(duration * fps);
+  const gif = GIFEncoder();
+  const delay = Math.round(1000 / fps);
+
+  for (let i = 0; i < numFrames; i++) {
+    // Smooth sine-wave cycle so the animation loops seamlessly.
+    const t = (i / numFrames) * 2 * Math.PI;
+    const blend = (Math.sin(t) + 1) / 2;
+
+    const cs = lerpColor(startColor, endColor, blend);
+    const ce = lerpColor(endColor, startColor, blend);
+
+    // Build a static (no SMIL) gradient definition for this frame.
+    const frameGradDef = buildGradientDef('bg', cs, ce, gradDir, false);
+
+    let frameGradDef2 = '';
+    if (startColor2 && endColor2) {
+      const cs2 = lerpColor(startColor2, endColor2, blend);
+      const ce2 = lerpColor(endColor2, startColor2, blend);
+      frameGradDef2 = buildGradientDef('bg2', cs2, ce2, gradDir, false);
+    }
+
+    const frameSvg = `<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="${width}" height="${height}" viewBox="0 0 ${width} ${height}">
+  <defs>
+    ${frameGradDef}
+    ${frameGradDef2}
+    ${extraDefs}
+  </defs>
+  <g>${shapeMarkup}</g>
+  ${
+    text
+      ? `<text style="font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:${fontSize}px;font-weight:700;fill:#${txtColor};text-anchor:middle;dominant-baseline:middle" x="${(width * textAlignX) / 100}" y="${(height * textAlignY) / 100}">${text}</text>`
+      : ''
+  }
+</svg>`;
+
+    const pngBuffer = await sharp(Buffer.from(frameSvg)).png().toBuffer();
+    const metadata = await sharp(pngBuffer).metadata();
+    const fw = metadata.width || width;
+    const fh = metadata.height || height;
+
+    // ensureAlpha() guarantees an RGBA (4-byte-per-pixel) buffer directly —
+    // no manual channel conversion needed.
+    const rgbaRaw = await sharp(pngBuffer).ensureAlpha().raw().toBuffer();
+    const uint8 = new Uint8Array(rgbaRaw.buffer, rgbaRaw.byteOffset, rgbaRaw.byteLength);
+
+    const palette = quantize(Buffer.from(uint8), 256, { oneBitAlpha: false });
+    const index = applyPalette(Buffer.from(uint8), palette);
+
+    gif.writeFrame(index, fw, fh, { palette, delay });
+  }
+
+  gif.finish();
+  return Buffer.from(gif.bytes());
 }
 
 export async function GET(request: NextRequest) {
@@ -196,12 +233,10 @@ export async function GET(request: NextRequest) {
   const validDirs = ['horizontal', 'vertical', 'diagonal', 'radial'] as const;
   const parallax = sp.get('parallax') === 'true';
 
-  // Wave parameters for Waving shape
-  const wavePosition = Math.min(Math.max(parseInt(sp.get('wavePosition') ?? '70', 10), 0), 100); // Percentage of height where wave starts (0-100)
-  const waveAmplitude = Math.min(Math.max(parseInt(sp.get('waveAmplitude') ?? '20', 10), 5), 50); // Wave height in pixels
-  const waveSpeed = Math.min(Math.max(parseInt(sp.get('waveSpeed') ?? '20', 10), 5), 60); // Animation duration in seconds
+  const wavePosition = Math.min(Math.max(parseInt(sp.get('wavePosition') ?? '70', 10), 0), 100);
+  const waveAmplitude = Math.min(Math.max(parseInt(sp.get('waveAmplitude') ?? '20', 10), 5), 50);
+  const waveSpeed = Math.min(Math.max(parseInt(sp.get('waveSpeed') ?? '20', 10), 5), 60);
   const flipWave = sp.get('flipWave') === 'true';
-  // When flipped, invert the wave position (0% becomes 100%, 100% becomes 0%)
   const actualWavePosition = flipWave ? 100 - wavePosition : wavePosition;
 
   const type = (validTypes as readonly string[]).includes(sp.get('type') ?? '')
@@ -230,7 +265,7 @@ export async function GET(request: NextRequest) {
     .replace(/'/g, '&#x27;');
   const fontSize = Math.min(Math.max(parseInt(sp.get('fontSize') ?? '30', 10), 10), 100);
 
-  /* ── Text Alignment ───────────────────────────────────────────────── */
+  /* ── Text Alignment ───────────────────────────────────────────── */
   const textAlignX = Math.min(Math.max(parseInt(sp.get('textAlignX') ?? '50', 10), 0), 100);
   const textAlignY = Math.min(Math.max(parseInt(sp.get('textAlignY') ?? '50', 10), 0), 100);
 
@@ -251,14 +286,13 @@ export async function GET(request: NextRequest) {
     'ffffff',
   );
 
-  // Wave layer 2 colors (for parallax effect) - use different colors for depth effect
   const waveColor2 = sanitizeHex(sp.get('waveColor2') ?? '', bgColor);
   const waveColorEnd2 = sanitizeHex(sp.get('waveColorEnd2') ?? '', bgColorEnd);
   const useGradient2 = waveColorEnd2.length === 6;
 
   const useGradient = bgColorEnd.length === 6;
 
-  /* ── Compute default corner radii from type + section ─────────── */
+  /* ── Compute default corner radii ─────────────────────────────── */
   const maxR = Math.floor(height / 2);
 
   let defTL = 0,
@@ -316,9 +350,7 @@ export async function GET(request: NextRequest) {
   } else if (type === 'transparent' || type === 'blur') {
     defTL = defTR = defBR = defBL = 0;
   }
-  // 'slice' handled separately below
 
-  /* ── Per-corner radius overrides ──────────────────────────────── */
   const parseCorner = (key: string, def: number) => {
     const raw = sp.get(key);
     if (raw === null) return def;
@@ -339,20 +371,19 @@ export async function GET(request: NextRequest) {
   let bgFill = `#${bgColor}`;
   let bgFill2 = `#${waveColor2}`;
 
-  // Determine if gradient animation should be enabled
-  const animateGradient = animation === 'gradient';
+  // For the GIF path (animation === 'gradient'), per-frame gradient defs are
+  // built inside generateAnimatedGif — no SMIL animation in the base SVG.
+  const animateGradient = false;
 
   if (useGradient) {
     gradientDef = buildGradientDef(GRAD_ID, bgColor, bgColorEnd, gradDir, animateGradient);
     bgFill = `url(#${GRAD_ID})`;
   }
 
-  // Second gradient for parallax wave layer
   if (useGradient2) {
     gradientDef2 = buildGradientDef(GRAD_ID_2, waveColor2, waveColorEnd2, gradDir, animateGradient);
     bgFill2 = `url(#${GRAD_ID_2})`;
   } else {
-    // Use a slightly different opacity or blend for the second layer
     bgFill2 = bgFill;
   }
 
@@ -364,27 +395,17 @@ export async function GET(request: NextRequest) {
     const inset = 24;
     shapeMarkup = `<path d="M0 ${inset} L${inset} 0 H${WIDTH - inset} L${WIDTH} ${inset} V${height} H0 Z" fill="${bgFill}"/>`;
   } else if (type === 'waving') {
-    // Waving shape. With parallax enabled, render dual animated layers.
     if (parallax) {
       const dur = `${waveSpeed}s`;
-      // When flipped, swap the section to show wave on opposite side
       const effectiveSection = flipWave ? (section === 'header' ? 'footer' : 'header') : section;
-      // Calculate wave positions based on parameters
       const baseWaveY = (height * actualWavePosition) / 100;
-      // Flip wave direction for browser preview (flipWave=true) to match GitHub display
       const amplitude = flipWave ? -waveAmplitude : waveAmplitude;
 
-      // Create two distinct wave layers for parallax effect
-      // Layer 1 (background): positioned at wavePosition - offset for depth
-      // Layer 2 (foreground): positioned slightly lower for depth effect
       const layer1Y = Math.round(baseWaveY - amplitude * 0.2);
       const layer2Y = Math.round(baseWaveY + amplitude * 0.15);
-
-      // Animation phases - layer 2 starts at different time for parallax effect
       const layer2Offset = waveSpeed * 0.33;
 
       if (effectiveSection === 'header') {
-        // Header section - waves at the bottom
         shapeMarkup = `
 <!-- Background wave layer (slower, creates depth) -->
 <path fill="${bgFill}" opacity="0.5">
@@ -407,7 +428,6 @@ export async function GET(request: NextRequest) {
   />
 </path>`;
       } else {
-        // Footer section - waves at the top
         shapeMarkup = `
 <!-- Background wave layer (slower, creates depth) -->
 <path fill="${bgFill}" opacity="0.5">
@@ -431,7 +451,6 @@ export async function GET(request: NextRequest) {
 </path>`;
       }
     } else {
-      // Waving shape without parallax - use wave parameters
       const useFlipWave = flipWave ? (section === 'header' ? 'footer' : 'header') : section;
       const waveY = Math.round((height * actualWavePosition) / 100);
       const waveVar = Math.round(waveAmplitude * 0.5);
@@ -442,7 +461,6 @@ export async function GET(request: NextRequest) {
       }
     }
   } else if (type === 'wave') {
-    // Wave shape - creates a wave pattern at the bottom or top
     const waveHeight = 30;
     if (section === 'header') {
       shapeMarkup = `<path d="M0 ${waveHeight} Q${WIDTH / 4} ${waveHeight + 15} ${WIDTH / 2} ${waveHeight} T${WIDTH} ${waveHeight} V${height} H0 Z" fill="${bgFill}"/>`;
@@ -450,21 +468,14 @@ export async function GET(request: NextRequest) {
       shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - waveHeight} Q${(WIDTH * 3) / 4} ${height - waveHeight - 15} ${WIDTH / 2} ${height - waveHeight} T0 ${height - waveHeight} Z" fill="${bgFill}"/>`;
     }
   } else if (type === 'egg') {
-    // Egg shape - oval with more rounded top
-    if (section === 'header') {
-      shapeMarkup = `<ellipse cx="${WIDTH / 2}" cy="${height / 2}" rx="${WIDTH / 2 - 10}" ry="${height / 2 - 5}" fill="${bgFill}"/>`;
-    } else {
-      shapeMarkup = `<ellipse cx="${WIDTH / 2}" cy="${height / 2}" rx="${WIDTH / 2 - 10}" ry="${height / 2 - 5}" fill="${bgFill}"/>`;
-    }
+    shapeMarkup = `<ellipse cx="${WIDTH / 2}" cy="${height / 2}" rx="${WIDTH / 2 - 10}" ry="${height / 2 - 5}" fill="${bgFill}"/>`;
   } else if (type === 'shark') {
-    // Shark fin shape
     if (section === 'header') {
       shapeMarkup = `<path d="M0 ${height} L0 40 Q${WIDTH / 3} 0 ${WIDTH / 2} 40 L${WIDTH} 40 V${height} H0 Z" fill="${bgFill}"/>`;
     } else {
       shapeMarkup = `<path d="M0 0 H${WIDTH} V${height - 40} L${WIDTH / 2} ${height - 40} Q${WIDTH / 3} ${height} 0 ${height - 40} Z" fill="${bgFill}"/>`;
     }
   } else if (type === 'speech') {
-    // Speech bubble shape with tail
     const tailSize = 20;
     if (section === 'header') {
       shapeMarkup = `<path d="M${tailSize} 0 H${WIDTH - tailSize} Q${WIDTH} 0 ${WIDTH} ${tailSize} V${height - tailSize} Q${WIDTH} ${height} ${WIDTH - tailSize} ${height} H${tailSize} Q0 ${height} 0 ${height - tailSize} V${tailSize} Q0 0 ${tailSize} 0 Z" fill="${bgFill}"/>`;
@@ -472,10 +483,8 @@ export async function GET(request: NextRequest) {
       shapeMarkup = `<path d="M${tailSize} 0 H${WIDTH - tailSize} Q${WIDTH} 0 ${WIDTH} ${tailSize} V${height - tailSize} Q${WIDTH} ${height} ${WIDTH - tailSize} ${height} H${WIDTH / 2 + tailSize} L${WIDTH / 2} ${height + tailSize} L${WIDTH / 2 - tailSize} ${height} H${tailSize} Q0 ${height} 0 ${height - tailSize} V${tailSize} Q0 0 ${tailSize} 0 Z" fill="${bgFill}"/>`;
     }
   } else if (type === 'transparent') {
-    // Transparent background - no fill
     shapeMarkup = `<rect width="${WIDTH}" height="${height}" fill="transparent"/>`;
   } else if (type === 'blur') {
-    // Blur effect background
     extraDefs = `<filter id="blurFilter"><feGaussianBlur in="SourceGraphic" stdDeviation="10" /></filter>`;
     shapeMarkup = `<rect width="${WIDTH}" height="${height}" fill="${bgFill}" filter="url(#blurFilter)"/>`;
   } else {
@@ -496,9 +505,6 @@ export async function GET(request: NextRequest) {
   } else if (animation === 'scale') {
     keyframes = `@keyframes sc{from{transform:scale(0.9);opacity:0}to{transform:scale(1);opacity:1}}`;
     animStyle = 'animation:sc 0.8s ease-out forwards';
-  } else if (animation === 'gradient') {
-    keyframes = `@keyframes gradientShift{0%{stop-color:#${bgColor}}50%{stop-color:#${bgColorEnd}}100%{stop-color:#${bgColor}}}@keyframes gradientMove{0%{background-position:0%50%}50%{background-position:100%50%}100%{background-position:0%50%}}`;
-    animStyle = 'animation:gradientMove 3s ease infinite';
   } else if (animation === 'pulse') {
     keyframes = `@keyframes pulseAnim{0%,100%{opacity:1}50%{opacity:0.7}}`;
     animStyle = 'animation:pulseAnim 2s ease-in-out infinite';
@@ -509,8 +515,7 @@ export async function GET(request: NextRequest) {
     keyframes = `@keyframes bounceAnim{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}`;
     animStyle = 'animation:bounceAnim 0.5s ease-in-out infinite';
   }
-
-  // Parallax for waving is encoded directly in SVG path animations.
+  // NOTE: 'gradient' animation is handled via GIF generation below — no CSS needed.
 
   /* ── Final SVG ────────────────────────────────────────────────── */
   const svg = `<?xml version="1.0" encoding="UTF-8"?>
@@ -529,10 +534,30 @@ export async function GET(request: NextRequest) {
   ${text ? `<text class="label" x="${(WIDTH * textAlignX) / 100}" y="${(height * textAlignY) / 100}">${text}</text>` : ''}
 </svg>`;
 
-  // If gradient animation is enabled, generate animated GIF
-  if (animation === 'gradient') {
+  // Gradient Flow animation: render as an animated GIF so it works on GitHub,
+  // which strips CSS animations and SMIL `<animate>` elements from SVGs.
+  // Only attempt GIF generation when there are actually two gradient colours.
+  if (animation === 'gradient' && useGradient) {
     try {
-      const gifBuffer = await generateAnimatedGif(svg, bgColor, bgColorEnd, 3, 10);
+      const gifBuffer = await generateAnimatedGif(
+        {
+          shapeMarkup,
+          width: WIDTH,
+          height,
+          text,
+          fontSize,
+          txtColor,
+          gradDir,
+          textAlignX,
+          textAlignY,
+          extraDefs,
+          ...(useGradient2 ? { startColor2: waveColor2, endColor2: waveColorEnd2 } : {}),
+        },
+        bgColor,
+        bgColorEnd,
+        3,
+        10,
+      );
       return new NextResponse(gifBuffer as unknown as Blob, {
         headers: {
           'Content-Type': 'image/gif',
