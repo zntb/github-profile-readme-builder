@@ -396,7 +396,7 @@ export async function GET(request: NextRequest) {
     <style>
       ${keyframes}
       .bg-shape{${animStyle}}
-      .label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:${fontSize}px;font-weight:700;fill:#${txtColor};dominant-baseline:middle}
+      .label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:${fontSize}px;font-weight:700;fill:#${txtColor};text-anchor:middle;dominant-baseline:middle}
     </style>
   </defs>
   <g class="bg-shape">${shapeMarkup}</g>
