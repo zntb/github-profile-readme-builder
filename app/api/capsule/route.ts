@@ -9,11 +9,22 @@ function buildGradientDef(
   startColor: string,
   endColor: string,
   direction: GradientDir,
+  animate: boolean = false,
 ): string {
+  // If animation is enabled, add SMIL animations to gradient stops
+  const animationAttrs = animate
+    ? `
+      <animate attributeName="stop-color" values="#${startColor};${startColor};${endColor};${startColor}" dur="3s" repeatCount="indefinite" />`
+    : '';
+  const animationAttrs2 = animate
+    ? `
+      <animate attributeName="stop-color" values="#${endColor};${endColor};${startColor};${endColor}" dur="3s" repeatCount="indefinite" />`
+    : '';
+
   if (direction === 'radial') {
     return `<radialGradient id="${id}" cx="50%" cy="50%" r="50%">
-      <stop offset="0%" stop-color="#${startColor}"/>
-      <stop offset="100%" stop-color="#${endColor}"/>
+      <stop offset="0%" stop-color="#${startColor}">${animationAttrs}</stop>
+      <stop offset="100%" stop-color="#${endColor}">${animationAttrs2}</stop>
     </radialGradient>`;
   }
   const coords: Record<string, string> = {
@@ -22,8 +33,8 @@ function buildGradientDef(
     diagonal: 'x1="0%" y1="0%" x2="100%" y2="100%"',
   };
   return `<linearGradient id="${id}" ${coords[direction] ?? coords.horizontal}>
-    <stop offset="0%" stop-color="#${startColor}"/>
-    <stop offset="100%" stop-color="#${endColor}"/>
+    <stop offset="0%" stop-color="#${startColor}">${animationAttrs}</stop>
+    <stop offset="100%" stop-color="#${endColor}">${animationAttrs2}</stop>
   </linearGradient>`;
 }
 
@@ -237,14 +248,17 @@ export async function GET(request: NextRequest) {
   let bgFill = `#${bgColor}`;
   let bgFill2 = `#${waveColor2}`;
 
+  // Determine if gradient animation should be enabled
+  const animateGradient = animation === 'gradient';
+
   if (useGradient) {
-    gradientDef = buildGradientDef(GRAD_ID, bgColor, bgColorEnd, gradDir);
+    gradientDef = buildGradientDef(GRAD_ID, bgColor, bgColorEnd, gradDir, animateGradient);
     bgFill = `url(#${GRAD_ID})`;
   }
 
   // Second gradient for parallax wave layer
   if (useGradient2) {
-    gradientDef2 = buildGradientDef(GRAD_ID_2, waveColor2, waveColorEnd2, gradDir);
+    gradientDef2 = buildGradientDef(GRAD_ID_2, waveColor2, waveColorEnd2, gradDir, animateGradient);
     bgFill2 = `url(#${GRAD_ID_2})`;
   } else {
     // Use a slightly different opacity or blend for the second layer
