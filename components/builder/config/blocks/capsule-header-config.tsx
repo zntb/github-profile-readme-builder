@@ -9,6 +9,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Slider } from '@/components/ui/slider';
 import { Switch } from '@/components/ui/switch';
 
 import { FieldGroup } from '../field-group';
@@ -48,6 +49,8 @@ interface CapsuleHeaderConfigProps {
   waveAmplitude?: number;
   waveSpeed?: number;
   waveFlip?: boolean;
+  textAlignX?: number;
+  textAlignY?: number;
   onTextChange: (value: string) => void;
   onTypeChange: (value: string) => void;
   onSectionChange: (value: string) => void;
@@ -69,6 +72,8 @@ interface CapsuleHeaderConfigProps {
   onWaveAmplitudeChange?: (value: number) => void;
   onWaveSpeedChange?: (value: number) => void;
   onWaveFlipChange?: (value: boolean) => void;
+  onTextAlignXChange?: (value: number) => void;
+  onTextAlignYChange?: (value: number) => void;
 }
 
 /** Compute default corner radii from type + section (mirrors the API logic). */
@@ -158,6 +163,8 @@ export function CapsuleHeaderConfig({
   waveAmplitude = 20,
   waveSpeed = 20,
   waveFlip = false,
+  textAlignX = 50,
+  textAlignY = 50,
   onTextChange,
   onTypeChange,
   onSectionChange,
@@ -179,6 +186,8 @@ export function CapsuleHeaderConfig({
   onWaveAmplitudeChange,
   onWaveSpeedChange,
   onWaveFlipChange,
+  onTextAlignXChange,
+  onTextAlignYChange,
 }: CapsuleHeaderConfigProps) {
   const defaults = defaultRadii(type, section, height);
   const maxR = Math.floor(height / 2);
@@ -498,6 +507,46 @@ export function CapsuleHeaderConfig({
             className="w-28"
             maxLength={6}
           />
+        </div>
+      </FieldGroup>
+
+      {/* Text Alignment X (Horizontal) */}
+      <FieldGroup>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Text Align Horizontal</Label>
+          <span className="text-xs text-muted-foreground">{textAlignX}%</span>
+        </div>
+        <Slider
+          value={[textAlignX]}
+          onValueChange={(val) => onTextAlignXChange?.(val[0])}
+          min={0}
+          max={100}
+          step={1}
+        />
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>Left</span>
+          <span>Center</span>
+          <span>Right</span>
+        </div>
+      </FieldGroup>
+
+      {/* Text Alignment Y (Vertical) */}
+      <FieldGroup>
+        <div className="flex items-center justify-between">
+          <Label className="text-sm">Text Align Vertical</Label>
+          <span className="text-xs text-muted-foreground">{textAlignY}%</span>
+        </div>
+        <Slider
+          value={[textAlignY]}
+          onValueChange={(val) => onTextAlignYChange?.(val[0])}
+          min={0}
+          max={100}
+          step={1}
+        />
+        <div className="flex justify-between text-[10px] text-muted-foreground">
+          <span>Top</span>
+          <span>Center</span>
+          <span>Bottom</span>
         </div>
       </FieldGroup>
     </>

@@ -370,6 +370,10 @@ export function BlockConfigFields({
           onWaveAmplitudeChange={(v) => update('waveAmplitude', v)}
           onWaveSpeedChange={(v) => update('waveSpeed', v)}
           onWaveFlipChange={(v) => update('waveFlip', v)}
+          textAlignX={getNumberProp('textAlignX', 50)}
+          textAlignY={getNumberProp('textAlignY', 50)}
+          onTextAlignXChange={(v) => update('textAlignX', v)}
+          onTextAlignYChange={(v) => update('textAlignY', v)}
         />
       );
     }
@@ -777,6 +781,10 @@ export function BlockConfigFields({
           onWaveAmplitudeChange={(v) => update('waveAmplitude', v)}
           onWaveSpeedChange={(v) => update('waveSpeed', v)}
           onWaveFlipChange={(v) => update('waveFlip', v)}
+          textAlignX={getNumberProp('textAlignX', 50)}
+          textAlignY={getNumberProp('textAlignY', 50)}
+          onTextAlignXChange={(v) => update('textAlignX', v)}
+          onTextAlignYChange={(v) => update('textAlignY', v)}
         />
       );
     }

@@ -119,6 +119,10 @@ export async function GET(request: NextRequest) {
     .replace(/'/g, '&#x27;');
   const fontSize = Math.min(Math.max(parseInt(sp.get('fontSize') ?? '30', 10), 10), 100);
 
+  /* ── Text Alignment ───────────────────────────────────────────────── */
+  const textAlignX = Math.min(Math.max(parseInt(sp.get('textAlignX') ?? '50', 10), 0), 100);
+  const textAlignY = Math.min(Math.max(parseInt(sp.get('textAlignY') ?? '50', 10), 0), 100);
+
   /* ── Colors ───────────────────────────────────────────────────── */
   const sanitizeHex = (raw: string | null, fallback: string) =>
     (raw ?? '').replace(/[^a-fA-F0-9]/g, '').slice(0, 6) || fallback;
@@ -392,11 +396,11 @@ export async function GET(request: NextRequest) {
     <style>
       ${keyframes}
       .bg-shape{${animStyle}}
-      .label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:${fontSize}px;font-weight:700;fill:#${txtColor};text-anchor:middle;dominant-baseline:middle}
+      .label{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;font-size:${fontSize}px;font-weight:700;fill:#${txtColor};dominant-baseline:middle}
     </style>
   </defs>
   <g class="bg-shape">${shapeMarkup}</g>
-  ${text ? `<text class="label" x="${WIDTH / 2}" y="${height / 2}">${text}</text>` : ''}
+  ${text ? `<text class="label" x="${(WIDTH * textAlignX) / 100}" y="${(height * textAlignY) / 100}">${text}</text>` : ''}
 </svg>`;
 
   return new NextResponse(svg, {

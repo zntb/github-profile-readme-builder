@@ -114,6 +114,9 @@ function buildCapsuleUrl(props: Record<string, unknown>, origin: string): string
     waveAmplitude: props.waveAmplitude ?? 20,
     waveSpeed: props.waveSpeed ?? 20,
     flipWave: props.waveFlip === true,
+    // Text alignment
+    textAlignX: props.textAlignX ?? 50,
+    textAlignY: props.textAlignY ?? 50,
   };
 
   // Pass per-corner radii only when explicitly set (API falls back to type defaults otherwise)
@@ -509,6 +512,9 @@ export function renderBlock(block: Block, origin: string = ''): string {
         waveAmplitude: waveAmplitude ?? 20,
         waveSpeed: waveSpeed ?? 20,
         waveFlip: waveFlip ?? false,
+        // Text alignment
+        textAlignX: (props.textAlignX as number) ?? 50,
+        textAlignY: (props.textAlignY as number) ?? 50,
       };
       const url = buildCapsuleUrl(capsuleProps, origin);
       return `<div align="center">\n  <img src="${url}" />\n</div>`;

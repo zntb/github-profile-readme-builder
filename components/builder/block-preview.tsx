@@ -191,6 +191,8 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
             waveAmplitude: String(waveAmplitude),
             waveSpeed: String(waveSpeed),
             flipWave: waveFlip ? 'true' : 'false',
+            textAlignX: String(props.textAlignX ?? 50),
+            textAlignY: String(props.textAlignY ?? 50),
           });
 
           return (
@@ -315,11 +317,21 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
               ...animationBgSize,
               height: `${capHeight}px`,
               borderRadius,
+              position: 'relative',
             }}
           >
             <span
               className="font-bold drop-shadow-md"
-              style={{ fontSize: `${fontSize}px`, color: fontColor }}
+              style={{
+                fontSize: `${fontSize}px`,
+                color: fontColor,
+                position: 'absolute',
+                left: `${props.textAlignX ?? 50}%`,
+                top: `${props.textAlignY ?? 50}%`,
+                transform: 'translate(-50%, -50%)',
+                width: 'max-content',
+                maxWidth: '100%',
+              }}
             >
               {props.text as string}
             </span>
@@ -799,6 +811,8 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
             waveAmplitude: String(waveAmplitude),
             waveSpeed: String(waveSpeed),
             flipWave: waveFlip ? 'true' : 'false',
+            textAlignX: String(props.textAlignX ?? 50),
+            textAlignY: String(props.textAlignY ?? 50),
           });
 
           return (
@@ -910,7 +924,18 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
               height: `${height}px`,
             }}
           >
-            <span className="font-medium" style={{ color: fontColor, fontSize: `${fontSize}px` }}>
+            <span
+              className="font-medium"
+              style={{
+                color: fontColor,
+                fontSize: `${fontSize}px`,
+                position: 'absolute',
+                left: `${props.textAlignX ?? 50}%`,
+                top: `${props.textAlignY ?? 50}%`,
+                transform: 'translate(-50%, -50%)',
+                width: 'max-content',
+              }}
+            >
               {props.text as string}
             </span>
           </div>

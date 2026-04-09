@@ -822,7 +822,18 @@ function PreviewBlock({
               }}
             >
               <div className="absolute inset-0 flex items-center justify-center">
-                <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
+                <span
+                  className="font-bold"
+                  style={{
+                    fontSize: `${fontSize}px`,
+                    color: fontColor,
+                    position: 'absolute',
+                    left: `${props.textAlignX ?? 50}%`,
+                    top: `${props.textAlignY ?? 50}%`,
+                    transform: 'translate(-50%, -50%)',
+                    width: 'max-content',
+                  }}
+                >
                   {props.text as string}
                 </span>
               </div>
@@ -926,6 +937,8 @@ function PreviewBlock({
             waveAmplitude: String(waveAmplitude),
             waveSpeed: String(waveSpeed),
             flipWave: waveFlip ? 'true' : 'false',
+            textAlignX: String(props.textAlignX ?? 50),
+            textAlignY: String(props.textAlignY ?? 50),
           });
 
           return (
@@ -965,7 +978,15 @@ function PreviewBlock({
           >
             <span
               className="font-bold drop-shadow-md"
-              style={{ fontSize: `${fontSize}px`, color: fontColor }}
+              style={{
+                fontSize: `${fontSize}px`,
+                color: fontColor,
+                position: 'absolute',
+                left: `${props.textAlignX ?? 50}%`,
+                top: `${props.textAlignY ?? 50}%`,
+                transform: 'translate(-50%, -50%)',
+                width: 'max-content',
+              }}
             >
               {props.text as string}
             </span>
@@ -1449,6 +1470,8 @@ function PreviewBlock({
               waveAmplitude: String(waveAmplitude),
               waveSpeed: String(waveSpeed),
               flipWave: waveFlip ? 'true' : 'false',
+              textAlignX: String(props.textAlignX ?? 50),
+              textAlignY: String(props.textAlignY ?? 50),
             });
 
             return (
@@ -1483,7 +1506,18 @@ function PreviewBlock({
                 ...(isBlur ? { backdropFilter: 'blur(10px)' } : {}),
               }}
             >
-              <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
+              <span
+                className="font-bold"
+                style={{
+                  fontSize: `${fontSize}px`,
+                  color: fontColor,
+                  position: 'absolute',
+                  left: `${props.textAlignX ?? 50}%`,
+                  top: `${props.textAlignY ?? 50}%`,
+                  transform: 'translate(-50%, -50%)',
+                  width: 'max-content',
+                }}
+              >
                 {props.text as string}
               </span>
             </div>
