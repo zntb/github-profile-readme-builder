@@ -484,6 +484,7 @@ export function renderBlock(block: Block, origin: string = ''): string {
         wavePosition,
         waveAmplitude,
         waveSpeed,
+        waveFlip,
       } = props as Record<string, string | number | boolean>;
       const capsuleProps = {
         type: (type as string) ?? 'waving',
@@ -507,6 +508,7 @@ export function renderBlock(block: Block, origin: string = ''): string {
         wavePosition: wavePosition ?? 70,
         waveAmplitude: waveAmplitude ?? 20,
         waveSpeed: waveSpeed ?? 20,
+        waveFlip: waveFlip ?? false,
       };
       const url = buildCapsuleUrl(capsuleProps, origin);
       return `<div align="center">\n  <img src="${url}" />\n</div>`;
