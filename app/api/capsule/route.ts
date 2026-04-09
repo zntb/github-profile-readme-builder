@@ -1,3 +1,4 @@
+// app/api/capsule/route.ts
 import { NextRequest, NextResponse } from 'next/server';
 
 const WIDTH = 896;
