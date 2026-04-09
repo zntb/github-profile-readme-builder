@@ -33,8 +33,8 @@ async function generateAnimatedGif(
 
   // Generate frames with interpolated colors
   for (let i = 0; i < numFrames; i++) {
-    const t = (i / numFrames) * 2 * Math.PI;
-    // Use sine wave for smooth color interpolation
+    // Use sine wave for smooth color interpolation (full cycle from 0 to 2π)
+    const t = (i / (numFrames - 1)) * 2 * Math.PI;
     const blend = (Math.sin(t) + 1) / 2;
     const currentStart = lerpColor(startColor, endColor, blend);
     const currentEnd = lerpColor(endColor, startColor, blend);
