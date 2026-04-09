@@ -64,7 +64,7 @@ export function Builder() {
   ];
 
   return (
-    <div className="h-screen flex flex-col bg-background gradient-bg md:pb-16">
+    <div className="h-screen flex flex-col bg-background gradient-bg">
       {/* Keyboard shortcuts provider — lazy-loaded, registers shortcuts + renders dialog */}
       <LazyKeyboardShortcutsProvider />
 
@@ -73,7 +73,7 @@ export function Builder() {
 
       <BuilderHeader />
 
-      <main>
+      <main className="flex-1 pb-16">
         {/* Desktop Layout */}
         <div className="hidden lg:flex flex-1">
           {/* Left Sidebar - Block Library */}
@@ -89,7 +89,7 @@ export function Builder() {
           </div>
 
           {/* Right Panel - Config or Preview */}
-          <div className="w-80 xl:w-96 border-l border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full">
+          <div className="w-80 xl:w-96 border-l border-border/50 bg-card/50 backdrop-blur-sm flex flex-col h-full pb-16">
             {selectedBlockId ? (
               <LazyConfigPanel />
             ) : (
@@ -142,7 +142,7 @@ export function Builder() {
         </div>
 
         {/* Tablet Layout (md-lg) */}
-        <div className="hidden md:flex lg:hidden flex-1 relative">
+        <div className="hidden md:flex lg:hidden flex-1 relative pb-16">
           {/* Left Sidebar - Block Library (collapsible) */}
           <Sheet open={sidebarOpen} onOpenChange={setSidebarOpen}>
             <SheetTrigger asChild>
