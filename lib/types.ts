@@ -90,6 +90,21 @@ export interface CapsuleHeaderProps {
   bgStartColor?: string;
   bgEndColor?: string;
   bgSolidColor?: string;
+  // Border radius (individual corners)
+  borderRadiusTL?: number;
+  borderRadiusTR?: number;
+  borderRadiusBR?: number;
+  borderRadiusBL?: number;
+  // Parallax effect
+  parallaxEffect?: boolean;
+  // Wave configuration
+  wavePosition?: number;
+  waveAmplitude?: number;
+  waveSpeed?: number;
+  waveFlip?: boolean;
+  // Text alignment
+  textAlignX?: number;
+  textAlignY?: number;
 }
 
 export interface AvatarProps {
