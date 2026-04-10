@@ -436,13 +436,20 @@ export function renderBlock(block: Block, origin: string = ''): string {
 
     case 'visitor-counter': {
       const globalUsername = useBuilderStore.getState().username;
-      const { username: blockUsername, color, style, label } = props as Record<string, string>;
+      const {
+        username: blockUsername,
+        color,
+        style,
+        label,
+        alignment,
+      } = props as Record<string, string>;
       const username =
         (!blockUsername || blockUsername === 'github') && globalUsername
           ? globalUsername
           : blockUsername;
+      const align = alignment || 'center';
       const url = `https://komarev.com/ghpvc/?username=${username}&color=${color}&style=${style}&label=${encodeURIComponent(label)}`;
-      return `<div align="center">\n  <img src="${url}" alt="Profile Views" />\n</div>`;
+      return `<div align="${align}">\n  <img src="${url}" alt="Profile Views" />\n</div>`;
     }
 
     case 'quote': {

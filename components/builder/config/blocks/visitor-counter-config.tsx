@@ -16,18 +16,22 @@ interface VisitorCounterConfigProps {
   label: string;
   color: string;
   style: string;
+  alignment: string;
   onLabelChange: (value: string) => void;
   onColorChange: (value: string) => void;
   onStyleChange: (value: string) => void;
+  onAlignmentChange: (value: string) => void;
 }
 
 export function VisitorCounterConfig({
   label,
   color,
   style,
+  alignment,
   onLabelChange,
   onColorChange,
   onStyleChange,
+  onAlignmentChange,
 }: VisitorCounterConfigProps) {
   return (
     <>
@@ -62,6 +66,19 @@ export function VisitorCounterConfig({
             <SelectItem value="flat">Flat</SelectItem>
             <SelectItem value="flat-square">Flat Square</SelectItem>
             <SelectItem value="plastic">Plastic</SelectItem>
+          </SelectContent>
+        </Select>
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Card Alignment</Label>
+        <Select value={alignment} onValueChange={onAlignmentChange}>
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="left">Left</SelectItem>
+            <SelectItem value="center">Center</SelectItem>
+            <SelectItem value="right">Right</SelectItem>
           </SelectContent>
         </Select>
       </FieldGroup>

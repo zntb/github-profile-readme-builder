@@ -1188,9 +1188,14 @@ function PreviewBlock({
 
       case 'visitor-counter': {
         const visitorUrl = `https://komarev.com/ghpvc/?username=${getUsername(props.username as string)}&color=${props.color}&style=${props.style}&label=${encodeURIComponent(props.label as string)}`;
+        const alignment = (props.alignment as string) ?? 'center';
         return (
-          <div className="text-center">
-            <img src={visitorUrl} alt="Profile Views" style={{ height: 'auto' }} />
+          <div style={{ textAlign: alignment as 'left' | 'center' | 'right' }}>
+            <img
+              src={visitorUrl}
+              alt="Profile Views"
+              style={{ height: 'auto', display: 'inline-block' }}
+            />
           </div>
         );
       }

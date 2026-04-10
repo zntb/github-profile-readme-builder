@@ -718,9 +718,11 @@ export function BlockConfigFields({
           label={(props.label as string) ?? 'Visitors'}
           color={(props.color as string) ?? 'blue'}
           style={(props.style as string) ?? 'flat'}
+          alignment={(props.alignment as string) ?? 'center'}
           onLabelChange={(v) => update('label', v)}
           onColorChange={(v) => update('color', v)}
           onStyleChange={(v) => update('style', v)}
+          onAlignmentChange={(v) => update('alignment', v)}
         />
       );
 
