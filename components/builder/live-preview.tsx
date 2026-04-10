@@ -665,7 +665,10 @@ function PreviewBlock({
   const imageSizeStyle = imageStyleOverride ?? resolvePreviewImageSize(block);
 
   const propsKey = useMemo(() => JSON.stringify(props), [props]);
-  const childrenKey = useMemo(() => children?.map((child) => child.id).join(',') ?? '', [children]);
+  const childrenKey = useMemo(
+    () => children?.map((child) => `${child.id}:${JSON.stringify(child.props)}`).join(',') ?? '',
+    [children],
+  );
 
   const getPrefetchedSrc = (url: string): string | undefined => {
     const state: ImageState | undefined = prefetchedImages?.get(url);
