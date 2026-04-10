@@ -837,14 +837,22 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         );
       }
 
-      case 'visitor-counter':
+      case 'visitor-counter': {
+        const alignment = (props.alignment as string) ?? 'center';
+        const alignmentClass =
+          alignment === 'left'
+            ? 'justify-start'
+            : alignment === 'right'
+              ? 'justify-end'
+              : 'justify-center';
         return (
-          <div className="flex justify-center">
+          <div className={`flex ${alignmentClass}`}>
             <span className="rounded bg-muted px-3 py-1 text-xs">
               {props.label as string}: 1,234
             </span>
           </div>
         );
+      }
 
       case 'quote': {
         const quoteText = String(props.quote ?? '');
