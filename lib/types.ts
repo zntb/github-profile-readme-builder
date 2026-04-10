@@ -288,6 +288,8 @@ export interface QuoteProps {
   author?: string;
   theme: string;
   type: 'default' | 'horizontal' | 'vertical';
+  textAlign?: 'left' | 'center' | 'right';
+  authorAlign?: 'left' | 'center' | 'right';
 }
 
 export interface FooterBannerProps {
