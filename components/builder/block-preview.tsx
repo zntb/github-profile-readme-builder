@@ -35,47 +35,6 @@ function getStreakThemeColors(
   return getStreakTheme(themeName);
 }
 
-/** Mirrors the API route's default corner-radii logic. */
-function defaultCapRadii(
-  type: string,
-  section: string,
-  height: number,
-): { tl: number; tr: number; br: number; bl: number } {
-  const maxR = Math.floor(height / 2);
-  if (type === 'rect') return { tl: 8, tr: 8, br: 8, bl: 8 };
-  if (type === 'cylinder') return { tl: maxR, tr: maxR, br: maxR, bl: maxR };
-  if (type === 'soft') return { tl: 36, tr: 36, br: 36, bl: 36 };
-  if (type === 'wave') {
-    return section === 'header'
-      ? { tl: 0, tr: 0, br: 40, bl: 40 }
-      : { tl: 40, tr: 40, br: 0, bl: 0 };
-  }
-  if (type === 'egg') {
-    return section === 'header'
-      ? { tl: 50, tr: 50, br: 0, bl: 0 }
-      : { tl: 0, tr: 0, br: 50, bl: 50 };
-  }
-  if (type === 'shark') {
-    return section === 'header'
-      ? { tl: 20, tr: 20, br: 0, bl: 10 }
-      : { tl: 0, tr: 10, br: 20, bl: 20 };
-  }
-  if (type === 'waving') {
-    return section === 'header'
-      ? { tl: 24, tr: 24, br: 0, bl: 0 }
-      : { tl: 0, tr: 0, br: 24, bl: 24 };
-  }
-  if (type === 'speech') {
-    return section === 'header'
-      ? { tl: 24, tr: 24, br: 0, bl: 0 }
-      : { tl: 0, tr: 0, br: 24, bl: 24 };
-  }
-  if (type === 'transparent' || type === 'blur') {
-    return { tl: 0, tr: 0, br: 0, bl: 0 };
-  }
-  return { tl: 0, tr: 0, br: 0, bl: 0 };
-}
-
 interface BlockPreviewProps {
   block: Block;
   className?: string;
@@ -164,49 +123,64 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
         );
 
       case 'capsule-header': {
+        // Always render via /api/capsule so the Canvas matches exactly what Live Preview
+        // and GitHub display when fetching the same URL.
         const capType = (props.type as string) ?? 'waving';
         const capSection = (props.section as string) ?? 'header';
         const parallaxEffect = props.parallaxEffect === true;
 
-        // For 'waving' type with parallax, render using API image for accurate wave preview
-        if (capType === 'waving' && parallaxEffect) {
-          // Build API URL with wave parameters
-          const wavePosition = props.wavePosition ?? 70;
-          const waveAmplitude = props.waveAmplitude ?? 20;
-          const waveSpeed = props.waveSpeed ?? 20;
-          const waveFlip = props.waveFlip === true;
+        // Build API URL with all parameters
+        const wavePosition = props.wavePosition ?? 70;
+        const waveAmplitude = props.waveAmplitude ?? 20;
+        const waveSpeed = props.waveSpeed ?? 20;
+        const waveFlip = props.waveFlip === true;
 
-          const params = new URLSearchParams({
-            type: capType,
-            section: capSection,
-            height: String(props.height ?? 200),
-            text: String(props.text ?? ''),
-            fontSize: String(props.fontSize ?? 30),
-            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
-            color: String(props.bgStartColor ?? 'EEFF00'),
-            colorEnd: String(props.bgEndColor ?? 'A82DAA'),
-            gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
-            parallax: 'true',
-            animation: String(props.bgAnimation ?? 'none'),
-            wavePosition: String(wavePosition),
-            waveAmplitude: String(waveAmplitude),
-            waveSpeed: String(waveSpeed),
-            flipWave: waveFlip ? 'true' : 'false',
-            textAlignX: String(props.textAlignX ?? 50),
-            textAlignY: String(props.textAlignY ?? 50),
-          });
+        // Handle bgType to build proper color parameters
+        const bgType = (props.bgType as string) ?? 'gradient';
+        const bgStartColor = (props.bgStartColor as string) ?? 'EEFF00';
+        const bgEndColor = (props.bgEndColor as string) ?? 'A82DAA';
+        const bgSolidColor = (props.bgSolidColor as string) ?? 'EEFF00';
 
-          return (
-            <img
-              src={`/api/capsule?${params.toString()}`}
-              alt="Capsule Header"
-              className="w-full"
-              style={{ height: `${props.height ?? 200}px` }}
-            />
-          );
-        }
+        const bgColor = bgType === 'solid' ? bgSolidColor || 'EEFF00' : bgStartColor || 'EEFF00';
+        const colorEnd = bgType !== 'solid' ? bgEndColor || 'A82DAA' : '';
 
-        // Fall back to CSS-based rendering for non-parallax or other types
+        const params: Record<string, string> = {
+          type: capType,
+          section: capSection,
+          height: String(props.height ?? 200),
+          text: String(props.text ?? ''),
+          fontSize: String(props.fontSize ?? 30),
+          fontColor: ((props.fontColor as string) ?? 'ffffff').replace('#', ''),
+          color: bgColor,
+          gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
+          animation: String(props.bgAnimation ?? 'none'),
+          parallax: String(parallaxEffect),
+          wavePosition: String(wavePosition),
+          waveAmplitude: String(waveAmplitude),
+          waveSpeed: String(waveSpeed),
+          flipWave: String(waveFlip),
+          textAlignX: String(props.textAlignX ?? 50),
+          textAlignY: String(props.textAlignY ?? 50),
+        };
+
+        if (colorEnd) params.colorEnd = colorEnd;
+        if (props.borderRadiusTL !== undefined) params.rtl = String(props.borderRadiusTL);
+        if (props.borderRadiusTR !== undefined) params.rtr = String(props.borderRadiusTR);
+        if (props.borderRadiusBR !== undefined) params.rbr = String(props.borderRadiusBR);
+        if (props.borderRadiusBL !== undefined) params.rbl = String(props.borderRadiusBL);
+
+        return (
+          <img
+            src={`/api/capsule?${new URLSearchParams(params).toString()}`}
+            alt="Capsule Header"
+            className="w-full"
+            style={{ height: `${props.height ?? 200}px` }}
+          />
+        );
+      }
+
+      // Removed CSS fallback case - kept for reference but not used in normal flow
+      /* case 'capsule-header-css': {
         const colorValue = props.color as string;
         const bgType = (props.bgType as string) ?? 'gradient';
         const bgAnimation = (props.bgAnimation as string) ?? 'none';
@@ -443,6 +417,7 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
           </div>
         );
       }
+      */
 
       case 'greeting':
         return (
@@ -866,192 +841,58 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
       }
 
       case 'footer-banner': {
+        // Always render via /api/capsule so the Canvas matches exactly what Live Preview
+        // and GitHub display when fetching the same URL.
         const type = (props.type as string) ?? 'waving';
         const section = (props.section as string) ?? 'footer';
         const parallaxEffect = props.parallaxEffect === true;
 
-        // For 'waving' type with parallax, render using API image for accurate wave preview
-        if (type === 'waving' && parallaxEffect) {
-          // Build API URL with wave parameters
-          const wavePosition = props.wavePosition ?? 70;
-          const waveAmplitude = props.waveAmplitude ?? 20;
-          const waveSpeed = props.waveSpeed ?? 20;
-          const waveFlip = props.waveFlip === true;
+        // Build API URL with all parameters
+        const wavePosition = props.wavePosition ?? 70;
+        const waveAmplitude = props.waveAmplitude ?? 20;
+        const waveSpeed = props.waveSpeed ?? 20;
+        const waveFlip = props.waveFlip === true;
 
-          const params = new URLSearchParams({
-            type,
-            section,
-            height: String(props.height ?? 80),
-            text: String(props.text ?? 'Thanks for visiting!'),
-            fontSize: String(props.fontSize ?? 24),
-            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
-            color: String(props.bgStartColor ?? '3B82F6'),
-            colorEnd: String(props.bgEndColor ?? '8B5CF6'),
-            gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
-            parallax: 'true',
-            animation: String(props.bgAnimation ?? 'none'),
-            wavePosition: String(wavePosition),
-            waveAmplitude: String(waveAmplitude),
-            waveSpeed: String(waveSpeed),
-            flipWave: waveFlip ? 'true' : 'false',
-            textAlignX: String(props.textAlignX ?? 50),
-            textAlignY: String(props.textAlignY ?? 50),
-          });
-
-          return (
-            <img
-              src={`/api/capsule?${params.toString()}`}
-              alt="Footer Banner"
-              className="w-full"
-              style={{ height: `${props.height ?? 80}px` }}
-            />
-          );
-        }
-
-        // Fall back to CSS-based rendering for non-parallax or other types
-        // Determine background settings
-        // FIXED: resolveFooterBannerColors() correctly handles both legacy
-        // waveColor ("0:EEFF00,100:A82DAA") and modern (bgStartColor / bgEndColor)
-        // props.  The old code split on ':' and produced startColor='0' (not a
-        // valid hex) and endColor='EEFF00,100' (also invalid).
+        // Handle bgType to build proper color parameters using resolveFooterBannerColors
         const { bgStartColor, bgEndColor } = resolveFooterBannerColors(props);
         const bgType = (props.bgType as string) ?? 'gradient';
-        const bgAnimation = (props.bgAnimation as string) ?? 'none';
         const bgSolidColor = (props.bgSolidColor as string) ?? '3B82F6';
 
-        const height = Number(props.height) || 80;
+        const bgColor = bgType === 'solid' ? bgSolidColor || '3B82F6' : bgStartColor || '3B82F6';
+        const colorEnd = bgType !== 'solid' ? bgEndColor || '8B5CF6' : '';
 
-        // Apply animation class
-        const animationClass =
-          bgAnimation !== 'none'
-            ? bgAnimation === 'gradient'
-              ? 'animate-gradient-flow'
-              : bgAnimation === 'pulse'
-                ? 'animate-pulse'
-                : bgAnimation === 'waving'
-                  ? 'animate-wave'
-                  : bgAnimation === 'shimmer'
-                    ? 'animate-shimmer'
-                    : ''
-            : '';
+        const params: Record<string, string> = {
+          type,
+          section,
+          height: String(props.height ?? 80),
+          text: String(props.text ?? 'Thanks for visiting!'),
+          fontSize: String(props.fontSize ?? 24),
+          fontColor: ((props.fontColor as string) ?? 'ffffff').replace('#', ''),
+          color: bgColor,
+          gradientDirection: String(props.bgGradientDirection ?? 'horizontal'),
+          animation: String(props.bgAnimation ?? 'none'),
+          parallax: String(parallaxEffect),
+          wavePosition: String(wavePosition),
+          waveAmplitude: String(waveAmplitude),
+          waveSpeed: String(waveSpeed),
+          flipWave: String(waveFlip),
+          textAlignX: String(props.textAlignX ?? 50),
+          textAlignY: String(props.textAlignY ?? 50),
+        };
 
-        // Add required background size for animations
-        const animationBgSize =
-          animationClass !== ''
-            ? {
-                backgroundSize: bgAnimation === 'gradient' ? '200% 200%' : '200% 100%',
-              }
-            : {};
-
-        // Build gradient style
-        // Special handling for blur type
-        const isBlur = type === 'blur';
-
-        // For blur effect in the canvas/preview (where there's no content behind),
-        // we need to simulate the blur by using a frosted glass effect with a
-        // semi-transparent background and filter instead of backdrop-filter
-        let gradientStyle: React.CSSProperties;
-
-        if (isBlur) {
-          if (bgType === 'solid') {
-            // For solid background with blur
-            const solidColor = `#${bgSolidColor}`;
-            gradientStyle = {
-              backgroundColor: `${solidColor}CC`, // 80% opacity
-              filter: 'blur(10px)',
-              WebkitFilter: 'blur(10px)',
-            };
-          } else {
-            // For gradient background with blur
-            gradientStyle = {
-              backgroundImage: `linear-gradient(to right, #${bgStartColor}, #${bgEndColor})`,
-              backgroundColor: `#${bgStartColor}99`, // 60% opacity
-              filter: 'blur(10px)',
-              WebkitFilter: 'blur(10px)',
-              ...animationBgSize,
-            };
-          }
-        } else if (bgType === 'solid') {
-          gradientStyle = {
-            backgroundColor: `#${bgSolidColor}`,
-          };
-        } else {
-          gradientStyle = {
-            backgroundImage: `linear-gradient(to right, #${bgStartColor}, #${bgEndColor})`,
-            ...animationBgSize,
-          };
-        }
-
-        // Build border radius - use explicit undefined check to respect explicit 0 values
-        // Footer banner always uses rounded bottom corners (matching Capsule Header header styling)
-        const heightVal = Number(props.height) || 80;
-        const maxR = Math.floor(heightVal / 2);
-        const borderRadiusTL =
-          props.borderRadiusTL !== undefined ? Math.min(Number(props.borderRadiusTL), maxR) : 0;
-        const borderRadiusTR =
-          props.borderRadiusTR !== undefined ? Math.min(Number(props.borderRadiusTR), maxR) : 0;
-        const borderRadiusBR =
-          props.borderRadiusBR !== undefined ? Math.min(Number(props.borderRadiusBR), maxR) : 24;
-        const borderRadiusBL =
-          props.borderRadiusBL !== undefined ? Math.min(Number(props.borderRadiusBL), maxR) : 24;
-
-        const hasCustomRadius =
-          props.borderRadiusTL !== undefined ||
-          props.borderRadiusTR !== undefined ||
-          props.borderRadiusBR !== undefined ||
-          props.borderRadiusBL !== undefined;
-
-        // Compute default border radius based on type
-        let defaultBorderRadius = '0 0 24px 24px';
-        if (type === 'rect') defaultBorderRadius = '8px';
-        else if (type === 'cylinder') defaultBorderRadius = '9999px';
-        else if (type === 'soft') defaultBorderRadius = '36px';
-        else if (type === 'slice') defaultBorderRadius = '48px 10px 48px 10px';
-        else if (type === 'wave') defaultBorderRadius = '0 0 40px 40px';
-        else if (type === 'egg') defaultBorderRadius = '0 0 50px 50px';
-        else if (type === 'shark') defaultBorderRadius = '0 10px 20px 20px';
-        else if (type === 'speech') defaultBorderRadius = '0 0 24px 24px';
-        else if (type === 'transparent' || type === 'blur') defaultBorderRadius = '0';
-
-        const borderRadiusValue = hasCustomRadius
-          ? `${borderRadiusTL}px ${borderRadiusTR}px ${borderRadiusBR}px ${borderRadiusBL}px`
-          : defaultBorderRadius;
-
-        // Font color from props
-        const normalizedFontColor =
-          typeof props.fontColor === 'string' ? props.fontColor.replace('#', '').trim() : 'ffffff';
-        const fontColor = `#${normalizedFontColor || 'ffffff'}`;
-
-        // Font size from props with bounds checking
-        let fontSize = 24;
-        if (props.fontSize && typeof props.fontSize === 'number' && isFinite(props.fontSize)) {
-          fontSize = Math.max(12, Math.min(72, props.fontSize as number));
-        }
+        if (colorEnd) params.colorEnd = colorEnd;
+        if (props.borderRadiusTL !== undefined) params.rtl = String(props.borderRadiusTL);
+        if (props.borderRadiusTR !== undefined) params.rtr = String(props.borderRadiusTR);
+        if (props.borderRadiusBR !== undefined) params.rbr = String(props.borderRadiusBR);
+        if (props.borderRadiusBL !== undefined) params.rbl = String(props.borderRadiusBL);
 
         return (
-          <div
-            className={`relative flex items-center justify-center ${animationClass}`}
-            style={{
-              ...gradientStyle,
-              borderRadius: borderRadiusValue,
-              height: `${height}px`,
-            }}
-          >
-            <span
-              className="font-medium"
-              style={{
-                color: fontColor,
-                fontSize: `${fontSize}px`,
-                position: 'absolute',
-                left: `${props.textAlignX ?? 50}%`,
-                top: `${props.textAlignY ?? 50}%`,
-                transform: 'translate(-50%, -50%)',
-                width: 'max-content',
-              }}
-            >
-              {props.text as string}
-            </span>
-          </div>
+          <img
+            src={`/api/capsule?${new URLSearchParams(params).toString()}`}
+            alt="Footer Banner"
+            className="w-full"
+            style={{ height: `${props.height ?? 80}px` }}
+          />
         );
       }
 
