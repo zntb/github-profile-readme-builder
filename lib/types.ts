@@ -1,5 +1,18 @@
 // Block Types for the README Builder
 
+/**
+ * Generic block-level properties that can be applied to ALL block types
+ * via the config panel.
+ */
+export interface BlockLayoutProps {
+  /** Block width as percentage (1-100). Applied via config panel. */
+  blockWidth?: number;
+  /** Block height in pixels. Applied via config panel. */
+  blockHeight?: number;
+  /** Block alignment within its container. Applied via config panel. */
+  blockAlignment?: 'left' | 'center' | 'right';
+}
+
 export type BlockType =
   // Layout
   | 'divider'
