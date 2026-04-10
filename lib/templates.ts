@@ -593,13 +593,20 @@ export const templates: Template[] = [
           height: 180,
           section: 'header',
           bgType: 'gradient',
-          bgGradientDirection: 'horizontal',
+          bgGradientDirection: 'vertical',
           bgAnimation: 'none',
-          bgStartColor: '0D1117',
+          bgStartColor: '3370cc',
           bgEndColor: '161B22',
-          bgSolidColor: '0D1117',
+          bgSolidColor: '3370cc',
           fontColor: 'ffffff',
           fontSize: 30,
+          parallaxEffect: true,
+          wavePosition: 70,
+          waveAmplitude: 20,
+          waveSpeed: 20,
+          waveFlip: true,
+          textAlignX: 50,
+          textAlignY: 27,
         },
       },
       {
@@ -824,6 +831,20 @@ export const templates: Template[] = [
       },
       {
         id: 'oss-17',
+        type: 'divider',
+        props: {
+          type: 'line',
+          bgType: 'solid',
+          bgSolidColor: '30363D',
+          bgStartColor: '30363D',
+          bgEndColor: '30363D',
+          bgGradientDirection: 'horizontal',
+          thickness: 1,
+          alignment: 'center',
+        },
+      },
+      {
+        id: 'oss-18',
         type: 'visitor-counter',
         props: {
           username: 'github',
@@ -833,7 +854,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'oss-18',
+        id: 'oss-19',
         type: 'footer-banner',
         props: {
           text: 'Happy to collaborate — open an issue or PR!',
@@ -841,13 +862,20 @@ export const templates: Template[] = [
           section: 'footer',
           height: 100,
           fontSize: 24,
-          fontColor: '58A6FF',
+          fontColor: 'ffffff',
           bgType: 'gradient',
-          bgGradientDirection: 'horizontal',
+          bgGradientDirection: 'vertical',
           bgAnimation: 'none',
-          bgStartColor: '0D1117',
+          bgStartColor: '3370cc',
           bgEndColor: '161B22',
-          bgSolidColor: '0D1117',
+          bgSolidColor: '3370cc',
+          parallaxEffect: true,
+          wavePosition: 70,
+          waveAmplitude: 20,
+          waveSpeed: 20,
+          waveFlip: true,
+          textAlignX: 50,
+          textAlignY: 76,
         },
       },
     ],
@@ -856,16 +884,15 @@ export const templates: Template[] = [
   {
     id: 'full-stack-engineer',
     name: 'Full Stack Engineer',
-    description:
-      'Showcases frontend, backend, cloud, and DevOps skills with a professional Catppuccin theme',
-    thumbnail: '/templates/fullstack.png',
+    description: 'Professional developer profile with comprehensive tech stack and GitHub stats',
+    thumbnail: '/templates/full-stack.png',
     blocks: [
       {
-        id: 'fs-1',
+        id: 'fse-1',
         type: 'capsule-header',
         props: {
           text: 'Full Stack Engineer',
-          type: 'slice',
+          type: 'waving',
           height: 200,
           section: 'header',
           bgType: 'gradient',
@@ -876,10 +903,17 @@ export const templates: Template[] = [
           bgSolidColor: 'CBA6F7',
           fontColor: 'ffffff',
           fontSize: 30,
+          parallaxEffect: false,
+          wavePosition: 70,
+          waveAmplitude: 20,
+          waveSpeed: 20,
+          waveFlip: false,
+          textAlignX: 50,
+          textAlignY: 50,
         },
       },
       {
-        id: 'fs-2',
+        id: 'fse-2',
         type: 'greeting',
         props: {
           text: "I'm a Full Stack Engineer",
@@ -888,7 +922,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-3',
+        id: 'fse-3',
         type: 'typing-animation',
         props: {
           lines: [
@@ -904,7 +938,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-4',
+        id: 'fse-4',
         type: 'paragraph',
         props: {
           text: 'I design and build end-to-end products — from pixel-perfect UIs to scalable distributed backends. I care deeply about developer experience, performance, and clean architecture.',
@@ -912,14 +946,14 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-5',
+        id: 'fse-5',
         type: 'social-badges',
         props: {
           linkedin: 'yourusername',
-          github: 'yourusername',
           twitter: 'yourusername',
-          portfolio: 'https://yoursite.dev',
+          github: 'yourusername',
           email: 'hello@yoursite.dev',
+          portfolio: 'https://yoursite.dev',
           youtube: '',
           instagram: '',
           discord: '',
@@ -927,7 +961,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-6',
+        id: 'fse-6',
         type: 'divider',
         props: {
           type: 'line',
@@ -941,17 +975,17 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-7',
+        id: 'fse-7',
         type: 'heading',
         props: {
           text: 'Frontend',
-          level: 3,
-          alignment: 'left',
+          level: 2,
+          alignment: 'center',
           emoji: '🎨',
         },
       },
       {
-        id: 'fs-8',
+        id: 'fse-8',
         type: 'skill-icons',
         props: {
           icons: ['html', 'css', 'js', 'ts', 'react', 'nextjs', 'vue', 'tailwind', 'sass', 'figma'],
@@ -960,17 +994,17 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-9',
+        id: 'fse-9',
         type: 'heading',
         props: {
           text: 'Backend & Databases',
-          level: 3,
-          alignment: 'left',
+          level: 2,
+          alignment: 'center',
           emoji: '🗄️',
         },
       },
       {
-        id: 'fs-10',
+        id: 'fse-10',
         type: 'skill-icons',
         props: {
           icons: [
@@ -990,17 +1024,17 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-11',
+        id: 'fse-11',
         type: 'heading',
         props: {
           text: 'Cloud & DevOps',
-          level: 3,
-          alignment: 'left',
+          level: 2,
+          alignment: 'center',
           emoji: '☁️',
         },
       },
       {
-        id: 'fs-12',
+        id: 'fse-12',
         type: 'skill-icons',
         props: {
           icons: [
@@ -1020,7 +1054,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-13',
+        id: 'fse-13',
         type: 'divider',
         props: {
           type: 'line',
@@ -1034,7 +1068,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-14',
+        id: 'fse-14',
         type: 'heading',
         props: {
           text: 'GitHub Stats',
@@ -1044,7 +1078,7 @@ export const templates: Template[] = [
         },
       },
       {
-        id: 'fs-15',
+        id: 'fse-15',
         type: 'stats-row',
         props: {
           direction: 'row',
@@ -1056,7 +1090,7 @@ export const templates: Template[] = [
         },
         children: [
           {
-            id: 'fs-15a',
+            id: 'fse-15a',
             type: 'stats-card',
             props: {
               username: 'github',
@@ -1071,7 +1105,7 @@ export const templates: Template[] = [
             },
           },
           {
-            id: 'fs-15b',
+            id: 'fse-15b',
             type: 'top-languages',
             props: {
               username: 'github',
@@ -1087,27 +1121,27 @@ export const templates: Template[] = [
         ],
       },
       {
-        id: 'fs-17',
+        id: 'fse-16',
         type: 'streak-stats',
         props: {
           username: 'github',
           theme: 'catppuccin_mocha',
-          hideBorder: false,
+          hideBorder: true,
           borderRadius: 12,
           layoutWidth: 'full',
         },
       },
       {
-        id: 'fs-18',
+        id: 'fse-17',
         type: 'activity-graph',
         props: {
           username: 'github',
           theme: 'tokyonight',
-          hideBorder: false,
+          hideBorder: true,
         },
       },
       {
-        id: 'fs-19',
+        id: 'fse-18',
         type: 'footer-banner',
         props: {
           text: 'Open to new opportunities',
@@ -1122,6 +1156,13 @@ export const templates: Template[] = [
           bgStartColor: 'CBA6F7',
           bgEndColor: '94E2D5',
           bgSolidColor: 'CBA6F7',
+          parallaxEffect: false,
+          wavePosition: 70,
+          waveAmplitude: 20,
+          waveSpeed: 20,
+          waveFlip: true,
+          textAlignX: 50,
+          textAlignY: 66,
         },
       },
     ],
