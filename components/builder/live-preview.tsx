@@ -13,6 +13,52 @@ import type { Block } from '@/lib/types';
 import { BlockTypeSkeleton } from './skeleton-loaders';
 
 /**
+ * Build a relative /api/capsule URL from block props.
+ * This ensures the Live Preview renders identically to GitHub,
+ * which fetches the same endpoint when embedding the image.
+ */
+function buildCapsulePreviewUrl(
+  props: Record<string, unknown>,
+  defaultSection: string = 'header',
+): string {
+  const bgType = (props.bgType as string) ?? 'gradient';
+  const bgStartColor = (props.bgStartColor as string) ?? 'EEFF00';
+  const bgEndColor = (props.bgEndColor as string) ?? 'A82DAA';
+  const bgSolidColor = (props.bgSolidColor as string) ?? 'EEFF00';
+  const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
+
+  const bgColor = bgType === 'solid' ? bgSolidColor || 'EEFF00' : bgStartColor || 'EEFF00';
+  const colorEnd = bgType !== 'solid' ? bgEndColor || 'A82DAA' : '';
+
+  const params: Record<string, string> = {
+    type: (props.type as string) ?? 'waving',
+    color: bgColor,
+    height: String(props.height ?? 200),
+    section: (props.section as string) ?? defaultSection,
+    fontSize: String(props.fontSize ?? 30),
+    fontColor: ((props.fontColor as string) ?? 'ffffff').replace('#', ''),
+    animation: (props.bgAnimation as string) ?? 'none',
+    gradientDirection: bgGradientDirection,
+    parallax: String(props.parallaxEffect === true),
+    wavePosition: String(props.wavePosition ?? 70),
+    waveAmplitude: String(props.waveAmplitude ?? 20),
+    waveSpeed: String(props.waveSpeed ?? 20),
+    flipWave: String(props.waveFlip === true),
+    textAlignX: String(props.textAlignX ?? 50),
+    textAlignY: String(props.textAlignY ?? 50),
+  };
+
+  if (colorEnd) params.colorEnd = colorEnd;
+  if (props.text) params.text = String(props.text);
+  if (props.borderRadiusTL !== undefined) params.rtl = String(props.borderRadiusTL);
+  if (props.borderRadiusTR !== undefined) params.rtr = String(props.borderRadiusTR);
+  if (props.borderRadiusBR !== undefined) params.rbr = String(props.borderRadiusBR);
+  if (props.borderRadiusBL !== undefined) params.rbl = String(props.borderRadiusBL);
+
+  return `/api/capsule?${new URLSearchParams(params).toString()}`;
+}
+
+/**
  * Extended image state that includes loading information
  */
 interface ImageState {
@@ -196,7 +242,6 @@ function usePrefetchedImages(
   }, [blocks, globalUsername]);
 
   // Fetch images sequentially with priority - visible blocks first, then background
-  // This optimizes perceived performance by loading visible content before background content
   useEffect(() => {
     if (urls.length === 0) return;
 
@@ -210,8 +255,6 @@ function usePrefetchedImages(
     }
     setImageStates(initialStates);
 
-    // Fetch images sequentially to prioritize visible blocks
-    // This prevents bandwidth contention and gives faster visual feedback
     let isCancelled = false;
 
     const fetchSequentially = async () => {
@@ -225,7 +268,7 @@ function usePrefetchedImages(
           const dataUrl = await blobToDataUrl(blob);
 
           if (!isCancelled) {
-            setImageStates((prev) => {
+            setImageStates((prev: Map<string, ImageState>) => {
               const newStates = new Map(prev);
               newStates.set(url, { loading: false, data: dataUrl, error: null });
               return newStates;
@@ -233,7 +276,7 @@ function usePrefetchedImages(
           }
         } catch (error) {
           if (!isCancelled) {
-            setImageStates((prev) => {
+            setImageStates((prev: Map<string, ImageState>) => {
               const newStates = new Map(prev);
               newStates.set(url, { loading: false, data: null, error: error as Error });
               return newStates;
@@ -254,8 +297,7 @@ function usePrefetchedImages(
   const refetch = useCallback(() => {
     if (urls.length === 0) return;
 
-    // Set all URLs to loading again
-    setImageStates((prev) => {
+    setImageStates((prev: Map<string, ImageState>) => {
       const newStates = new Map(prev);
       for (const url of urls) {
         const currentState = prev.get(url);
@@ -264,9 +306,8 @@ function usePrefetchedImages(
       return newStates;
     });
 
-    // Refetch all URLs
     Promise.all(
-      urls.map(async (url) => {
+      urls.map(async (url: string) => {
         try {
           const response = await fetch(url);
           if (!response.ok) throw new Error(`HTTP ${response.status}`);
@@ -278,7 +319,7 @@ function usePrefetchedImages(
         }
       }),
     ).then((results) => {
-      setImageStates((prev) => {
+      setImageStates((prev: Map<string, ImageState>) => {
         const newStates = new Map(prev);
         for (const result of results) {
           if (result.success && result.dataUrl) {
@@ -350,7 +391,6 @@ function isBlockLoading(
 
   // Quote blocks don't need a username, handle separately
   if (block.type === 'quote') {
-    // For quote blocks, only show loading if no custom quote/author provided
     if (block.props.quote && block.props.author) return false;
 
     const quoteParams = new URLSearchParams({
@@ -374,7 +414,6 @@ function isBlockLoading(
 
   const username = getUsername(block.props.username as string);
 
-  // No username means no API call, so not loading
   if (!username || username === 'github') return false;
 
   const baseUrl = getApiUrlForBlock(block, username);
@@ -492,7 +531,6 @@ export function LivePreview({ blocks }: LivePreviewProps) {
 
               // Render two adjacent half-width cards side by side, matching GitHub layout
               if (isHalfWidthGithubCard(block) && nextBlock && isHalfWidthGithubCard(nextBlock)) {
-                // Check if either block's images are loading
                 const firstBlockLoading = isBlockLoading(block, prefetchedImages, globalUsername);
                 const secondBlockLoading = isBlockLoading(
                   nextBlock,
@@ -534,7 +572,6 @@ export function LivePreview({ blocks }: LivePreviewProps) {
                 continue;
               }
 
-              // Check if this block needs to show a loading skeleton or error
               const blockLoading = isBlockLoading(block, prefetchedImages, globalUsername);
               const blockError = isBlockErrored(block, prefetchedImages, globalUsername);
 
@@ -580,8 +617,6 @@ export function LivePreview({ blocks }: LivePreviewProps) {
 
 /**
  * Resolve the img style for a stats card block.
- * Default: fill the container width and let the SVG maintain its natural aspect ratio.
- * An explicit imageStyleOverride (e.g. from stats-row) takes precedence.
  */
 function resolvePreviewImageSize(block: Block): CSSProperties {
   const cardHeight = block.props.cardHeight as string | number | undefined;
@@ -613,16 +648,11 @@ function PreviewBlock({
   const globalUsername = useBuilderStore((state) => state.username);
   const imageSizeStyle = imageStyleOverride ?? resolvePreviewImageSize(block);
 
-  // Memoize stable keys for props and children to prevent unnecessary recalculations
-  // Using JSON.stringify for props creates a stable string that only changes when values change
-  // Using child IDs for children prevents recalculation when parent re-renders with same children
-
   const propsKey = useMemo(() => JSON.stringify(props), [props]);
-
   const childrenKey = useMemo(() => children?.map((child) => child.id).join(',') ?? '', [children]);
 
   const getPrefetchedSrc = (url: string): string | undefined => {
-    const state = prefetchedImages?.get(url);
+    const state: ImageState | undefined = prefetchedImages?.get(url);
     return state?.data ?? undefined;
   };
 
@@ -632,15 +662,13 @@ function PreviewBlock({
       : blockUsername;
   };
 
-  /* eslint-disable react-hooks/preserve-manual-memoization, react-hooks/exhaustive-deps */
+  /* eslint-disable react-hooks/exhaustive-deps */
   const renderBlock = useMemo(() => {
     switch (type) {
       case 'stats-row': {
         const direction = (props.direction as 'row' | 'column') ?? 'row';
         const gap = Number(props.gap ?? 12);
         const cardWidth = (props.cardWidth as string) || '49%';
-        // For the preview, let images maintain natural aspect ratio (height: auto).
-        // Forcing an explicit pixel height on SVG <img> can cause letterboxing.
         return (
           <div
             style={{
@@ -688,7 +716,6 @@ function PreviewBlock({
         const thickness = (props.thickness as number) ?? 2;
         const alignment = (props.alignment as string) ?? 'center';
 
-        // Color handling
         const bgSolidColor = (props.bgSolidColor as string) ?? 'CCCCCC';
         const bgStartColor = (props.bgStartColor as string) ?? 'CCCCCC';
         const bgEndColor = (props.bgEndColor as string) ?? '999999';
@@ -746,322 +773,18 @@ function PreviewBlock({
       case 'spacer':
         return <div style={{ height: `${props.height}px` }} />;
 
+      /**
+       * capsule-header — always render via /api/capsule so the Live Preview
+       * matches exactly what GitHub displays when it fetches the same URL.
+       */
       case 'capsule-header': {
-        // Determine the color to use based on bgType
-        const bgType = (props.bgType as string) ?? 'gradient';
-        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
-        const bgAnimation = (props.bgAnimation as string) ?? 'none';
-        let bgStartColor = props.bgStartColor ? String(props.bgStartColor) : undefined;
-        let bgEndColor = props.bgEndColor ? String(props.bgEndColor) : undefined;
-        const bgSolidColor = (props.bgSolidColor as string) ?? 'EEFF00';
-
-        // Parse legacy color format ONLY if modern properties are NOT present
-        if ((!bgStartColor || !bgEndColor) && props.color && props.color !== 'gradient') {
-          const colorValue = props.color as string;
-          const colorParts = colorValue.split(',');
-          if (colorParts.length >= 2) {
-            const startMatch = colorParts[0].match(/\d+:([0-9a-fA-F]+)/);
-            const endMatch = colorParts[1].match(/\d+:([0-9a-fA-F]+)/);
-            if (startMatch) bgStartColor = startMatch[1].toUpperCase();
-            if (endMatch) bgEndColor = endMatch[1].toUpperCase();
-          }
-        }
-
-        // Always apply defaults - this ensures new blocks get proper colors immediately
-        bgStartColor = bgStartColor ?? 'EEFF00';
-        bgEndColor = bgEndColor ?? 'A82DAA';
-
-        const normalizeHex = (value: string, fallback: string) => {
-          const sanitized = value?.replace('#', '').trim();
-          return sanitized || fallback;
-        };
-
-        // For solid type, render natively (no external API needed)
-        if (bgType === 'solid') {
-          const fontSize = (props.fontSize as number) ?? 30;
-          const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
-          const solidColor = normalizeHex(bgSolidColor, 'EEFF00');
-          const normalizedSolidColor = solidColor.startsWith('#') ? solidColor : `#${solidColor}`;
-
-          const section = (props.section as string) ?? 'header';
-          const type = (props.type as string) ?? 'waving';
-
-          // Compute border radius based on type
-          let borderRadius = '0 0 24px 24px';
-          if (type === 'rect') borderRadius = '8px';
-          else if (type === 'cylinder') borderRadius = '9999px';
-          else if (type === 'soft') borderRadius = '36px';
-          else if (type === 'slice') borderRadius = '48px 10px 48px 10px';
-          else if (type === 'wave')
-            borderRadius = section === 'footer' ? '24px 24px 0 0' : '0 0 40px 40px';
-          else if (type === 'egg')
-            borderRadius = section === 'footer' ? '24px 24px 0 0' : '50px 50px 0 0';
-          else if (type === 'shark')
-            borderRadius = section === 'footer' ? '24px 24px 0 0' : '20px 20px 0 10px';
-          else if (type === 'speech')
-            borderRadius = section === 'footer' ? '24px 24px 0 0' : '24px 24px 0 0';
-          else if (type === 'transparent' || type === 'blur') borderRadius = '0';
-          else if (section === 'footer') borderRadius = '24px 24px 0 0';
-
-          // Special handling for transparent and blur types
-          const isTransparent = type === 'transparent';
-          const isBlur = type === 'blur';
-
-          // For blur effect in the preview (where there's no content behind),
-          // we need to simulate the blur by using a filter instead of backdrop-filter
-          if (isBlur) {
-            const blurBackgroundColor = normalizedSolidColor;
-            return (
-              <div
-                className="relative overflow-hidden"
-                style={{
-                  width: '100%',
-                  maxWidth: '896px',
-                  height: `${props.height}px`,
-                  backgroundColor: isTransparent ? 'transparent' : `${blurBackgroundColor}CC`, // 80% opacity
-                  borderRadius,
-                  filter: 'blur(10px)',
-                  WebkitFilter: 'blur(10px)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <span
-                  className="font-bold"
-                  style={{
-                    fontSize: `${fontSize}px`,
-                    color: fontColor,
-                    position: 'absolute',
-                    left: `${props.textAlignX ?? 50}%`,
-                    top: `${props.textAlignY ?? 50}%`,
-                    transform: 'translate(-50%, -50%)',
-                    width: 'max-content',
-                  }}
-                >
-                  {props.text as string}
-                </span>
-              </div>
-            );
-          }
-
-          return (
-            <div
-              className="relative overflow-hidden"
-              style={{
-                width: '100%',
-                maxWidth: '896px',
-                height: `${props.height}px`,
-                backgroundColor: isTransparent ? 'transparent' : normalizedSolidColor,
-                borderRadius,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span
-                className="font-bold"
-                style={{
-                  fontSize: `${fontSize}px`,
-                  color: fontColor,
-                  position: 'absolute',
-                  left: `${props.textAlignX ?? 50}%`,
-                  top: `${props.textAlignY ?? 50}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: 'max-content',
-                }}
-              >
-                {props.text as string}
-              </span>
-            </div>
-          );
-        }
-
-        // For gradient/animated types, render custom capsule header
-        const startColor = `#${bgStartColor}`;
-        const endColor = `#${bgEndColor}`;
-
-        let gradientBgImage: string;
-        switch (bgGradientDirection) {
-          case 'horizontal':
-            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
-            break;
-          case 'vertical':
-            gradientBgImage = `linear-gradient(to bottom, ${startColor}, ${endColor})`;
-            break;
-          case 'diagonal':
-            gradientBgImage = `linear-gradient(135deg, ${startColor}, ${endColor})`;
-            break;
-          case 'radial':
-            gradientBgImage = `radial-gradient(circle, ${startColor}, ${endColor})`;
-            break;
-          case 'conic':
-            gradientBgImage = `conic-gradient(from 0deg, ${startColor}, ${endColor})`;
-            break;
-          default:
-            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
-        }
-
-        // Apply animation for animated type
-        const fontSize = (props.fontSize as number) ?? 30;
-        const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
-        const animationClass =
-          bgAnimation !== 'none'
-            ? bgAnimation === 'gradient'
-              ? 'animate-gradient-flow'
-              : bgAnimation === 'pulse'
-                ? 'animate-pulse'
-                : bgAnimation === 'waving'
-                  ? 'animate-wave'
-                  : bgAnimation === 'wave'
-                    ? 'animate-wave'
-                    : bgAnimation === 'shimmer'
-                      ? 'animate-shimmer'
-                      : ''
-            : '';
-
-        // Add required background size for animations
-        const animationBgSize =
-          animationClass !== ''
-            ? {
-                backgroundSize: bgAnimation === 'gradient' ? '200% 200%' : '200% 100%',
-              }
-            : {};
-        const section = (props.section as string) ?? 'header';
-        const type = (props.type as string) ?? 'waving';
-
-        // Normalize solid color for blur background
-        const solidColor = normalizeHex(bgSolidColor, 'EEFF00');
-        const normalizedSolidColor = solidColor.startsWith('#') ? solidColor : `#${solidColor}`;
-
-        // Compute border radius based on type
-        let borderRadius = '0 0 24px 24px';
-        if (type === 'rect') borderRadius = '8px';
-        else if (type === 'cylinder') borderRadius = '9999px';
-        else if (type === 'soft') borderRadius = '36px';
-        else if (type === 'slice') borderRadius = '48px 10px 48px 10px';
-        else if (type === 'wave')
-          borderRadius = section === 'footer' ? '24px 24px 0 0' : '0 0 40px 40px';
-        else if (type === 'egg')
-          borderRadius = section === 'footer' ? '24px 24px 0 0' : '50px 50px 0 0';
-        else if (type === 'shark')
-          borderRadius = section === 'footer' ? '24px 24px 0 0' : '20px 20px 0 10px';
-        else if (type === 'speech')
-          borderRadius = section === 'footer' ? '24px 24px 0 0' : '24px 24px 0 0';
-        else if (type === 'transparent' || type === 'blur') borderRadius = '0';
-        else if (section === 'footer') borderRadius = '24px 24px 0 0';
-
-        // For 'waving' type with parallax, render using API image for accurate wave preview
-        if (type === 'waving' && props.parallaxEffect === true) {
-          const wavePosition = props.wavePosition ?? 70;
-          const waveAmplitude = props.waveAmplitude ?? 20;
-          const waveSpeed = props.waveSpeed ?? 20;
-          const waveFlip = props.waveFlip === true;
-
-          const params = new URLSearchParams({
-            type,
-            section,
-            height: String(props.height ?? 200),
-            text: String(props.text ?? ''),
-            fontSize: String(fontSize),
-            fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
-            color: String(bgStartColor),
-            colorEnd: String(bgEndColor),
-            gradientDirection: bgGradientDirection,
-            parallax: 'true',
-            wavePosition: String(wavePosition),
-            waveAmplitude: String(waveAmplitude),
-            waveSpeed: String(waveSpeed),
-            flipWave: waveFlip ? 'true' : 'false',
-            textAlignX: String(props.textAlignX ?? 50),
-            textAlignY: String(props.textAlignY ?? 50),
-          });
-
-          return (
-            <img
-              src={`/api/capsule?${params.toString()}`}
-              alt="Capsule Header"
-              className="w-full"
-              style={{
-                height: `${props.height ?? 200}px`,
-                maxWidth: '896px',
-              }}
-            />
-          );
-        }
-
-        // Special handling for transparent and blur types
-        const isTransparent = type === 'transparent';
-        const isBlur = type === 'blur';
-
-        // For blur effect in the preview (where there's no content behind),
-        // we need to simulate the blur by using a filter instead of backdrop-filter
-        if (isBlur) {
-          return (
-            <div
-              className={`relative flex items-center justify-center w-full overflow-hidden ${animationClass}`}
-              style={{
-                width: '100%',
-                maxWidth: '896px', // GitHub README max width
-                height: `${props.height}px`,
-                backgroundImage: gradientBgImage,
-                backgroundColor: normalizedSolidColor,
-                borderRadius,
-                filter: 'blur(10px)',
-                WebkitFilter: 'blur(10px)',
-                ...animationBgSize,
-              }}
-            >
-              <span
-                className="font-bold drop-shadow-md"
-                style={{
-                  fontSize: `${fontSize}px`,
-                  color: fontColor,
-                  position: 'absolute',
-                  left: `${props.textAlignX ?? 50}%`,
-                  top: `${props.textAlignY ?? 50}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: 'max-content',
-                }}
-              >
-                {props.text as string}
-              </span>
-            </div>
-          );
-        }
-
+        const capsuleUrl = buildCapsulePreviewUrl(props, 'header');
         return (
-          <div
-            className={`relative flex items-center justify-center w-full overflow-hidden ${animationClass}`}
-            style={{
-              width: '100%',
-              maxWidth: '896px', // GitHub README max width
-              height: `${props.height}px`,
-              backgroundImage: isTransparent ? 'none' : gradientBgImage,
-              backgroundColor: isTransparent
-                ? 'transparent'
-                : isBlur
-                  ? normalizedSolidColor
-                  : undefined,
-              borderRadius,
-              ...animationBgSize,
-            }}
-          >
-            <span
-              className="font-bold drop-shadow-md"
-              style={{
-                fontSize: `${fontSize}px`,
-                color: fontColor,
-                position: 'absolute',
-                left: `${props.textAlignX ?? 50}%`,
-                top: `${props.textAlignY ?? 50}%`,
-                transform: 'translate(-50%, -50%)',
-                width: 'max-content',
-              }}
-            >
-              {props.text as string}
-            </span>
-          </div>
+          <img
+            src={capsuleUrl}
+            alt="Capsule Header"
+            style={{ width: '100%', height: `${props.height ?? 200}px`, display: 'block' }}
+          />
         );
       }
 
@@ -1318,11 +1041,6 @@ function PreviewBlock({
         );
       }
 
-      /**
-       * Stats card — uses <img> so the browser respects the SVG viewBox aspect ratio.
-       * The previous StatsCardInline approach (fetch + dangerouslySetInnerHTML) stripped
-       * the height attribute from the SVG, causing distorted proportions.
-       */
       case 'stats-card': {
         const layoutStyle = (props.layoutStyle as string | undefined) ?? 'standard';
         const username = getUsername(props.username as string);
@@ -1392,7 +1110,6 @@ function PreviewBlock({
         const activityUrl = `/api/activity?${activityParams.toString()}`;
         const prefetchedActivitySrc = getPrefetchedSrc(activityUrl);
         return (
-          // Activity graph SVG is 850 px wide — always fill the full container width
           <img
             src={prefetchedActivitySrc ?? activityUrl}
             alt="Activity Graph"
@@ -1442,7 +1159,6 @@ function PreviewBlock({
         const authorAlign = (props.authorAlign as string) ?? 'center';
         const { bg, text, accent, border } = getQuoteTheme(quoteTheme);
 
-        // Default layout with alignment support
         return (
           <div
             className="rounded-lg p-4"
@@ -1468,289 +1184,28 @@ function PreviewBlock({
         );
       }
 
+      /**
+       * footer-banner — always render via /api/capsule so the Live Preview
+       * matches exactly what GitHub displays when it fetches the same URL.
+       * resolveFooterBannerColors() ensures both legacy (waveColor) and modern
+       * (bgStartColor / bgEndColor) props produce the correct colours.
+       */
       case 'footer-banner': {
-        // Determine the color to use based on bgType
-        // FIXED: resolveFooterBannerColors() correctly handles both legacy
-        // waveColor ("0:EEFF00,100:A82DAA") and modern (bgStartColor / bgEndColor)
-        // props.  The old code split on ':' and produced startColor='0' (not a
-        // valid hex) and endColor='EEFF00,100' (also invalid).
         const { bgStartColor, bgEndColor } = resolveFooterBannerColors(props);
-        const bgType = (props.bgType as string) ?? 'gradient';
-        const bgGradientDirection = (props.bgGradientDirection as string) ?? 'horizontal';
-        const bgAnimation = (props.bgAnimation as string) ?? 'none';
-        const bgSolidColor = (props.bgSolidColor as string) ?? '3B82F6';
-
-        const normalizeHex = (value: string, fallback: string) => {
-          const sanitized = value?.replace('#', '').trim();
-          return sanitized || fallback;
+        const footerProps: Record<string, unknown> = {
+          ...props,
+          bgStartColor,
+          bgEndColor,
+          // footer-banner always renders as footer section
+          section: 'footer',
         };
-
-        // For solid type, render natively (no external API needed)
-        if (bgType === 'solid') {
-          const fontSize = (props.fontSize as number) ?? 24;
-          const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
-          const solidColor = normalizeHex(bgSolidColor, '3B82F6');
-          const normalizedSolidColor = solidColor.startsWith('#') ? solidColor : `#${solidColor}`;
-
-          const type = (props.type as string) ?? 'waving';
-
-          // Compute border radius based on type and section
-          let borderRadiusValue: string;
-          if (type === 'rect') {
-            borderRadiusValue = '8px';
-          } else if (type === 'cylinder') {
-            borderRadiusValue = '9999px';
-          } else if (type === 'soft') {
-            borderRadiusValue = '36px';
-          } else if (type === 'slice') {
-            borderRadiusValue = '48px 10px 48px 10px';
-          } else if (type === 'wave') {
-            borderRadiusValue = '0 0 40px 40px';
-          } else if (type === 'egg') {
-            borderRadiusValue = '0 0 50px 50px';
-          } else if (type === 'shark') {
-            borderRadiusValue = '0 10px 20px 20px';
-          } else if (type === 'speech') {
-            borderRadiusValue = '0 0 24px 24px';
-          } else if (type === 'transparent' || type === 'blur') {
-            borderRadiusValue = '0';
-          } else {
-            // Default: waving or other types - use rounded bottom corners
-            borderRadiusValue = '0 0 24px 24px';
-          }
-
-          // For 'waving' type with parallax, render using API image for accurate wave preview
-          if (type === 'waving' && props.parallaxEffect === true) {
-            const wavePosition = props.wavePosition ?? 70;
-            const waveAmplitude = props.waveAmplitude ?? 20;
-            const waveSpeed = props.waveSpeed ?? 20;
-            const waveFlip = props.waveFlip === true;
-
-            const params = new URLSearchParams({
-              type,
-              section: 'footer',
-              height: String(props.height ?? 80),
-              text: String(props.text ?? 'Thanks for visiting!'),
-              fontSize: String(props.fontSize ?? 24),
-              fontColor: String(props.fontColor ?? 'ffffff').replace('#', ''),
-              color: String(bgStartColor),
-              colorEnd: String(bgEndColor),
-              gradientDirection: bgGradientDirection,
-              parallax: 'true',
-              wavePosition: String(wavePosition),
-              waveAmplitude: String(waveAmplitude),
-              waveSpeed: String(waveSpeed),
-              flipWave: waveFlip ? 'true' : 'false',
-              textAlignX: String(props.textAlignX ?? 50),
-              textAlignY: String(props.textAlignY ?? 50),
-            });
-
-            return (
-              <img
-                src={`/api/capsule?${params.toString()}`}
-                alt="Footer Banner"
-                className="w-full"
-                style={{
-                  height: `${props.height ?? 80}px`,
-                  maxWidth: '896px',
-                }}
-              />
-            );
-          }
-
-          // Special handling for transparent and blur types
-          const isTransparent = type === 'transparent';
-          const isBlur = type === 'blur';
-
-          return (
-            <div
-              className="relative overflow-hidden"
-              style={{
-                width: '100%',
-                maxWidth: '896px',
-                height: `${props.height}px`,
-                backgroundColor: isTransparent ? 'transparent' : normalizedSolidColor,
-                borderRadius: borderRadiusValue,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                ...(isBlur ? { backdropFilter: 'blur(10px)' } : {}),
-              }}
-            >
-              <span
-                className="font-bold"
-                style={{
-                  fontSize: `${fontSize}px`,
-                  color: fontColor,
-                  position: 'absolute',
-                  left: `${props.textAlignX ?? 50}%`,
-                  top: `${props.textAlignY ?? 50}%`,
-                  transform: 'translate(-50%, -50%)',
-                  width: 'max-content',
-                }}
-              >
-                {props.text as string}
-              </span>
-            </div>
-          );
-        }
-
-        // For gradient/animated types
-        const startColor = bgStartColor?.startsWith('#') ? bgStartColor : `#${bgStartColor}`;
-        const endColor = bgEndColor?.startsWith('#') ? bgEndColor : `#${bgEndColor}`;
-
-        let gradientBgImage: string;
-        switch (bgGradientDirection) {
-          case 'horizontal':
-            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
-            break;
-          case 'vertical':
-            gradientBgImage = `linear-gradient(to bottom, ${startColor}, ${endColor})`;
-            break;
-          case 'diagonal':
-            gradientBgImage = `linear-gradient(135deg, ${startColor}, ${endColor})`;
-            break;
-          case 'radial':
-            gradientBgImage = `radial-gradient(circle, ${startColor}, ${endColor})`;
-            break;
-          case 'conic':
-            gradientBgImage = `conic-gradient(from 0deg, ${startColor}, ${endColor})`;
-            break;
-          default:
-            gradientBgImage = `linear-gradient(to right, ${startColor}, ${endColor})`;
-        }
-
-        const section = (props.section as string) ?? 'footer';
-        const type = (props.type as string) ?? 'waving';
-        const fontSize = (props.fontSize as number) ?? 24;
-        const fontColor = `#${normalizeHex((props.fontColor as string) ?? 'ffffff', 'ffffff')}`;
-
-        // Normalize solid color for blur background
-        const solidColorFB = normalizeHex(bgSolidColor, '3B82F6');
-        const normalizedSolidColor = solidColorFB.startsWith('#')
-          ? solidColorFB
-          : `#${solidColorFB}`;
-
-        // Apply animation for animated type
-        const animationClass =
-          bgAnimation !== 'none'
-            ? bgAnimation === 'gradient'
-              ? 'animate-gradient-flow'
-              : bgAnimation === 'pulse'
-                ? 'animate-pulse'
-                : bgAnimation === 'waving'
-                  ? 'animate-wave'
-                  : bgAnimation === 'shimmer'
-                    ? 'animate-shimmer'
-                    : ''
-            : '';
-
-        // Add required background size for animations
-        const animationBgSize =
-          animationClass !== ''
-            ? {
-                backgroundSize: bgAnimation === 'gradient' ? '200% 200%' : '200% 100%',
-              }
-            : {};
-
-        // Get custom border radius from props if defined - use explicit check for undefined
-        // Note: Add parentheses around ternary expressions to fix operator precedence issues
-        // Footer banner always uses rounded bottom corners (matching Capsule Header header styling)
-        const height = Number(props.height) || 80;
-        const maxR = Math.floor(height / 2);
-        const cornerTL = props.borderRadiusTL;
-        const cornerTR = props.borderRadiusTR;
-        const cornerBR = props.borderRadiusBR;
-        const cornerBL = props.borderRadiusBL;
-        const borderRadiusTL = cornerTL !== undefined ? Math.min(Number(cornerTL), maxR) : 0;
-        const borderRadiusTR = cornerTR !== undefined ? Math.min(Number(cornerTR), maxR) : 0;
-        const borderRadiusBR = cornerBR !== undefined ? Math.min(Number(cornerBR), maxR) : 24;
-        const borderRadiusBL = cornerBL !== undefined ? Math.min(Number(cornerBL), maxR) : 24;
-
-        const defaultRadiusValue =
-          type === 'rect'
-            ? '8px'
-            : type === 'cylinder'
-              ? '9999px'
-              : type === 'soft'
-                ? '36px'
-                : type === 'slice'
-                  ? '48px 10px 48px 10px'
-                  : type === 'wave'
-                    ? '0 0 40px 40px'
-                    : type === 'egg'
-                      ? '0 0 50px 50px'
-                      : type === 'shark'
-                        ? '0 10px 20px 20px'
-                        : type === 'speech'
-                          ? '0 0 24px 24px'
-                          : type === 'transparent' || type === 'blur'
-                            ? '0'
-                            : section === 'footer'
-                              ? '0 0 24px 24px'
-                              : '24px 24px 0 0';
-
-        const borderRadius =
-          props.borderRadiusTL !== undefined ||
-          props.borderRadiusTR !== undefined ||
-          props.borderRadiusBR !== undefined ||
-          props.borderRadiusBL !== undefined
-            ? `${borderRadiusTL}px ${borderRadiusTR}px ${borderRadiusBR}px ${borderRadiusBL}px`
-            : defaultRadiusValue;
-
-        // For blur effect in the preview (where there's no content behind),
-        // we need to simulate the blur by using a filter instead of backdrop-filter
-        if (type === 'blur') {
-          return (
-            <div
-              className={`relative overflow-hidden ${animationClass}`}
-              style={{
-                width: '100%',
-                maxWidth: '896px',
-                height: `${height}px`,
-                backgroundImage: gradientBgImage,
-                backgroundColor: normalizedSolidColor,
-                borderRadius,
-                filter: 'blur(10px)',
-                WebkitFilter: 'blur(10px)',
-                ...animationBgSize,
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
-                {props.text as string}
-              </span>
-            </div>
-          );
-        }
-
+        const capsuleUrl = buildCapsulePreviewUrl(footerProps, 'footer');
         return (
-          <div
-            className={`relative overflow-hidden ${animationClass}`}
-            style={{
-              width: '100%',
-              maxWidth: '896px',
-              height: `${height}px`,
-              backgroundImage: type === 'transparent' ? 'none' : gradientBgImage,
-              backgroundColor:
-                type === 'transparent'
-                  ? 'transparent'
-                  : type === 'blur'
-                    ? normalizedSolidColor
-                    : undefined,
-              borderRadius,
-              ...animationBgSize,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}
-          >
-            <span className="font-bold" style={{ fontSize: `${fontSize}px`, color: fontColor }}>
-              {props.text as string}
-            </span>
-          </div>
+          <img
+            src={capsuleUrl}
+            alt="Footer Banner"
+            style={{ width: '100%', height: `${props.height ?? 100}px`, display: 'block' }}
+          />
         );
       }
 
