@@ -151,10 +151,13 @@ export function BlockConfigFields({
 
   switch (type) {
     case 'stats-row': {
-      const statsChildren =
-        block.children?.filter((child): child is Block & { type: StatsChildType } =>
-          statsChildTypes.includes(child.type as StatsChildType),
-        ) ?? [];
+      const statsChildren = block.children
+        ? [
+            ...block.children.filter((child): child is Block & { type: StatsChildType } =>
+              statsChildTypes.includes(child.type as StatsChildType),
+            ),
+          ]
+        : [];
 
       const updateCardProps = (slotIndex: 0 | 1, updates: Record<string, unknown>) => {
         const nextSlots: Array<Block | undefined> = [statsChildren[0], statsChildren[1]];
