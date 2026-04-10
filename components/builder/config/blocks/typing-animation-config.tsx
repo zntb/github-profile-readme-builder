@@ -13,18 +13,26 @@ interface TypingAnimationConfigProps {
   lines: string[];
   color: string;
   width: number | undefined;
+  height: number | undefined;
+  speed: number | undefined;
   onLinesChange: (value: string[]) => void;
   onColorChange: (value: string) => void;
   onWidthChange: (value: number | undefined) => void;
+  onHeightChange: (value: number | undefined) => void;
+  onSpeedChange: (value: number | undefined) => void;
 }
 
 export function TypingAnimationConfig({
   lines,
   color,
   width,
+  height,
+  speed,
   onLinesChange,
   onColorChange,
   onWidthChange,
+  onHeightChange,
+  onSpeedChange,
 }: TypingAnimationConfigProps) {
   return (
     <>
@@ -83,6 +91,28 @@ export function TypingAnimationConfig({
           placeholder="e.g., 400"
           min={100}
           max={800}
+        />
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Height (px)</Label>
+        <Input
+          type="number"
+          value={height ?? ''}
+          onChange={(e) => onHeightChange(e.target.value ? parseInt(e.target.value) : undefined)}
+          placeholder="e.g., 30"
+          min={20}
+          max={100}
+        />
+      </FieldGroup>
+      <FieldGroup>
+        <Label>Speed</Label>
+        <Input
+          type="number"
+          value={speed ?? ''}
+          onChange={(e) => onSpeedChange(e.target.value ? parseInt(e.target.value) : undefined)}
+          placeholder="e.g., 50"
+          min={10}
+          max={200}
         />
       </FieldGroup>
     </>

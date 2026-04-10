@@ -410,9 +410,13 @@ export function BlockConfigFields({
           lines={props.lines as string[]}
           color={(props.color as string) ?? ''}
           width={props.width as number | undefined}
+          height={props.height as number | undefined}
+          speed={props.speed as number | undefined}
           onLinesChange={(v) => update('lines', v)}
           onColorChange={(v) => update('color', v)}
           onWidthChange={(v) => update('width', v)}
+          onHeightChange={(v) => update('height', v)}
+          onSpeedChange={(v) => update('speed', v)}
         />
       );
 
@@ -557,6 +561,10 @@ export function BlockConfigFields({
           hideTitle={Boolean(props.hideTitle)}
           hideRank={Boolean(props.hideRank)}
           borderRadius={Number(props.borderRadius) || 10}
+          bgColor={props.bgColor as string | undefined}
+          textColor={props.textColor as string | undefined}
+          titleColor={props.titleColor as string | undefined}
+          iconColor={props.iconColor as string | undefined}
           onLayoutStyleChange={(v) => update('layoutStyle', v)}
           onLayoutWidthChange={(v) => update('layoutWidth', v)}
           onWidthChange={(v) => update('width', v)}
@@ -566,6 +574,10 @@ export function BlockConfigFields({
           onHideTitleChange={(v) => update('hideTitle', v)}
           onHideRankChange={(v) => update('hideRank', v)}
           onBorderRadiusChange={(v) => update('borderRadius', v)}
+          onBgColorChange={(v) => update('bgColor', v)}
+          onTextColorChange={(v) => update('textColor', v)}
+          onTitleColorChange={(v) => update('titleColor', v)}
+          onIconColorChange={(v) => update('iconColor', v)}
         />
       );
 
@@ -579,6 +591,9 @@ export function BlockConfigFields({
           langs_count={Number(props.langs_count) || 8}
           hideBorder={Boolean(props.hideBorder)}
           hideProgress={Boolean(props.hideProgress)}
+          bgColor={props.bgColor as string | undefined}
+          textColor={props.textColor as string | undefined}
+          titleColor={props.titleColor as string | undefined}
           onLayoutWidthChange={(v) => update('layoutWidth', v)}
           onWidthChange={(v) => update('width', v)}
           onThemeChange={(v) => update('theme', v)}
@@ -586,6 +601,9 @@ export function BlockConfigFields({
           onLangsCountChange={(v) => update('langs_count', v)}
           onHideBorderChange={(v) => update('hideBorder', v)}
           onHideProgressChange={(v) => update('hideProgress', v)}
+          onBgColorChange={(v) => update('bgColor', v)}
+          onTextColorChange={(v) => update('textColor', v)}
+          onTitleColorChange={(v) => update('titleColor', v)}
         />
       );
 
@@ -597,11 +615,25 @@ export function BlockConfigFields({
           theme={(props.theme as string) ?? 'default'}
           hideBorder={Boolean(props.hideBorder)}
           borderRadius={Number(props.borderRadius) || 10}
+          bgColor={props.bgColor as string | undefined}
+          fireColor={props.fireColor as string | undefined}
+          ringColor={props.ringColor as string | undefined}
+          currStreakColor={props.currStreakColor as string | undefined}
+          sideNumColor={props.sideNumColor as string | undefined}
+          sideLabelColor={props.sideLabelColor as string | undefined}
+          datesColor={props.datesColor as string | undefined}
           onLayoutWidthChange={(v) => update('layoutWidth', v)}
           onWidthChange={(v) => update('width', v)}
           onThemeChange={(v) => update('theme', v)}
           onHideBorderChange={(v) => update('hideBorder', v)}
           onBorderRadiusChange={(v) => update('borderRadius', v)}
+          onBgColorChange={(v) => update('bgColor', v)}
+          onFireColorChange={(v) => update('fireColor', v)}
+          onRingColorChange={(v) => update('ringColor', v)}
+          onCurrStreakColorChange={(v) => update('currStreakColor', v)}
+          onSideNumColorChange={(v) => update('sideNumColor', v)}
+          onSideLabelColorChange={(v) => update('sideLabelColor', v)}
+          onDatesColorChange={(v) => update('datesColor', v)}
         />
       );
 
@@ -610,8 +642,18 @@ export function BlockConfigFields({
         <ActivityGraphConfig
           theme={String(props.theme) || 'default'}
           hideBorder={Boolean(props.hideBorder)}
+          bgColor={props.bgColor as string | undefined}
+          color={props.color as string | undefined}
+          lineColor={props.lineColor as string | undefined}
+          pointColor={props.pointColor as string | undefined}
+          areaColor={props.areaColor as string | undefined}
           onThemeChange={(v) => update('theme', v)}
           onHideBorderChange={(v) => update('hideBorder', v)}
+          onBgColorChange={(v) => update('bgColor', v)}
+          onColorChange={(v) => update('color', v)}
+          onLineColorChange={(v) => update('lineColor', v)}
+          onPointColorChange={(v) => update('pointColor', v)}
+          onAreaColorChange={(v) => update('areaColor', v)}
         />
       );
 

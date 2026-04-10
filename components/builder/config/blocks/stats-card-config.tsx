@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { CardWidthField } from '../card-width-field';
 import { FieldGroup } from '../field-group';
+import { SimpleColorPicker } from '../gradient-color-picker';
 import { ThemeField } from '../theme-field';
 
 interface StatsCardConfigProps {
@@ -25,6 +26,10 @@ interface StatsCardConfigProps {
   hideTitle: boolean;
   hideRank: boolean;
   borderRadius: number;
+  bgColor: string | undefined;
+  textColor: string | undefined;
+  titleColor: string | undefined;
+  iconColor: string | undefined;
   onLayoutStyleChange: (value: 'standard' | 'compact') => void;
   onLayoutWidthChange: (value: string) => void;
   onWidthChange: (value: string | undefined) => void;
@@ -34,6 +39,10 @@ interface StatsCardConfigProps {
   onHideTitleChange: (value: boolean) => void;
   onHideRankChange: (value: boolean) => void;
   onBorderRadiusChange: (value: number) => void;
+  onBgColorChange: (value: string) => void;
+  onTextColorChange: (value: string) => void;
+  onTitleColorChange: (value: string) => void;
+  onIconColorChange: (value: string) => void;
 }
 
 export function StatsCardConfig({
@@ -46,6 +55,10 @@ export function StatsCardConfig({
   hideTitle,
   hideRank,
   borderRadius,
+  bgColor,
+  textColor,
+  titleColor,
+  iconColor,
   onLayoutStyleChange,
   onLayoutWidthChange,
   onWidthChange,
@@ -55,6 +68,10 @@ export function StatsCardConfig({
   onHideTitleChange,
   onHideRankChange,
   onBorderRadiusChange,
+  onBgColorChange,
+  onTextColorChange,
+  onTitleColorChange,
+  onIconColorChange,
 }: StatsCardConfigProps) {
   return (
     <>
@@ -128,6 +145,30 @@ export function StatsCardConfig({
           max={20}
         />
       </FieldGroup>
+      <SimpleColorPicker
+        label="Background Color"
+        value={bgColor ?? ''}
+        onChange={onBgColorChange}
+        placeholder="Transparent"
+      />
+      <SimpleColorPicker
+        label="Text Color"
+        value={textColor ?? ''}
+        onChange={onTextColorChange}
+        placeholder="Grey"
+      />
+      <SimpleColorPicker
+        label="Title Color"
+        value={titleColor ?? ''}
+        onChange={onTitleColorChange}
+        placeholder="Grey"
+      />
+      <SimpleColorPicker
+        label="Icon Color"
+        value={iconColor ?? ''}
+        onChange={onIconColorChange}
+        placeholder="Grey"
+      />
     </>
   );
 }

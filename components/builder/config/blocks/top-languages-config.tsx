@@ -13,6 +13,7 @@ import { Switch } from '@/components/ui/switch';
 
 import { CardWidthField } from '../card-width-field';
 import { FieldGroup } from '../field-group';
+import { SimpleColorPicker } from '../gradient-color-picker';
 import { ThemeField } from '../theme-field';
 
 interface TopLanguagesConfigProps {
@@ -23,6 +24,9 @@ interface TopLanguagesConfigProps {
   langs_count: number;
   hideBorder: boolean;
   hideProgress: boolean;
+  bgColor: string | undefined;
+  textColor: string | undefined;
+  titleColor: string | undefined;
   onLayoutWidthChange: (value: string) => void;
   onWidthChange: (value: string | undefined) => void;
   onThemeChange: (value: string) => void;
@@ -30,6 +34,9 @@ interface TopLanguagesConfigProps {
   onLangsCountChange: (value: number) => void;
   onHideBorderChange: (value: boolean) => void;
   onHideProgressChange: (value: boolean) => void;
+  onBgColorChange: (value: string) => void;
+  onTextColorChange: (value: string) => void;
+  onTitleColorChange: (value: string) => void;
 }
 
 export function TopLanguagesConfig({
@@ -40,6 +47,9 @@ export function TopLanguagesConfig({
   langs_count,
   hideBorder,
   hideProgress,
+  bgColor,
+  textColor,
+  titleColor,
   onLayoutWidthChange,
   onWidthChange,
   onThemeChange,
@@ -47,6 +57,9 @@ export function TopLanguagesConfig({
   onLangsCountChange,
   onHideBorderChange,
   onHideProgressChange,
+  onBgColorChange,
+  onTextColorChange,
+  onTitleColorChange,
 }: TopLanguagesConfigProps) {
   return (
     <>
@@ -100,6 +113,24 @@ export function TopLanguagesConfig({
           />
         </div>
       </FieldGroup>
+      <SimpleColorPicker
+        label="Background Color"
+        value={bgColor ?? ''}
+        onChange={onBgColorChange}
+        placeholder="Transparent"
+      />
+      <SimpleColorPicker
+        label="Text Color"
+        value={textColor ?? ''}
+        onChange={onTextColorChange}
+        placeholder="Grey"
+      />
+      <SimpleColorPicker
+        label="Title Color"
+        value={titleColor ?? ''}
+        onChange={onTitleColorChange}
+        placeholder="Grey"
+      />
     </>
   );
 }
