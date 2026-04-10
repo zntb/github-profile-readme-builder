@@ -537,11 +537,23 @@ export async function GET(request: NextRequest) {
   // Gradient Flow animation: render as an animated GIF so it works on GitHub,
   // which strips CSS animations and SMIL `<animate>` elements from SVGs.
   // Only attempt GIF generation when there are actually two gradient colours.
+  // Note: When parallax is enabled, the shapeMarkup contains SMIL <animate> elements
+  // that are incompatible with frame-by-frame GIF generation. We need to use a
+  // static shape without animations for the GIF frames.
+  const hasParallaxAnimation = type === 'waving' && parallax && shapeMarkup.includes('<animate');
   if (animation === 'gradient' && useGradient) {
     try {
+      // For parallax waves, we need to generate a static shape for the GIF
+      // without the SMIL animations. Extract the static path from the animated markup.
+      const staticShapeMarkup = hasParallaxAnimation
+        ? shapeMarkup
+            .replace(/<animate[\s\S]*?\/>/g, '')
+            .replace(/<animateTransform[\s\S]*?\/>/g, '')
+        : shapeMarkup;
+
       const gifBuffer = await generateAnimatedGif(
         {
-          shapeMarkup,
+          shapeMarkup: staticShapeMarkup,
           width: WIDTH,
           height,
           text,
