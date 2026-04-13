@@ -42,6 +42,7 @@ export type BlockType =
   | 'streak-stats'
   | 'activity-graph'
   | 'trophies'
+  | 'wakatime-stats'
   // Advanced
   | 'visitor-counter'
   | 'quote'
@@ -252,6 +253,24 @@ export interface StreakStatsProps {
   sideNumColor?: string;
   sideLabelColor?: string;
   datesColor?: string;
+}
+
+export interface WakatimeStatsProps {
+  username: string;
+  theme: string;
+  layoutWidth?: 'half' | 'full';
+  cardWidth?: string;
+  cardHeight?: string;
+  hideBorder: boolean;
+  borderRadius: number;
+  bgColor?: string;
+  textColor?: string;
+  titleColor?: string;
+  hideTitle: boolean;
+  hideRecent: boolean;
+  hideEditors: boolean;
+  hideLanguages: boolean;
+  hideOperatingSystems: boolean;
 }
 
 export interface ActivityGraphProps {
@@ -757,6 +776,22 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
           margin_h: 15,
           noFrame: false,
           noBg: false,
+        },
+      },
+      {
+        type: 'wakatime-stats',
+        label: 'Wakatime Stats',
+        icon: 'Clock',
+        defaultProps: {
+          username: 'wakatime',
+          theme: 'tokyonight',
+          hideBorder: false,
+          borderRadius: 4,
+          hideTitle: false,
+          hideRecent: false,
+          hideEditors: false,
+          hideLanguages: false,
+          hideOperatingSystems: false,
         },
       },
     ],

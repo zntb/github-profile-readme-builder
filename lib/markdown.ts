@@ -370,6 +370,11 @@ export function renderBlock(block: Block, origin: string = ''): string {
       return `<div align="center">\n  ${imageTag}\n</div>`;
     }
 
+    case 'wakatime-stats': {
+      const imageTag = renderWakatimeStatsImageTag(block, origin);
+      return `<div align="center">\n  ${imageTag}\n</div>`;
+    }
+
     case 'activity-graph': {
       const globalUsername = useBuilderStore.getState().username;
       const {
@@ -670,6 +675,46 @@ function renderStreakStatsImageTag(block: Block, origin: string): string {
   return `<img src="${url}" alt="GitHub Streak" />`;
 }
 
+function renderWakatimeStatsImageTag(block: Block, origin: string): string {
+  const globalUsername = useBuilderStore.getState().username;
+  const {
+    username: blockUsername,
+    theme,
+    hideBorder,
+    borderRadius,
+    bgColor,
+    textColor,
+    titleColor,
+    hideTitle,
+    hideRecent,
+    hideEditors,
+    hideLanguages,
+    hideOperatingSystems,
+  } = block.props as Record<string, unknown>;
+  const username =
+    blockUsername && blockUsername !== 'wakatime' && blockUsername !== 'github'
+      ? blockUsername
+      : globalUsername;
+  const params = {
+    username,
+    theme,
+    hide_border: hideBorder ? 'true' : 'false',
+    border_radius: borderRadius,
+    bg_color: bgColor,
+    text_color: textColor,
+    title_color: titleColor,
+    hide_title: hideTitle ? 'true' : 'false',
+    hide_recent: hideRecent ? 'true' : 'false',
+    hide_editors: hideEditors ? 'true' : 'false',
+    hide_languages: hideLanguages ? 'true' : 'false',
+    hide_operating_systems: hideOperatingSystems ? 'true' : 'false',
+  };
+  const url = origin
+    ? buildExternalUrl('wakatime', params, origin)
+    : buildInternalUrl('wakatime', params);
+  return `<img src="${url}" alt="Wakatime Stats" />`;
+}
+
 function isHalfWidthCard(block: Block): boolean {
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
@@ -685,6 +730,8 @@ function getHalfWidthCardImageTag(block: Block, origin: string): string | null {
       return renderTopLanguagesImageTag(block, origin);
     case 'streak-stats':
       return renderStreakStatsImageTag(block, origin);
+    case 'wakatime-stats':
+      return renderWakatimeStatsImageTag(block, origin);
     default:
       return null;
   }
@@ -709,6 +756,7 @@ export function renderMarkdown(blocks: Block[], origin: string = ''): string {
           if (blockType === 'stats-card') return 'GitHub Stats';
           if (blockType === 'top-languages') return 'Top Languages';
           if (blockType === 'streak-stats') return 'GitHub Streak';
+          if (blockType === 'wakatime-stats') return 'Wakatime Stats';
           return 'Stats';
         };
 

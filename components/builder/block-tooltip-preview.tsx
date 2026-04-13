@@ -32,6 +32,7 @@ const BLOCK_DESCRIPTIONS: Record<BlockType, string> = {
   'streak-stats': 'GitHub contribution streak visualization',
   'activity-graph': 'Yearly contribution activity heatmap',
   trophies: 'GitHub achievements and trophies showcase',
+  'wakatime-stats': 'Wakatime coding statistics and time tracking',
   // Advanced
   'visitor-counter': 'Profile views counter with customizable style',
   quote: 'Display quotes with themed styling',
@@ -180,6 +181,14 @@ export function BlockTooltipPreview({ type }: { type: BlockType }) {
           <div className="flex items-center gap-2">
             <span className="text-orange-500">🔥</span>
             <span className="text-xs font-bold">365 days</span>
+          </div>
+        );
+
+      case 'wakatime-stats':
+        return (
+          <div className="flex items-center gap-2">
+            <span className="text-blue-500">⏱️</span>
+            <span className="text-xs font-bold">12 hrs/day</span>
           </div>
         );
 

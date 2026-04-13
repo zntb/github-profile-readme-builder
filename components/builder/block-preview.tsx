@@ -2,7 +2,13 @@
 
 import { resolveFooterBannerColors } from '@/lib/footer-banner-utils';
 import { getQuoteTheme } from '@/lib/quote-themes';
-import { getActivityTheme, getLangTheme, getStatsTheme, getStreakTheme } from '@/lib/themes';
+import {
+  getActivityTheme,
+  getLangTheme,
+  getStatsTheme,
+  getStreakTheme,
+  getWakatimeTheme,
+} from '@/lib/themes';
 import type { Block } from '@/lib/types';
 import { cn } from '@/lib/utils';
 
@@ -33,6 +39,13 @@ function getStreakThemeColors(
 ): ReturnType<typeof getStreakTheme> | undefined {
   if (!themeName) return undefined;
   return getStreakTheme(themeName);
+}
+
+function getWakatimeThemeColors(
+  themeName: string | undefined,
+): ReturnType<typeof getWakatimeTheme> | undefined {
+  if (!themeName) return undefined;
+  return getWakatimeTheme(themeName);
 }
 
 interface BlockPreviewProps {
@@ -767,6 +780,34 @@ export function BlockPreview({ block, className }: BlockPreviewProps) {
                 style={{ color: streakTheme ? `#${streakTheme.text}` : undefined }}
               >
                 @{props.username as string}
+              </div>
+            </div>
+          </div>
+        );
+      }
+
+      case 'wakatime-stats': {
+        const wakatimeTheme = getWakatimeThemeColors(props.theme as string | undefined);
+        return (
+          <div className="flex justify-center">
+            <div
+              className="rounded-lg border p-4 text-center"
+              style={{
+                borderColor: wakatimeTheme ? `#${wakatimeTheme.border}` : undefined,
+                backgroundColor: wakatimeTheme ? `#${wakatimeTheme.bg}` : undefined,
+              }}
+            >
+              <div
+                className="text-sm font-medium"
+                style={{ color: wakatimeTheme ? `#${wakatimeTheme.title}` : undefined }}
+              >
+                Wakatime Stats
+              </div>
+              <div
+                className="text-xs mt-1"
+                style={{ color: wakatimeTheme ? `#${wakatimeTheme.text}` : undefined }}
+              >
+                Coding activity tracking
               </div>
             </div>
           </div>

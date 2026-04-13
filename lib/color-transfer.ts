@@ -68,6 +68,7 @@ const BLOCK_COLOR_PROPERTIES: Record<BlockType, string[]> = {
   ],
   'activity-graph': ['bgColor', 'color', 'lineColor', 'pointColor', 'areaColor'],
   trophies: [],
+  'wakatime-stats': ['bgColor', 'textColor', 'titleColor'],
   'visitor-counter': ['color'],
   quote: ['theme'],
   'footer-banner': ['waveColor', 'fontColor'],

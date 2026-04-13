@@ -1202,6 +1202,64 @@ export function getStreakTheme(themeName: string): StreakTheme {
   return deriveStreakTheme(getStatsTheme(themeName));
 }
 
+// Wakatime card themes
+export interface WakatimeTheme {
+  bg: string;
+  text: string;
+  title: string;
+  progress: string;
+  progressBg: string;
+  border: string;
+}
+
+export const wakatimeThemes: Record<string, WakatimeTheme> = {
+  default: {
+    bg: 'ffffff',
+    text: '434d58',
+    title: '151515',
+    progress: '378dff',
+    progressBg: 'e4e2e2',
+    border: 'e4e2e2',
+  },
+  dark: {
+    bg: '151515',
+    text: '9f9f9f',
+    title: 'ffffff',
+    progress: '378dff',
+    progressBg: '2d333b',
+    border: '444c56',
+  },
+  tokyonight: {
+    bg: '1a1b27',
+    text: '38bdae',
+    title: '70a5fd',
+    progress: '70a5fd',
+    progressBg: '2f3549',
+    border: '2f3549',
+  },
+};
+
+function deriveWakatimeTheme(theme: StatsTheme): WakatimeTheme {
+  return {
+    bg: theme.bg || 'ffffff',
+    text: theme.text || '434d58',
+    title: theme.title || '151515',
+    progress: theme.icon || '378dff',
+    progressBg: 'e4e2e2',
+    border: theme.border || 'e4e2e2',
+  };
+}
+
+export function getWakatimeTheme(themeName: string): WakatimeTheme {
+  // Check for custom theme
+  if (wakatimeThemes[themeName]) {
+    return { ...wakatimeThemes[themeName] };
+  }
+
+  // Derive from stats theme
+  return deriveWakatimeTheme(getStatsTheme(themeName));
+}
+
 export function getActivityTheme(themeName: string): ActivityTheme {
   // Check for custom theme
   const customStats = parseCustomTheme(themeName);

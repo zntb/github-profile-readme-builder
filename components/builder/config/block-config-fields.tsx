@@ -110,6 +110,10 @@ const VisitorCounterConfig = dynamic(
   () => import('./blocks/visitor-counter-config').then((m) => m.VisitorCounterConfig),
   { ssr: false, loading: () => <ConfigSkeleton /> },
 );
+const WakatimeStatsConfig = dynamic(
+  () => import('./blocks/wakatime-stats-config').then((m) => m.WakatimeStatsConfig),
+  { ssr: false, loading: () => <ConfigSkeleton /> },
+);
 
 // Skeleton component for loading state
 function ConfigSkeleton() {
@@ -723,6 +727,40 @@ export function BlockConfigFields({
           onColorChange={(v) => update('color', v)}
           onStyleChange={(v) => update('style', v)}
           onAlignmentChange={(v) => update('alignment', v)}
+        />
+      );
+
+    case 'wakatime-stats':
+      return (
+        <WakatimeStatsConfig
+          layoutWidth={(props.layoutWidth as string) ?? 'full'}
+          width={(props.width as string) ?? ''}
+          username={(props.username as string) ?? ''}
+          theme={(props.theme as string) ?? 'default'}
+          hideBorder={Boolean(props.hideBorder)}
+          hideTitle={Boolean(props.hideTitle)}
+          hideRecent={Boolean(props.hideRecent)}
+          hideEditors={Boolean(props.hideEditors)}
+          hideLanguages={Boolean(props.hideLanguages)}
+          hideOperatingSystems={Boolean(props.hideOperatingSystems)}
+          borderRadius={Number(props.borderRadius) || 4}
+          bgColor={props.bgColor as string | undefined}
+          textColor={props.textColor as string | undefined}
+          titleColor={props.titleColor as string | undefined}
+          onLayoutWidthChange={(v) => update('layoutWidth', v)}
+          onWidthChange={(v) => update('width', v)}
+          onUsernameChange={(v) => update('username', v)}
+          onThemeChange={(v) => update('theme', v)}
+          onHideBorderChange={(v) => update('hideBorder', v)}
+          onHideTitleChange={(v) => update('hideTitle', v)}
+          onHideRecentChange={(v) => update('hideRecent', v)}
+          onHideEditorsChange={(v) => update('hideEditors', v)}
+          onHideLanguagesChange={(v) => update('hideLanguages', v)}
+          onHideOperatingSystemsChange={(v) => update('hideOperatingSystems', v)}
+          onBorderRadiusChange={(v) => update('borderRadius', v)}
+          onBgColorChange={(v) => update('bgColor', v)}
+          onTextColorChange={(v) => update('textColor', v)}
+          onTitleColorChange={(v) => update('titleColor', v)}
         />
       );
 

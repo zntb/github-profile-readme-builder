@@ -99,6 +99,7 @@ function isBlockErrored(
     'activity-graph',
     'trophies',
     'quote',
+    'wakatime-stats',
   ];
   if (!apiBlockTypes.includes(block.type)) return false;
 
@@ -204,6 +205,24 @@ function usePrefetchedImages(
                 border_radius: String(block.props.borderRadius),
               });
               urlSet.add(`/api/streak?${params.toString()}`);
+            }
+            break;
+          }
+          case 'wakatime-stats': {
+            const username = getUsername(block.props.username as string);
+            if (username) {
+              const params = new URLSearchParams({
+                username,
+                theme: block.props.theme as string,
+                hide_border: block.props.hideBorder ? 'true' : 'false',
+                border_radius: String(block.props.borderRadius ?? 4),
+                hide_title: block.props.hideTitle ? 'true' : 'false',
+                hide_recent: block.props.hideRecent ? 'true' : 'false',
+                hide_editors: block.props.hideEditors ? 'true' : 'false',
+                hide_languages: block.props.hideLanguages ? 'true' : 'false',
+                hide_operating_systems: block.props.hideOperatingSystems ? 'true' : 'false',
+              });
+              urlSet.add(`/api/wakatime?${params.toString()}`);
             }
             break;
           }
@@ -379,7 +398,8 @@ interface LivePreviewProps {
 }
 
 function isHalfWidthGithubCard(block: Block): boolean {
-  if (!['stats-card', 'top-languages', 'streak-stats'].includes(block.type)) return false;
+  if (!['stats-card', 'top-languages', 'streak-stats', 'wakatime-stats'].includes(block.type))
+    return false;
   const layoutWidth = block.props.layoutWidth as string | undefined;
   if (layoutWidth === 'half') return true;
   if (layoutWidth === 'full') return false;
@@ -402,6 +422,7 @@ function isBlockLoading(
     'activity-graph',
     'trophies',
     'quote',
+    'wakatime-stats',
   ];
   if (!apiBlockTypes.includes(block.type)) return false;
 
@@ -477,6 +498,20 @@ function getApiUrlForBlock(block: Block, username: string): string | null {
         border_radius: String(block.props.borderRadius ?? 4),
       });
       return `/api/streak?${params.toString()}`;
+    }
+    case 'wakatime-stats': {
+      const params = new URLSearchParams({
+        username,
+        theme: (block.props.theme as string) || 'default',
+        hide_border: block.props.hideBorder ? 'true' : 'false',
+        border_radius: String(block.props.borderRadius ?? 4),
+        hide_title: block.props.hideTitle ? 'true' : 'false',
+        hide_recent: block.props.hideRecent ? 'true' : 'false',
+        hide_editors: block.props.hideEditors ? 'true' : 'false',
+        hide_languages: block.props.hideLanguages ? 'true' : 'false',
+        hide_operating_systems: block.props.hideOperatingSystems ? 'true' : 'false',
+      });
+      return `/api/wakatime?${params.toString()}`;
     }
     case 'activity-graph': {
       const params = new URLSearchParams({
@@ -1142,6 +1177,29 @@ function PreviewBlock({
         const prefetchedStreakSrc = getPrefetchedSrc(streakUrl);
         return (
           <img src={prefetchedStreakSrc ?? streakUrl} alt="GitHub Streak" style={imageSizeStyle} />
+        );
+      }
+
+      case 'wakatime-stats': {
+        const wakatimeParams = new URLSearchParams({
+          username: getUsername(props.username as string),
+          theme: props.theme as string,
+          hide_border: props.hideBorder ? 'true' : 'false',
+          border_radius: String(props.borderRadius ?? 4),
+          hide_title: props.hideTitle ? 'true' : 'false',
+          hide_recent: props.hideRecent ? 'true' : 'false',
+          hide_editors: props.hideEditors ? 'true' : 'false',
+          hide_languages: props.hideLanguages ? 'true' : 'false',
+          hide_operating_systems: props.hideOperatingSystems ? 'true' : 'false',
+        });
+        const wakatimeUrl = `/api/wakatime?${wakatimeParams.toString()}`;
+        const prefetchedWakatimeSrc = getPrefetchedSrc(wakatimeUrl);
+        return (
+          <img
+            src={prefetchedWakatimeSrc ?? wakatimeUrl}
+            alt="Wakatime Stats"
+            style={imageSizeStyle}
+          />
         );
       }
 

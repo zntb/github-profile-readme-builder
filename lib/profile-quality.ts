@@ -38,6 +38,7 @@ const BLOCK_CATEGORIES_MAP: Record<BlockType, string> = {
   'streak-stats': 'github-stats',
   'activity-graph': 'github-stats',
   trophies: 'github-stats',
+  'wakatime-stats': 'github-stats',
   'visitor-counter': 'advanced',
   quote: 'advanced',
   'footer-banner': 'advanced',
@@ -67,6 +68,7 @@ const CONTENT_FIELDS: Record<BlockType, string[]> = {
   'streak-stats': ['username'],
   'activity-graph': ['username'],
   trophies: ['username'],
+  'wakatime-stats': ['username'],
   'visitor-counter': ['username'],
   quote: ['quote'],
   'footer-banner': ['text'],
@@ -197,7 +199,8 @@ function analyzeBlocks(blocks: Block[], username: string): ProfileQualityResult[
       b.type === 'top-languages' ||
       b.type === 'streak-stats' ||
       b.type === 'activity-graph' ||
-      b.type === 'trophies',
+      b.type === 'trophies' ||
+      b.type === 'wakatime-stats',
   );
 
   return {
