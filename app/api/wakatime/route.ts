@@ -70,8 +70,38 @@ function getLanguageColor(name: string): string {
   return languageColors[name] || '#858585';
 }
 
+function isValidWakatimeUsername(username: string): boolean {
+  // WakaTime usernames typically contain alphanumeric characters, hyphens, and underscores
+  // Must be 1-50 characters, start with alphanumeric
+  const usernameRegex = /^[a-zA-Z0-9][a-zA-Z0-9_-]{0,49}$/;
+  return usernameRegex.test(username);
+}
+
+// Validate hex color to prevent XSS in SVG output
+function isValidHexColor(color: string): boolean {
+  // Must be 3 or 6 hex characters (without the # prefix)
+  const hexColorRegex = /^[0-9a-fA-F]{3}$|^[0-9a-fA-F]{6}$/;
+  return hexColorRegex.test(color);
+}
+
+// Sanitize theme colors to prevent XSS
+function sanitizeWakatimeTheme(theme: WakatimeTheme): WakatimeTheme {
+  return {
+    bg: isValidHexColor(theme.bg) ? theme.bg : 'ffffff',
+    text: isValidHexColor(theme.text) ? theme.text : '434d58',
+    title: isValidHexColor(theme.title) ? theme.title : '151515',
+    progress: isValidHexColor(theme.progress) ? theme.progress : '378dff',
+    progressBg: isValidHexColor(theme.progressBg) ? theme.progressBg : 'e4e2e2',
+    border: isValidHexColor(theme.border) ? theme.border : 'e4e2e2',
+  };
+}
+
 async function fetchPublicWakatimeStats(username: string): Promise<WakatimePublicData | null> {
   try {
+    // Validate username to prevent SSRF attacks
+    if (!isValidWakatimeUsername(username)) {
+      return null;
+    }
     const response = await fetch(`https://wakatime.com/api/v1/users/${username}/stats/all_time`);
     if (!response.ok) return null;
     return response.json();
@@ -194,8 +224,12 @@ export async function GET(request: NextRequest) {
   const username = searchParams.get('username');
   if (!username) return new NextResponse('Username is required', { status: 400 });
 
-  const theme = getWakatimeTheme(searchParams.get('theme') || 'default');
-  const options = { borderRadius: parseInt(searchParams.get('border_radius') || '10', 10) };
+  const theme = sanitizeWakatimeTheme(getWakatimeTheme(searchParams.get('theme') || 'default'));
+  const rawBorderRadius = searchParams.get('border_radius');
+  // Validate border_radius to prevent XSS through SVG attributes
+  const borderRadius =
+    rawBorderRadius !== null ? Math.min(Math.max(parseInt(rawBorderRadius, 10) || 10, 0), 100) : 10;
+  const options = { borderRadius };
 
   try {
     const stats = await fetchPublicWakatimeStats(username);
