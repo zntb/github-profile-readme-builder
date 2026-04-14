@@ -27,16 +27,21 @@ export const metadata: Metadata = {
     template: '%s | GitHub Profile Maker',
     default: 'GitHub Profile Maker',
   },
-  description: 'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder',
+  description:
+    'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder. 100% free, no signup required.',
   generator: 'Next.js',
   alternates: {
     canonical: 'https://github-profile-maker.vercel.app',
+    types: {
+      'text/plain': 'https://github-profile-maker.vercel.app/llms.txt',
+    },
   },
   openGraph: {
     type: 'website',
     url: 'https://github-profile-maker.vercel.app',
     title: 'GitHub Profile Maker',
-    description: 'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder',
+    description:
+      'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder. 100% free, no signup required.',
     images: [
       {
         url: 'https://github-profile-maker.vercel.app/screenshot.png',
@@ -50,7 +55,8 @@ export const metadata: Metadata = {
   twitter: {
     card: 'summary_large_image',
     title: 'GitHub Profile Maker',
-    description: 'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder',
+    description:
+      'Create beautiful GitHub profile READMEs with a visual drag-and-drop builder. 100% free, no signup required.',
     images: ['https://github-profile-maker.vercel.app/screenshot.png'],
   },
 };

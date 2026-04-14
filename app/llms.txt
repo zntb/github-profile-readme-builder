@@ -1,0 +1,90 @@
+# GitHub Profile Maker - AI Crawler Documentation
+
+## Overview
+
+GitHub Profile Maker (https://github-profile-maker.vercel.app) is a free, no-signup web application that enables users to create stunning GitHub profile READMEs using an intuitive visual drag-and-drop builder.
+
+## Purpose
+
+This tool allows developers to design custom GitHub profile READMEs without writing any code. Users can select from 25+ customizable blocks, configure colors and styles, preview their design in real-time, and export the result as Markdown ready to paste into their GitHub profile.
+
+## Target Audience
+
+- Software developers wanting to enhance their GitHub presence
+- Tech recruiters evaluating candidate profiles
+- Open source maintainers showcasing their projects
+- Students building their developer portfolio
+- Anyone wanting a professional-looking GitHub profile
+
+## Features
+
+### Core Functionality
+- Visual drag-and-drop editor with real-time preview
+- 25+ customizable blocks including:
+  - Activity Graph
+  - Stats Cards (streak, top languages, wakatime)
+  - Trophy showcase
+  - Skill icons
+  - Social badges
+  - Image and GIF support
+  - Animated typing effects
+  - Quote blocks
+  - Dividers and spacers
+  - Custom headers and banners
+  - Collapsible sections
+  - Visitor counters
+- Dark and light theme support
+- Custom color options with gradient support
+- Pre-built templates for quick starts
+- Auto-save functionality
+- Profile quality checker
+- Export to GitHub Gist
+- Share URL generation
+
+### Technical Details
+- Built with Next.js 14+ (App Router)
+- Client-side rendering for interactive builder
+- Server-side rendering for SEO content
+- TypeScript throughout
+- Responsive design (mobile, tablet, desktop)
+- Progressive Web App capable
+
+## Content Structure
+
+### Main Page Sections (for SEO)
+1. **Header**: Logo, navigation, action buttons
+2. **Builder Canvas**: Interactive drag-and-drop workspace
+3. **Block Sidebar**: Available blocks to add
+4. **Configuration Panel**: Block-specific settings
+5. **Preview Panel**: Real-time markdown preview
+6. **Footer**: Links to feedback, support
+
+### SEO Content Keywords
+GitHub profile maker, GitHub README builder, create GitHub profile, custom GitHub README, GitHub profile generator, markdown profile, GitHub profile template, visual README editor, developer profile, portfolio builder
+
+## User Journey
+
+1. **Landing**: User arrives at the tool
+2. **Username Entry**: User enters their GitHub username
+3. **Block Selection**: User browses and selects blocks from sidebar
+4. **Block Configuration**: User customizes each block's content and style
+5. **Preview**: User views real-time Markdown preview
+6. **Export**: User downloads or saves their README
+7. **GitHub Update**: User pastes content to their profile
+
+## File Types
+
+- **HTML**: Main application pages
+- **JSON**: API endpoints for GitHub data, templates, themes
+- **Sitemap**: XML sitemap for search engines
+- **Robots**: Crawler directives
+
+## Legal & Contact
+
+- GitHub Repository: https://github.com/zntb/github-profile-maker
+- Issues/Feedback: https://github.com/zntb/github-profile-maker/issues
+- Support: https://buymeacoffee.com/codetibo
+
+## Last Updated
+
+2026-04-14

@@ -13,6 +13,7 @@ export function Footer() {
             href="https://github.com/zntb/github-profile-maker/issues"
             target="_blank"
             rel="noopener noreferrer"
+            title="Report issues or suggest features on GitHub"
             className="text-muted-foreground hover:text-foreground hover:underline transition-colors"
           >
             Leave feedback
@@ -22,6 +23,7 @@ export function Footer() {
             href="https://buymeacoffee.com/codetibo"
             target="_blank"
             rel="noopener noreferrer"
+            title="Support the project with a donation"
             className="flex items-center gap-1.5 text-muted-foreground hover:text-foreground transition-colors"
           >
             <Image
