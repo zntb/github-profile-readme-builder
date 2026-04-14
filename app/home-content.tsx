@@ -1,7 +1,6 @@
 'use client';
 
 import dynamic from 'next/dynamic';
-import { Toaster } from 'sonner';
 
 import { Footer } from '@/components/footer';
 
@@ -14,6 +13,7 @@ import Loading from './loading';
  * Time-to-Interactive (TTI) on first load.
  *
  * The Loading skeleton is shown while the Builder chunk is being fetched.
+ * Note: ssr: false is set because the Builder uses browser APIs (zustand, window)
  */
 const Builder = dynamic(
   () => import('@/components/builder').then((m) => ({ default: m.Builder })),
@@ -28,7 +28,6 @@ export function HomeContent() {
     <>
       <Builder />
       <Footer />
-      <Toaster position="bottom-right" theme="dark" />
     </>
   );
 }
