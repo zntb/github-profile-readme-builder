@@ -97,11 +97,15 @@ export function Builder() {
                 {/* Username Input */}
                 <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
                   <div className="flex flex-col gap-2">
-                    <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Label
+                      htmlFor="username-input-desktop"
+                      className="text-xs font-medium text-muted-foreground flex items-center gap-1.5"
+                    >
                       <User className="w-3.5 h-3.5" />
                       GitHub Username
                     </Label>
                     <Input
+                      id="username-input-desktop"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Enter your GitHub username"
@@ -194,11 +198,15 @@ export function Builder() {
                   {/* Username Input */}
                   <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
                     <div className="flex flex-col gap-2">
-                      <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                      <Label
+                        htmlFor="username-input"
+                        className="text-xs font-medium text-muted-foreground flex items-center gap-1.5"
+                      >
                         <User className="w-3.5 h-3.5" />
                         GitHub Username
                       </Label>
                       <Input
+                        id="username-input"
                         value={username}
                         onChange={(e) => setUsername(e.target.value)}
                         placeholder="Enter your GitHub username"
@@ -321,11 +329,15 @@ export function Builder() {
                 {/* Username Input */}
                 <div className="border-b border-border/50 p-3 bg-gradient-to-b from-card/50 to-transparent">
                   <div className="flex flex-col gap-2">
-                    <Label className="text-xs font-medium text-muted-foreground flex items-center gap-1.5">
+                    <Label
+                      htmlFor="username-input-mobile"
+                      className="text-xs font-medium text-muted-foreground flex items-center gap-1.5"
+                    >
                       <User className="w-3.5 h-3.5" />
                       GitHub Username
                     </Label>
                     <Input
+                      id="username-input-mobile"
                       value={username}
                       onChange={(e) => setUsername(e.target.value)}
                       placeholder="Enter your GitHub username"

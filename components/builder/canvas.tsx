@@ -179,7 +179,10 @@ export function Canvas() {
 
   if (blocks.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center bg-background/50 p-4 sm:p-8 relative overflow-hidden">
+      <div
+        className="flex h-full items-center justify-center bg-background/50 p-4 sm:p-8 relative overflow-hidden"
+        data-testid="canvas"
+      >
         {/* Background decoration */}
         <div className="absolute inset-0 opacity-30">
           <div className="absolute top-1/4 left-1/4 w-64 h-64 bg-primary/10 rounded-full blur-3xl" />
@@ -211,7 +214,12 @@ export function Canvas() {
   const shouldVirtualize = blocks.length >= VIRTUALIZATION_THRESHOLD;
 
   return (
-    <ScrollArea className="h-full bg-background/30" role="region" aria-label="Canvas area">
+    <ScrollArea
+      className="h-full bg-background/30"
+      role="region"
+      aria-label="Canvas area"
+      data-testid="canvas"
+    >
       <div className="min-h-full p-4 sm:p-8" onClick={handleCanvasClick}>
         <div className="mx-auto max-w-4xl">
           {/* Canvas header */}

@@ -1,6 +1,8 @@
 import { test as base, type Locator, type Page } from '@playwright/test';
 import { type APIRequestContext } from 'playwright-core';
 
+import { BuilderPage, HomePage } from './pages';
+
 /**
  * Test Fixtures for Playwright E2E tests
  *
@@ -10,11 +12,14 @@ import { type APIRequestContext } from 'playwright-core';
  * - API testing
  * - Authentication
  * - Visual regression
+ * - Page Object Models
  */
 
 // Custom fixture types
 interface PageFixtures {
   page: Page;
+  homePage: HomePage;
+  builderPage: BuilderPage;
 }
 
 interface ApiFixtures {
@@ -23,6 +28,20 @@ interface ApiFixtures {
 
 // Extend base test with custom fixtures
 export const test = base.extend<PageFixtures & ApiFixtures>({
+  // HomePage fixture
+  homePage: async ({ page }, use) => {
+    const homePage = new HomePage(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    await use(homePage);
+  },
+
+  // BuilderPage fixture
+  builderPage: async ({ page }, use) => {
+    const builderPage = new BuilderPage(page);
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    await use(builderPage);
+  },
+
   // API Request context fixture
   apiRequest: async ({ playwright }, use) => {
     const request = await playwright.request.newContext({

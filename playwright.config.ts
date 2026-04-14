@@ -16,7 +16,7 @@ export default defineConfig({
   testMatch: '**/*.e2e.ts',
 
   // Maximum number of parallel workers
-  workers: 1,
+  workers: 2,
 
   // Retry configuration for flaky tests
   retries: process.env.CI ? 2 : 1,
@@ -103,14 +103,14 @@ export default defineConfig({
     },
 
     // Uncomment for additional browser testing
-    // {
-    //   name: 'firefox',
-    //   use: { ...devices['Desktop Firefox'] },
-    // },
-    // {
-    //   name: 'webkit',
-    //   use: { ...devices['Desktop Safari'] },
-    // },
+    {
+      name: 'firefox',
+      use: { ...devices['Desktop Firefox'] },
+    },
+    {
+      name: 'webkit',
+      use: { ...devices['Desktop Safari'] },
+    },
 
     // Mobile viewport project
     {
